@@ -227,18 +227,18 @@ int msm_camera_request_gpio_table(struct msm_camera_sensor_info *sinfo,
 	struct msm_camera_gpio_conf *gpio_conf =
 		sinfo->sensor_platform_info->gpio_conf;
 
-	#ifdef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
     if (NULL == gpio_conf->cam_gpio_common_tbl) {
 		pr_err("%s: NULL camera gpio table\n", __func__);
 		return -EFAULT;
 	}
-    #else
+#else
 	if (gpio_conf->cam_gpio_req_tbl == NULL ||
 		gpio_conf->cam_gpio_common_tbl == NULL) {
 		pr_err("%s: NULL camera gpio table\n", __func__);
 		return -EFAULT;
 	}
-	#endif
+#endif
 
 	if (gpio_en) {
 		if (NULL != gpio_conf->cam_gpiomux_conf_tbl) {
@@ -253,8 +253,7 @@ int msm_camera_request_gpio_table(struct msm_camera_sensor_info *sinfo,
 			pr_err("%s common gpio request failed\n", __func__);
 			return rc;
 		}
-		if (NULL != gpio_conf->cam_gpio_req_tbl)
-		{
+		if (NULL != gpio_conf->cam_gpio_req_tbl) {
 		    rc = gpio_request_array(gpio_conf->cam_gpio_req_tbl,
 				gpio_conf->cam_gpio_req_tbl_size);
 		    if (rc < 0) {
@@ -265,8 +264,7 @@ int msm_camera_request_gpio_table(struct msm_camera_sensor_info *sinfo,
 		    }
 		}		
 	} else {
-	    if (NULL != gpio_conf->cam_gpio_req_tbl)
-		{
+	    if (NULL != gpio_conf->cam_gpio_req_tbl) {
 			gpio_free_array(gpio_conf->cam_gpio_req_tbl,
 				gpio_conf->cam_gpio_req_tbl_size);
 		}
@@ -283,10 +281,10 @@ int msm_camera_config_gpio_table(struct msm_camera_sensor_info *sinfo,
 		sinfo->sensor_platform_info->gpio_conf;
 	int rc = 0, i;
 
-	#ifdef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
 	if(NULL == gpio_conf->cam_gpio_set_tbl)
 		return rc;
-	#endif
+#endif
 
 	if (gpio_en) {
 		for (i = 0; i < gpio_conf->cam_gpio_set_tbl_size; i++) {
@@ -441,12 +439,10 @@ cam_vio_disable:
 cam_vio_put:
     regulator_put(cam_vio);
     cam_vio = NULL;
-
 cam_ISP_1P2_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_SBM),0);
     usleep_range(1000,2000);
     gpio_free(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_SBM));
-
     regulator_disable(cam_8921_l10);
 docom_8921_l10_set_optimum_mode:
     regulator_set_optimum_mode(cam_8921_l10, 0);
@@ -455,7 +451,6 @@ docom_8921_l10_set_voltage:
 docom_8921_l10_put:
     regulator_put(cam_8921_l10);
     cam_8921_l10 = NULL;
-
 cam_2P85_EN_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN),0);
     usleep_range(1000,2000);
@@ -508,7 +503,7 @@ void power_seq_disable_docomo(void)
     usleep_range(1000,2000);
     gpio_free(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN));
     mdelay(1);
-    #if 0
+#if 0
 	if (mipi_csi_vdd) {
 		regulator_set_voltage(mipi_csi_vdd, 0, CAM_CSI_VDD_MAXUV);
 		regulator_set_optimum_mode(mipi_csi_vdd, 0);
@@ -516,8 +511,9 @@ void power_seq_disable_docomo(void)
 		regulator_put(mipi_csi_vdd);
 		mipi_csi_vdd = NULL;        
 	}
-    #endif
+#endif
 }
+
 int power_seq_enable_softbank(struct device *dev)
 {
     int rc=0;
@@ -669,7 +665,6 @@ cam_vaf_set_voltage:
 cam_vaf_put:
 	regulator_put(cam_vaf);
 	cam_vaf = NULL;
-
 cam_vana_disable:
 	regulator_disable(cam_vana);
 cam_vana_set_optimum_mode:
@@ -679,17 +674,14 @@ cam_vana_set_voltage:
 cam_vana_put:
 	regulator_put(cam_vana);
 	cam_vana = NULL;
-    
 cam_vio_disable:
     regulator_disable(cam_vio);
 cam_vio_put:
     regulator_put(cam_vio);
     cam_vio = NULL;
-
 cam_ISP_1P2_disable:    
     rc = gpio_direction_output(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_SBM), 0);
     gpio_free(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_SBM));
-	
     regulator_disable(cam_8921_l10);
 softbank_8921_l10_set_optimum_mode:
     regulator_set_optimum_mode(cam_8921_l10, 0);
@@ -702,7 +694,6 @@ cam_2P85_EN_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN),0);
     usleep_range(1000,2000);
     gpio_free(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN));
-
 	regulator_disable(mipi_csi_vdd);
 mipi_csi_vdd_set_optimum_mode:
     regulator_set_optimum_mode(mipi_csi_vdd, 0);
@@ -711,7 +702,7 @@ mipi_csi_vdd_set_voltage:
 mipi_csi_vdd_put:
 	regulator_put(mipi_csi_vdd);
 	mipi_csi_vdd = NULL;
-    
+
     printk("%s:  enable failed \n", __func__);
 	return -ENODEV;
 }
@@ -898,17 +889,14 @@ u9202l_cam_vana_set_voltage:
 u9202l_cam_vana_put:
 	regulator_put(cam_vana);
 	cam_vana = NULL;
-    
 u9202l_cam_vio_disable:
     regulator_disable(cam_vio);
 u9202l_cam_vio_put:
     regulator_put(cam_vio);
     cam_vio = NULL;
-
 u9202l_cam_ISP_1P2_disable:    
     rc = gpio_direction_output(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_SBM), 0);
     gpio_free(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_SBM));
-    
     regulator_disable(cam_vaf);
 u9202l_cam_vaf_set_optimum_mode:
 	regulator_set_optimum_mode(cam_vaf, 0);
@@ -1144,7 +1132,6 @@ cam_vana_set_voltage:
 cam_vana_put:		
 	regulator_put(cam_vana);
 	cam_vana = NULL;
-
 cam_vaf_disable:
 	regulator_disable(cam_vaf);
 cam_vaf_set_optimum_mode:
@@ -1158,12 +1145,10 @@ cam_CAM_1P85_EN_VRZ_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(CAM_1P85_EN_VRZ),0);
     usleep_range(1000,2000);   
     gpio_free(PM8921_GPIO_PM_TO_SYS(CAM_1P85_EN_VRZ));
-
 //cam_SMPS_2P85_EN_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN),0);
     usleep_range(1000,2000);
     gpio_free(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN));
-
 //cam_vdig_2_disable:
 	regulator_disable(cam_vdig_2);
 cam_vdig_2_set_optimum_mode:
@@ -1436,13 +1421,11 @@ c8869l_cam_vana_put:
 	cam_vana = NULL;
 c8869l_cam_vaf_disable:
 	regulator_disable(cam_vaf);
-    
 c8869l_cam_vio_2_put:              
 		regulator_put(cam_vio_2);
 		cam_vio_2 = NULL; 
 c8869l_cam_vana_disable:
 	regulator_disable(cam_vana);
-    
 c8869l_cam_vaf_set_optimum_mode:
     regulator_set_optimum_mode(cam_vaf, 0);
 c8869l_cam_vaf_set_voltage:
@@ -1450,7 +1433,6 @@ c8869l_cam_vaf_set_voltage:
 c8869l_cam_vaf_put:
 	regulator_put(cam_vaf);
 	cam_vaf = NULL;
-	
 c8869l_8921_l10_disable:
     regulator_disable(cam_8921_l10);
 c8869l_8921_l10_set_optimum_mode:
@@ -1460,7 +1442,6 @@ c8869l_8921_l10_set_voltage:
 c8869l_8921_l10_put:
     regulator_put(cam_8921_l10);
     cam_8921_l10 = NULL;
-
 c8869l_cam_CAM_1P85_EN_VRZ_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(CAM_1P85_EN_VRZ),0);
     usleep_range(1000,2000);   

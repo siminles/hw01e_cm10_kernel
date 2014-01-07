@@ -30,9 +30,6 @@ fi
 
 scm_version()
 {
-	# skip the repository version
-	return
-
 	local short
 	short=false
 

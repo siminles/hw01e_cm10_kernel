@@ -49,7 +49,6 @@ enum msm_camera_i2c_cmd_type {
 	MSM_CAMERA_I2C_CMD_POLL,
 };
 
-
 struct msm_camera_i2c_reg_conf {
 	uint16_t reg_addr;
 	uint16_t reg_data;
@@ -67,7 +66,7 @@ struct msm_camera_i2c_reg_conf_delay {
 
 struct msm_camera_i2c_conf_array {
 	//struct msm_camera_i2c_reg_conf *conf;
-        void * conf;
+	void * conf;
 	uint16_t size;
 	uint16_t delay;
 	enum msm_camera_i2c_data_type data_type;
@@ -127,7 +126,6 @@ int32_t msm_sensor_write_enum_conf_array(struct msm_camera_i2c_client *client,
 
 int32_t msm_sensor_write_all_conf_array(struct msm_camera_i2c_client *client,
 	struct msm_camera_i2c_conf_array *array, uint16_t size);
-
 
 int32_t msm_camera_i2c_write_tbl_delay(struct msm_camera_i2c_client *client,
 	struct msm_camera_i2c_reg_conf_delay *reg_conf_tbl, uint16_t size,

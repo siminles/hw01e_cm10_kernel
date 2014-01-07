@@ -23,8 +23,10 @@
 #include <mach/gpiomux.h>
 #include <linux/ion.h>
 #include <mach/ion.h>
+
 #include "devices.h"
 #include "board-8960.h"
+
 #ifdef CONFIG_FB_MSM_MIPI_DSI
 #define MIPI_DSI_WRITEBACK_SIZE (1280 * 720 * 3 * 2)//the largest lcd size is 720p now
 #else
@@ -460,7 +462,6 @@ static int mipi_dsi_huawei_panel_power(int on)
 	pr_info("%s: state : %d\n", __func__, on);
 
 	if (!dsi_power_on) {
-
 		reg_l2 = regulator_get(&msm_mipi_dsi1_device.dev,
 				"dsi_vdda");
 		if (IS_ERR(reg_l2)) {
@@ -500,7 +501,6 @@ static int mipi_dsi_huawei_panel_power(int on)
 	}
 	return 0;
 }
-
 
 /*use huawei power function*/
 static int mipi_dsi_panel_power(int on)
@@ -856,29 +856,30 @@ static struct platform_device mipi_dsi2lvds_bridge_device = {
 static struct platform_device mipi_dsi_toshiba_720p_panel_device = {
         .name = "mipi_toshiba_720p",
         .id = 0,
-        //.dev = {
-        //        .platform_data = &toshiba_pdata,
-        //}
 };
 #endif
+
 #ifdef CONFIG_HUAWEI_FB_MSM_MIPI_SAMSUNG_QHD_CMD_PT
 static struct platform_device mipi_dsi_samsung_qhd_panel_device = {
         .name = "mipi_samsung_qhd",
         .id = 0,
 };
 #endif
+
 #ifdef CONFIG_HUAWEI_FB_MSM_MIPI_R61408_CMI_WVGA_CMD_PT
 static struct platform_device mipi_dsi_cmi_r61408_wvga_panel_device = {
 	.name = "mipi_r61408_cmi_wvga",
 	.id = 0,
 };
 #endif
+
 #ifdef CONFIG_HUAWEI_FB_MSM_MIPI_HX8369_TIANMA_WVGA_CMD_PT
 static struct platform_device mipi_dsi_tianma_hx8369_wvga_panel_device = {
 	.name = "mipi_hx8369_tianma_wvga",
 	.id = 0,
 };
 #endif
+
 #ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
 static struct resource hdmi_msm_resources[] = {
 	{
@@ -1200,6 +1201,7 @@ void __init msm8960_init_fb(void)
     platform_device_register(&mipi_dsi_tianma_hx8369_wvga_panel_device);
 #endif
 }
+
 void __init msm8960_allocate_fb_region(void)
 {
 	void *addr;

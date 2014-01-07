@@ -2433,7 +2433,7 @@ int mdp4_overlay_set(struct fb_info *info, struct mdp_overlay *req)
 	pipe->flags = req->flags;
 
 	if (mixer == MDP4_MIXER0) {
-		u32 use_blt = mdp4_overlay_blt_enable(req, mfd, perf_level);
+		u32 use_blt = mdp4_overlay_blt_enable(req, mfd,	perf_level);
 		if((pipe->flags & MDP_BACKEND_COMPOSITION) && use_blt){
 			mdp4_overlay_pipe_free(pipe);
 			mutex_unlock(&mfd->dma->ov_mutex);

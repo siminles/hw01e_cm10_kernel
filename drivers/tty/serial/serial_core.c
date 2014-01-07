@@ -20,8 +20,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-
 #include <linux/module.h>
 #include <linux/tty.h>
 #include <linux/slab.h>
@@ -526,14 +524,13 @@ static int uart_write(struct tty_struct *tty,
 
 	if (!circ->buf)
 		return 0;
-    
-    #ifdef CONFIG_BCM_BT
-	if (tty->name && !strcmp(tty->name, "ttyHS0"))
-	{
+
+#ifdef CONFIG_BCM_BT
+	if (tty->name && !strcmp(tty->name, "ttyHS0")) {
 		//printk(KERN_INFO "outgoing data, IN tty->name is [%s]\n", tty->name);
 		bluesleep_outgoing_data();
 	}
-    #endif
+#endif
 	spin_lock_irqsave(&port->lock, flags);
 	while (1) {
 		c = CIRC_SPACE_TO_END(circ->head, circ->tail, UART_XMIT_SIZE);
@@ -1283,13 +1280,12 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
 
 	pr_debug("uart_close(%d) called\n", uport->line);
 
-    #ifdef CONFIG_BCM_BT
-	if (tty->name && !strcmp(tty->name, "ttyHS0"))
-	{
+#ifdef CONFIG_BCM_BT
+	if (tty->name && !strcmp(tty->name, "ttyHS0")) {
 		//printk(KERN_INFO "uart close, tty->name is [%s]\n", tty->name);
 		bluesleep_uart_close(uport);
 	}
-    #endif
+#endif
 	mutex_lock(&port->mutex);
 	spin_lock_irqsave(&port->lock, flags);
 
@@ -1606,13 +1602,12 @@ static int uart_open(struct tty_struct *tty, struct file *filp)
 	if (retval == 0)
 		retval = tty_port_block_til_ready(port, tty, filp);
 
-    #ifdef CONFIG_BCM_BT
-	if (tty->name && !strcmp(tty->name, "ttyHS0"))
-	{
+#ifdef CONFIG_BCM_BT
+	if (tty->name && !strcmp(tty->name, "ttyHS0")) {
 		//printk(KERN_INFO "uart open, tty->name is [%s]\n", tty->name);
 		bluesleep_uart_open(state->uart_port);
 	}
-    #endif
+#endif
 fail:
 	return retval;
 }

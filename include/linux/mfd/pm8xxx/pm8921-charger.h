@@ -58,7 +58,6 @@ struct msm_battery_8921gauge {
 };
 #endif
 
-
 enum pm8921_usb_ov_threshold {
 	PM_USB_OV_5P5V,
 	PM_USB_OV_6V,
@@ -163,7 +162,6 @@ struct pm8921_charger_platform_data {
 	int				rconn_mohm;
 	enum pm8921_usb_ov_threshold ovp_threshold;
 	enum pm8921_usb_debounce_time ovp_hystersis;
-
 };
 
 enum pm8921_charger_source {
@@ -239,6 +237,7 @@ int pm8921_disable_input_current_limit(bool disable);
  * USB drivers can distinguish between types of USB connections
  * and set the appropriate type for the USB supply.
  */
+
 void notify_usb_status_to_device(void (*callback)(uint8_t));
 void notify_usb_status_to_ate(void (*callback)(uint8_t));
 int pm8921_set_usb_power_supply_type(enum power_supply_type type);
@@ -297,14 +296,11 @@ int pm8921_usb_ovp_set_hystersis(enum pm8921_usb_debounce_time ms);
  *
  */
 int pm8921_usb_ovp_disable(int disable);
-
 int batt_therm_filter(int therm_value);
-
 /* Add PM8921 SMPS4 control begin */
 int pm8921_set_smps4_pwm(void);
 int pm8921_set_smps4_tcxo_en(void);
 /* Add PM8921 SMPS4 control end */
-
 #else
 static inline void pm8921_charger_vbus_draw(unsigned int mA)
 {

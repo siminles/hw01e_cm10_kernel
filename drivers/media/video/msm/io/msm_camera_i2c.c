@@ -430,7 +430,6 @@ int32_t msm_sensor_write_all_conf_array(struct msm_camera_i2c_client *client,
 int32_t msm_camera_i2c_write_tbl_delay(struct msm_camera_i2c_client *client,
 	struct msm_camera_i2c_reg_conf_delay *reg_conf_tbl, uint16_t size,
 	enum msm_camera_i2c_data_type data_type)
-
 {
 	int i;
 	int32_t rc = -EFAULT;
@@ -442,9 +441,7 @@ int32_t msm_camera_i2c_write_tbl_delay(struct msm_camera_i2c_client *client,
             &&( 0 == reg_conf_tbl->reg_addr)
             &&( 0 == reg_conf_tbl->reg_data)){
              mdelay(reg_conf_tbl->mdelays) ;  
-        }
-        else {
-        
+        } else {
     		if (reg_conf_tbl->cmd_type == MSM_CAMERA_I2C_CMD_POLL) {
     			rc = msm_camera_i2c_poll(client, reg_conf_tbl->reg_addr,
     				reg_conf_tbl->reg_addr, reg_conf_tbl->dt);
@@ -493,7 +490,6 @@ int32_t msm_camera_i2c_write_tbl_delay(struct msm_camera_i2c_client *client,
     			}
     		}
        }
-        //
 		if (rc < 0)
 			break;
 		reg_conf_tbl++;

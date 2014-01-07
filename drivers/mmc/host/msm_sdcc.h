@@ -422,6 +422,7 @@ int msmsdcc_sdio_al_lpm(struct mmc_host *mmc, bool enable);
 #define WIFI_IS_OFF    0
 void msmsdcc_setup_clocks_for_sdcc4(bool enable);
 #endif
+
 #ifdef CONFIG_MSM_SDIO_AL
 
 static inline int msmsdcc_lpm_enable(struct mmc_host *mmc)

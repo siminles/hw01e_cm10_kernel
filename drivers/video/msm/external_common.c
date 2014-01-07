@@ -117,8 +117,7 @@ const char edid_blk1[0x100] = {
 #ifdef CONFIG_FB_MSM_HDMI_MHL
 void mdp_vid_quant_set(void)
 {
-       printk("mdp_vid_quant_set -E; func1\n");
-
+	printk("mdp_vid_quant_set -E; func1\n");
 	if ((external_common_state->video_resolution == \
 		HDMI_VFRMT_720x480p60_4_3) || \
 		(external_common_state->video_resolution == \
@@ -131,8 +130,7 @@ void mdp_vid_quant_set(void)
 		MDP_OUTP(MDP_BASE + DMA_E_BASE + 0x74, 0x00FF0000);
 		MDP_OUTP(MDP_BASE + DMA_E_BASE + 0x78, 0x00FF0000);
 	}
-
-       printk("mdp_vid_quant_set -X; func1\n");
+	printk("mdp_vid_quant_set -X; func1\n");
 }
 #else
 void mdp_vid_quant_set(void)
@@ -141,8 +139,8 @@ void mdp_vid_quant_set(void)
 	 * Support for quantization to be added
 	 * only when MHL support is included.
 	 */
-        printk("mdp_vid_quant_set -E; func2\n");
-        printk("mdp_vid_quant_set -X; func2\n");
+	printk("mdp_vid_quant_set -E; func2\n");
+	printk("mdp_vid_quant_set -X; func2\n");
 }
 #endif
 
@@ -1435,8 +1433,7 @@ uint8_t hdmi_edid_extract_VIDEO_CAPABILITY_D_BLOCK(uint8_t *Data)
 
     printk("hdmi_edid_extract_VIDEO_CAPABILITY_D_BLOCK -begin\n");
 
-    if(Data == NULL)
-    {
+    if(Data == NULL) {
         printk("hdmi_edid_extract_VIDEO_CAPABILITY_D_BLOCK; param error\n");
         return EDID_REV_ADDR_ERROR;
     }
@@ -1452,22 +1449,18 @@ uint8_t hdmi_edid_extract_VIDEO_CAPABILITY_D_BLOCK(uint8_t *Data)
     LongDescriptorOffset = edid_blk1[0x02];    
 
     DataIndex = 0x04;            
-    while (DataIndex < LongDescriptorOffset)
-    {
+    while (DataIndex < LongDescriptorOffset) {
         TagCode = (edid_blk1[DataIndex] >> 5) & 0x07;
         DataBlockLength = edid_blk1[DataIndex++] & 0x0F;
-        if ((DataIndex + DataBlockLength) > LongDescriptorOffset)
-        {
+        if ((DataIndex + DataBlockLength) > LongDescriptorOffset) {
             DEV_DBG("EDID -> V Descriptor Overflow\n");
             return EDID_V_DESCR_OVERFLOW;
         }
         i = 0;                                  
-        if(TagCode==USE_EXTENDED_TAG)
-        {
+        if(TagCode==USE_EXTENDED_TAG) {
             ExtendedTagCode = edid_blk1[DataIndex++];
 			
-            if(ExtendedTagCode==VIDEO_CAPABILITY_D_BLOCK)
-            {
+            if(ExtendedTagCode==VIDEO_CAPABILITY_D_BLOCK) {
                 VIDEO_CAPABILITY_D_BLOCK_found =true;
                 //you should set the Quantization Ranges to limited range here(16-235).
                 
@@ -1499,11 +1492,11 @@ int hdmi_common_read_edid(void)
 	char vendor_id[5];
 	/* EDID_BLOCK_SIZE[0x80] Each page size in the EDID ROM */
 	uint8 edid_buf[0x80 * 4];
-       /* yuanqiang add for MHL certification; begin */
-       #ifdef MHL_CERTIFICATE
+	/* yuanqiang add for MHL certification; begin */
+#ifdef MHL_CERTIFICATE
 	uint8_t ErrCode;
-       #endif
-       /* yuanqiang add for MHL certification; end */
+#endif
+	/* yuanqiang add for MHL certification; end */
        
 	external_common_state->present_3d = 0;
 	memset(&external_common_state->disp_mode_list, 0,
@@ -1557,18 +1550,15 @@ int hdmi_common_read_edid(void)
 			hdmi_edid_extract_audio_data_blocks(edid_buf+0x80);
 			hdmi_edid_extract_3d_present(edid_buf+0x80);
 		}
-        
-             /* yuanqiang add for MHL certification; begin */
-             #ifdef MHL_CERTIFICATE
+		/* yuanqiang add for MHL certification; begin */
+#ifdef MHL_CERTIFICATE
 		ErrCode = hdmi_edid_extract_VIDEO_CAPABILITY_D_BLOCK(edid_buf+0x80);
-             if (ErrCode != EDID_SHORT_DESCRIPTORS_OK)
-             {
-                 DEV_DBG("not EDID_SHORT_DESCRIPTORS_OK\n");
-                 return ErrCode;
-             }
-             #endif
-             /* yuanqiang add for MHL certification; end */
-             
+		if (ErrCode != EDID_SHORT_DESCRIPTORS_OK) {
+			DEV_DBG("not EDID_SHORT_DESCRIPTORS_OK\n");
+			return ErrCode;
+		}
+#endif
+		/* yuanqiang add for MHL certification; end */
 		break;
 	case 2:
 	case 3:
@@ -1637,9 +1627,9 @@ bool hdmi_common_get_video_format_from_drv_data(struct msm_fb_data_type *mfd)
 
 	if (var->reserved[3]) {
 		format = var->reserved[3]-1;
-		DEV_INFO("reserved format is %d\n", format);
+		DEV_DBG("reserved format is %d\n", format);
 	} else {
-		DEV_INFO("detecting resolution from %dx%d use var->reserved[3]"
+		DEV_DBG("detecting resolution from %dx%d use var->reserved[3]"
 			" to specify mode", mfd->var_xres, mfd->var_yres);
 		switch (mfd->var_xres) {
 		default:
@@ -1660,19 +1650,19 @@ bool hdmi_common_get_video_format_from_drv_data(struct msm_fb_data_type *mfd)
 				: HDMI_VFRMT_1440x576i50_16_9;
 			break;
 		case 1920:
-                    //change from HDMI_VFRMT_1920x1080p60_16_9(Unsupported) to HDMI_VFRMT_1920x1080p24_16_9
-                    format = HDMI_VFRMT_1920x1080p24_16_9;
+			//change from HDMI_VFRMT_1920x1080p60_16_9(Unsupported) to HDMI_VFRMT_1920x1080p24_16_9
+			format = HDMI_VFRMT_1920x1080p24_16_9;
 			break;
 		}
 	}
 
 	changed = external_common_state->video_resolution != format;
 	if (external_common_state->video_resolution != format)
-		DEV_INFO("switching %s => %s", video_format_2string(
+		DEV_DBG("switching %s => %s", video_format_2string(
 			external_common_state->video_resolution),
 			video_format_2string(format));
 	else
-		DEV_INFO("resolution %s", video_format_2string(
+		DEV_DBG("resolution %s", video_format_2string(
 			external_common_state->video_resolution));
 	external_common_state->video_resolution = format;
 	return changed;

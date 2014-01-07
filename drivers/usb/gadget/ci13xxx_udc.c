@@ -50,10 +50,6 @@
  * - Gadget API (majority of optional features)
  * - Suspend & Remote Wakeup
  */
-
-
-
- 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/dmapool.h>
@@ -178,7 +174,6 @@ static struct {
 #define CAP_LAST            (hw_bank.lpm ? 0x12CUL : 0x0C0UL)
 
 static void enum_delay_work_func(struct work_struct *work);
-
 
 /* maximum number of enpoints: valid only after hw_device_reset() */
 static unsigned hw_ep_max;
@@ -1108,57 +1103,55 @@ static ssize_t show_inters(struct device *dev, struct device_attribute *attr,
 
 void ci13xxx_udc_set_enum_flag(void)
 {
-        g_enum_flag = 1;
+	g_enum_flag = 1;
 }
 
 void ci13xxx_udc_clr_enum_flag(void)
 {
-        g_enum_flag = 0;
+	g_enum_flag = 0;
 }
 
 int ci13xxx_udc_get_enum_count(void)
 {
-        return repeat_count;
+	return repeat_count;
 }
 EXPORT_SYMBOL_GPL(ci13xxx_udc_get_enum_count);
 
-
 void ci13xxx_udc_set_enum_count(int count)
 {
-      if(count < 0)
-      {
-           pr_err("%s: The input volue is invalid!\n",__func__);
-           return;
-      }
-      repeat_count = 0;
+	if(count < 0) {
+		pr_err("%s: The input volue is invalid!\n",__func__);
+		return;
+	}
+	repeat_count = 0;
 }
 EXPORT_SYMBOL_GPL(ci13xxx_udc_set_enum_count);
 
 int ci13xxx_udc_register_vbus_sn(void (*callback)(int))
 {
-        pr_debug("%p\n", callback);
-        notify_otg_state_func_ptr = callback;
-        return 0;
+	pr_debug("%p\n", callback);
+	notify_otg_state_func_ptr = callback;
+	return 0;
 }
 EXPORT_SYMBOL_GPL(ci13xxx_udc_register_vbus_sn);
 
 /* this is passed to the hsusb via platform_data msm_otg_pdata */
 void ci13xxx_udc_unregister_vbus_sn(void (*callback)(int))
 {
-        pr_debug("%p\n", callback);
-        notify_otg_state_func_ptr = NULL;
+	pr_debug("%p\n", callback);
+	notify_otg_state_func_ptr = NULL;
 }
 EXPORT_SYMBOL_GPL(ci13xxx_udc_unregister_vbus_sn);
 
 static void notify_otg_of_the_reenum_event(int plugin)
 {
-        plugin = !!plugin;
-        if (notify_otg_state_func_ptr) {
-           pr_debug("notifying otg\n");
-           (*notify_otg_state_func_ptr) (plugin);
-        } else {
-                pr_debug("unable to notify\n");
-        }
+	plugin = !!plugin;
+	if (notify_otg_state_func_ptr) {
+		pr_debug("notifying otg\n");
+		(*notify_otg_state_func_ptr) (plugin);
+	} else {
+		pr_debug("unable to notify\n");
+	}
 }
 
 /* added for cradle charge begin */
@@ -1174,25 +1167,23 @@ extern void set_nonstand_charger_flag(void);
 
 static void enum_delay_work_func(struct work_struct *work)
 {
-
     struct delayed_work *dwork = to_delayed_work(work);
     struct ci13xxx *udc = container_of(dwork,
 				struct ci13xxx, enmu_delay_work);
     struct otg_transceiver * otg_xciev = udc->transceiver;
 
-    if(g_enum_flag)
-    {
-           repeat_count = 0;
-           ci13xxx_udc_clr_enum_flag();
-           wake_unlock(&udc->non_standard_wake_lock);
-           return;
+    if(g_enum_flag) {
+		repeat_count = 0;
+		ci13xxx_udc_clr_enum_flag();
+		wake_unlock(&udc->non_standard_wake_lock);
+		return;
     }
 
     /* added for cradle charge begin */
     if (1 == usbswitch_is_cradle_attached()) {
-           otg_set_power(otg_xciev, CRADLE_CHARGING_CURRENT);
-           wake_unlock(&udc->non_standard_wake_lock);
-           return;
+		otg_set_power(otg_xciev, CRADLE_CHARGING_CURRENT);
+		wake_unlock(&udc->non_standard_wake_lock);
+		return;
     }
     /* added for cradle charge end */
 
@@ -1200,25 +1191,19 @@ static void enum_delay_work_func(struct work_struct *work)
       * if we clear enum flag  we should enum again  ,
       * reenum six times if charger is not AC/usb ,
       * will set non_standard flag , and set non_standard charger current 500mA */
-    if (repeat_count <= REENUM_NUM)
-    {
-           wake_lock(&udc->non_standard_wake_lock);
-           notify_otg_of_the_reenum_event(0);
-           schedule_delayed_work(&udc->re_enum_delay_work, NON_STANDARD_REENMU_TIMER_FREQ);
-    }
-    else
-    {
-           if(is_usb_chg_exist())
-           {
-                otg_set_power(otg_xciev, 500);
-                set_nonstand_charger_flag();
-           }
-           else
-           {
-                notify_otg_of_the_reenum_event(0);
-           }
-           repeat_count = 0;
-           wake_unlock(&udc->non_standard_wake_lock);
+    if (repeat_count <= REENUM_NUM) {
+		wake_lock(&udc->non_standard_wake_lock);
+		notify_otg_of_the_reenum_event(0);
+		schedule_delayed_work(&udc->re_enum_delay_work, NON_STANDARD_REENMU_TIMER_FREQ);
+    } else {
+		if(is_usb_chg_exist()) {
+            otg_set_power(otg_xciev, 500);
+            set_nonstand_charger_flag();
+		} else {
+            notify_otg_of_the_reenum_event(0);
+		}
+		repeat_count = 0;
+		wake_unlock(&udc->non_standard_wake_lock);
     }
 }
 
@@ -1232,7 +1217,6 @@ static void re_enum_delay_work_func(struct work_struct *work)
     repeat_count++;
     wake_unlock(&udc->non_standard_wake_lock);
 }
-
 
 /**
  * store_inters: enable & force or disable an individual interrutps

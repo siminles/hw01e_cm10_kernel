@@ -3844,10 +3844,10 @@ static int l2cap_parse_conf_rsp(struct sock *sk, void *rsp, int len, void *data,
 
 		case L2CAP_CONF_EXT_WINDOW:
 			/*Delete for fix  wcn3660 bt speed issue*/
-		//	pi->tx_win = val;
+			//pi->tx_win = val;
 
-		//	if (pi->tx_win > L2CAP_TX_WIN_MAX_ENHANCED)
-		//		pi->tx_win = L2CAP_TX_WIN_MAX_ENHANCED;
+			//if (pi->tx_win > L2CAP_TX_WIN_MAX_ENHANCED)
+				//pi->tx_win = L2CAP_TX_WIN_MAX_ENHANCED;
 			pi->ack_win = min_t(u16, val, pi->ack_win);
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_EXT_WINDOW,
 					2, pi->tx_win);
@@ -3915,7 +3915,7 @@ static void l2cap_conf_rfc_get(struct sock *sk, void *rsp, int len)
 	rfc.monitor_timeout = cpu_to_le16(L2CAP_DEFAULT_MONITOR_TO);
 	rfc.max_pdu_size = cpu_to_le16(L2CAP_DEFAULT_MAX_PDU_SIZE);
 	rfc.txwin_size = min_t(u16, pi->ack_win, L2CAP_DEFAULT_TX_WINDOW);
-	
+
 	if ((pi->mode != L2CAP_MODE_ERTM) && (pi->mode != L2CAP_MODE_STREAMING))
 		return;
 

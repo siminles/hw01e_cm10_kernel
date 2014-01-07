@@ -1735,11 +1735,9 @@ void device_shutdown(void)
 	struct device *dev;
 
     DBG("begin");
-
 	spin_lock(&devices_kset->list_lock);
 
     DBG("has get the spin_lock");
-
 	/*
 	 * Walk the devices list backward, shutting down each in turn.
 	 * Beware that device unplug events may also start pulling
@@ -1750,7 +1748,6 @@ void device_shutdown(void)
 				kobj.entry);
 
         DBG("dev name = %s", dev->kobj.name);
-        
 		get_device(dev);
 		/*
 		 * Make sure the device is off the kset list, in the
@@ -1773,7 +1770,6 @@ void device_shutdown(void)
 	spin_unlock(&devices_kset->list_lock);
 
     DBG("before async_synchronize_full()");
-    
 	async_synchronize_full();
 
     DBG("end");

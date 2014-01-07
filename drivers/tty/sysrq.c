@@ -12,7 +12,6 @@
  *	Input handler conversion
  */
 
-
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/sched.h>
@@ -646,26 +645,21 @@ static bool sysrq_filter(struct input_handle *handle,
        	/* identify volumedown pressed down or not */
        	/* value is event code, 1 present press and 0 present release */		
        	/* when volumedown lifted up clear the state of syrq->active and syrq->alt */ 
-       	if (!value)
-       	{
-		  	if (sysrq->active && code == sysrq->alt_use)
-		  	{
+       	if (!value) {
+		  	if (sysrq->active && code == sysrq->alt_use) {
 		  		sysrq->active = false;
 		  		sysrq_active = false;
 		  	}
 		  	sysrq->alt = KEY_RESERVED;
-      		}
-       	else if (value !=2)
-       	{
+       	} else if (value !=2) {
 		      	sysrq->alt = code;
 		      	sysrq->need_reinject = false;
-      		}
-        	break;
+       	}
+       	break;
 
 	case KEY_VOLUMEUP:
        	/* identify volumeup pressed down or not */ 
-       	if (value == 1 && sysrq->alt != KEY_RESERVED)
-       	{
+       	if (value == 1 && sysrq->alt != KEY_RESERVED) {
        		sysrq->active = true;
        		sysrq_active = true;
        		sysrq->alt_use = sysrq->alt;
@@ -679,17 +673,16 @@ static bool sysrq_filter(struct input_handle *handle,
 
 	case KEY_POWER:
 		/* identify power pressed down or not */ 
-    		if (sysrq_active && value && value != 2)
-    		{
-    	      		sysrq->need_reinject = false;
+		if (sysrq_active && value && value != 2) {
+    		sysrq->need_reinject = false;
     			/* trigger system crash */ 
 #ifndef CONFIG_HUAWEI_KERNEL
-    			__handle_sysrq('c', true);
+    		__handle_sysrq('c', true);
 #else
-                schedule_work(&crash_trigger);
+    		schedule_work(&crash_trigger);
 #endif
-    		}
-    	 	break;
+		}
+		break;
 		
 	default:
 		break;

@@ -383,25 +383,20 @@ EXPORT_SYMBOL_GPL(kernel_halt);
 void kernel_power_off(void)
 {
     DBG("begin");
-    
 	kernel_shutdown_prepare(SYSTEM_POWER_OFF);
 
     DBG("kernel_shutdown_prepare complete");
-    
 	if (pm_power_off_prepare)
 		pm_power_off_prepare();
 
     DBG("before  disable_nonboot_cpus");
-    
 	disable_nonboot_cpus();
 
     DBG("disable_nonboot_cpus complete");
-    
 	syscore_shutdown();
 	printk(KERN_EMERG "Power down.\n");
 	kmsg_dump(KMSG_DUMP_POWEROFF);
 	machine_power_off();
-
     DBG("end");
 }
 EXPORT_SYMBOL_GPL(kernel_power_off);
@@ -423,7 +418,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 	int ret = 0;
 
     DBG("SYSCALL_DEFINE4  power off debug begin");
-
 	/* We only trust the superuser with rebooting the system. */
 	if (!capable(CAP_SYS_BOOT))
 		return -EPERM;
@@ -497,7 +491,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 	mutex_unlock(&reboot_mutex);
 
     DBG("end");
-    
 	return ret;
 }
 

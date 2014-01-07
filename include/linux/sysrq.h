@@ -11,8 +11,6 @@
  *	based upon discusions in irc://irc.openprojects.net/#kernelnewbies
  */
 
-
-
 #ifndef _LINUX_SYSRQ_H
 #define _LINUX_SYSRQ_H
 
@@ -21,7 +19,6 @@
 
 /* Enable/disable SYSRQ support by default (0==no, 1==yes). */
 #define SYSRQ_DEFAULT_ENABLE	1
-
 #define SYSRQ_DEFAULT_DISABLE	0
 
 /* Possible values of bitmask for enabling sysrq functions */

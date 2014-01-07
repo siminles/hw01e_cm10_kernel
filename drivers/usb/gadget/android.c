@@ -16,8 +16,6 @@
  *
  */
 
-//DTSNO             OWNER     DATE            DESCRIPTION
-
 /* #define DEBUG */
 /* #define VERBOSE_DEBUG */
 
@@ -943,10 +941,10 @@ static int mass_storage_function_init(struct android_usb_function *f,
 	struct mass_storage_function_config *config;
 	struct fsg_common *common;
 	int err;
-        char *name = NULL;
-        char buf[MS_STG_SET_LEN];
-        char *b = NULL;
-        memset(buf, 0, sizeof(buf));
+	char *name = NULL;
+	char buf[MS_STG_SET_LEN];
+	char *b = NULL;
+	memset(buf, 0, sizeof(buf));
 	config = kzalloc(sizeof(struct mass_storage_function_config),
 								GFP_KERNEL);
 	if (!config)
@@ -956,21 +954,21 @@ static int mass_storage_function_init(struct android_usb_function *f,
 	b = strim(buf);
 	config->fsg.nluns = 0;
 	while (b){
-	        name = strsep(&b, ",");
-	        if(name){
-		        if(0==strcmp(name, "sdcard")){
+		name = strsep(&b, ",");
+		if(name){
+			if(0==strcmp(name, "sdcard")) {
 				config->fsg.luns[config->fsg.nluns].cdrom = 0;
 				config->fsg.luns[config->fsg.nluns].ro = 0;
 				config->fsg.luns[config->fsg.nluns].removable = 1;
 				config->fsg.luns[config->fsg.nluns].nofua = 0;
 				config->fsg.nluns++;
 				pr_info("mass_storage: %s, %d\n", name, config->fsg.nluns);
-			}else if(0==strcmp(name, "cdrom")){
-			        if(0==strcmp(autorun, "disable") ){
-				        continue;
+			}else if(0==strcmp(name, "cdrom")) {
+				if(0==strcmp(autorun, "disable") ) {
+					continue;
 				}else if(0!=strcmp(autorun, "enable")){
-				        pr_err("mass_storage: not support autorun type '%s' \n", autorun);
-				        continue;
+					pr_err("mass_storage: not support autorun type '%s' \n", autorun);
+					continue;
 				}
 				config->fsg.luns[config->fsg.nluns].cdrom = 1;
 				config->fsg.luns[config->fsg.nluns].ro = 1;
@@ -983,7 +981,7 @@ static int mass_storage_function_init(struct android_usb_function *f,
 			}
 		}
 		if(config->fsg.nluns >= FSG_MAX_LUNS_HUAWEI){
-                        pr_err("mass_storage: not support too many luns\n");
+			pr_err("mass_storage: not support too many luns\n");
 			break;
 		}
 	}
@@ -1004,13 +1002,12 @@ static int mass_storage_function_init(struct android_usb_function *f,
 	}
 
 	if(config->fsg.nluns > 1 ){
-                err = sysfs_create_link(&f->dev->kobj,&common->luns[1].dev.kobj, "lun1");
-                if (err)
-                {
-                       sysfs_delete_link(&f->dev->kobj,&common->luns[0].dev.kobj, "lun");
-                       kfree(config);
-                       return err;
-                }
+		err = sysfs_create_link(&f->dev->kobj,&common->luns[1].dev.kobj, "lun1");
+		if (err) {
+			sysfs_delete_link(&f->dev->kobj,&common->luns[0].dev.kobj, "lun");
+			kfree(config);
+			return err;
+		}
 	}
 
 	config->common = common;
@@ -1062,8 +1059,7 @@ static ssize_t suitestate_show(struct device *dev, struct device_attribute *attr
 static ssize_t suitestate_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
     int value;
-    if(sscanf(buf, "%d", &value) == 1)
-    {
+    if(sscanf(buf, "%d", &value) == 1) {
         suitestate = value;
         return size;
     }
@@ -1126,8 +1122,8 @@ static DEVICE_ATTR(luns, S_IWUSR|S_IRUSR, luns_show, luns_store);
 static struct device_attribute *mass_storage_function_attributes[] = {
 	&dev_attr_inquiry_string,
 	&dev_attr_suitestate,
-        &dev_attr_autorun,
-        &dev_attr_luns,
+	&dev_attr_autorun,
+	&dev_attr_luns,
 	NULL
 };
 
@@ -1394,12 +1390,11 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 		cdev->desc.bDeviceClass = device_desc.bDeviceClass;
 		cdev->desc.bDeviceSubClass = device_desc.bDeviceSubClass;
 		cdev->desc.bDeviceProtocol = device_desc.bDeviceProtocol;
-                if(strcmp(serial_string,"cleanup")){
-                        cdev->desc.iSerialNumber = device_desc.iSerialNumber;
-                }
-                else{
-                        cdev->desc.iSerialNumber = 0;
-                }
+		if(strcmp(serial_string,"cleanup")){
+			cdev->desc.iSerialNumber = device_desc.iSerialNumber;
+		} else {
+			cdev->desc.iSerialNumber = 0;
+		}
 		if (usb_add_config(cdev, &android_config_driver,
 							android_bind_config))
 			return size;

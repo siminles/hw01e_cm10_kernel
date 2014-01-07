@@ -34,6 +34,7 @@ static int jack_switch_types[] = {
 	SW_HPHR_OVERCURRENT,
 	SW_MONO_HEADPHONE_INSERT,
 };
+
 static int snd_jack_dev_free(struct snd_device *device)
 {
 	struct snd_jack *jack = device->device_data;

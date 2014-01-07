@@ -273,8 +273,6 @@
 /* #define VERBOSE_DEBUG */
 /* #define DUMP_MSGS */
 
-
-
 #include <linux/blkdev.h>
 #include <linux/completion.h>
 #include <linux/dcache.h>
@@ -2069,11 +2067,11 @@ static int do_scsi_command(struct fsg_common *common)
 			reply = do_inquiry(common, bh);
 		break;
 
-        case SEEK_6:
-                common->data_size_from_cmnd = 1;
-                if(common->cmnd[1] == 0x01 && common->curlun->cdrom == 1)
-                reply = do_get_suitestate(common, bh);
-                break;
+	case SEEK_6:
+		common->data_size_from_cmnd = 1;
+		if(common->cmnd[1] == 0x01 && common->curlun->cdrom == 1)
+			reply = do_get_suitestate(common, bh);
+		break;
 
 	case MODE_SELECT:
 		common->data_size_from_cmnd = common->cmnd[4];
@@ -2272,7 +2270,7 @@ static int do_scsi_command(struct fsg_common *common)
 			reply = do_write(common);
 		break;
 #ifdef CONFIG_HUAWEI_KERNEL
-	 case SC_REWIND_11:
+	case SC_REWIND_11:
 		/* when rework in manufacture, if the phone is in google ports mode,
 		 * we need to switch it to multi-ports mode for using the diag.  */
 		{
@@ -2280,10 +2278,10 @@ static int do_scsi_command(struct fsg_common *common)
 			memset(cmnd,0,sizeof(cmnd));
 			cmnd[0] = SC_REWIND_11;
 			cmnd[1] = 0x06;
-		        if(0 == memcmp(common->cmnd, cmnd, sizeof(cmnd))){
-		             usb_port_switch_request();
-		        }
-	        }
+			if(0 == memcmp(common->cmnd, cmnd, sizeof(cmnd))){
+				usb_port_switch_request();
+			}
+		}
 		break;
 #endif
 

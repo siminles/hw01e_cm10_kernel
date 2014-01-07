@@ -255,7 +255,6 @@ void mdp_vsync_cfg_regs(struct msm_fb_data_type *mfd,
 	 * load the last line + 1 to be in the
 	 * safety zone
 	 */
-
     /*Modify the parameter according to the te position from the panel*/
 	vsync_load_cnt = mfd->panel_info.yres/2;
 

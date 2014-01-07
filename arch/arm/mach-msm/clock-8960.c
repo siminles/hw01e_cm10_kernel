@@ -10,7 +10,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/err.h>
@@ -4971,7 +4970,6 @@ static struct clk_lookup msm_clocks_8064[] = {
 #ifdef CONFIG_ISDBTUNER
 	CLK_LOOKUP("ref_clk",		tsif_ref_clk.c,		"msm_tsif.1"),
 #endif
-
 	CLK_LOOKUP("core_clk",		tssc_clk.c,		NULL),
 	CLK_LOOKUP("alt_core_clk",	usb_hs1_xcvr_clk.c,	"msm_otg"),
 	CLK_LOOKUP("alt_core_clk",      usb_hs3_xcvr_clk.c,  "msm_ehci_host.0"),
@@ -5231,25 +5229,24 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
     CLK_LOOKUP("core_clk",		gsbi1_qup_clk.c,	"msm_serial_hsl.2"),
 #endif
-	#ifdef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
     CLK_LOOKUP("core_clk",		gsbi2_qup_clk.c,	"qup_i2c.2"),
-    #else
+#else
 	CLK_LOOKUP("core_clk",		gsbi2_qup_clk.c,	NULL),
-    #endif
+#endif
 	CLK_LOOKUP("core_clk",		gsbi3_qup_clk.c,	"qup_i2c.3"),
 	CLK_LOOKUP("core_clk",		gsbi4_qup_clk.c,	"qup_i2c.4"),
-	#ifdef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
 	CLK_LOOKUP("core_clk",	  gsbi5_qup_clk.c,	"qup_i2c.5"),
-	#else
+#else
 	CLK_LOOKUP("core_clk",		gsbi5_qup_clk.c,	NULL),
-	#endif
+#endif
 	CLK_LOOKUP("core_clk",		gsbi6_qup_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi7_qup_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi8_qup_clk.c,	NULL),
 #ifdef CONFIG_ISDBTUNER
 	CLK_LOOKUP("core_clk",		gsbi9_qup_clk.c,	"qup_i2c.9"),
 #endif
-
 	CLK_LOOKUP("core_clk",		gsbi10_qup_clk.c,	"qup_i2c.10"),
 	CLK_LOOKUP("core_clk",		gsbi11_qup_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi12_qup_clk.c,	"qup_i2c.12"),
@@ -5286,17 +5283,17 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
     CLK_LOOKUP("iface_clk",		gsbi1_p_clk.c,      "msm_serial_hsl.2"),
 #endif
-	#ifdef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
     CLK_LOOKUP("iface_clk",		gsbi2_p_clk.c,		"qup_i2c.2"),
-    #else
+#else
 	CLK_LOOKUP("iface_clk",		gsbi2_p_clk.c,		NULL),
-    #endif
+#endif
 	CLK_LOOKUP("iface_clk",		gsbi3_p_clk.c,		"qup_i2c.3"),
 	CLK_LOOKUP("iface_clk",		gsbi4_p_clk.c,		"qup_i2c.4"),
 	CLK_LOOKUP("iface_clk",		gsbi5_p_clk.c,	"msm_serial_hsl.0"),
-	#ifdef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
 	CLK_LOOKUP("iface_clk",		gsbi5_p_clk.c,	    "qup_i2c.5"),
-	#endif
+#endif
 #ifdef CONFIG_BCM_BT
 	CLK_LOOKUP("iface_clk",		gsbi6_p_clk.c,  NULL),
 #endif  /* end of CONFIG_BCM_BT */
@@ -5308,7 +5305,6 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #ifdef CONFIG_ISDBTUNER
 	CLK_LOOKUP("iface_clk",		gsbi9_p_clk.c,		"qup_i2c.9"),
 #endif
-
 	CLK_LOOKUP("iface_clk",		gsbi10_p_clk.c,		"qup_i2c.10"),
 #ifdef CONFIG_BCM_BT
 #ifdef GSBI11_LOW_SPEED
@@ -5321,10 +5317,9 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #ifdef CONFIG_WCN_BT
 	CLK_LOOKUP("iface_clk",		gsbi11_p_clk.c,		NULL),
 #endif /* end of CONFIG_WCN_BT */
-
 	CLK_LOOKUP("iface_clk",		gsbi12_p_clk.c,		"qup_i2c.12"),
 #ifdef CONFIG_ISDBTUNER
-        CLK_LOOKUP("iface_clk",         tsif_p_clk.c,           "msm_tsif.1"),
+	CLK_LOOKUP("iface_clk",         tsif_p_clk.c,           "msm_tsif.1"),
 #endif
 	CLK_LOOKUP("iface_clk",		usb_fs1_p_clk.c,	NULL),
 	CLK_LOOKUP("iface_clk",		usb_fs2_p_clk.c,	NULL),
@@ -5341,58 +5336,57 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		pmic_ssbi2_clk.c,	NULL),
 	CLK_LOOKUP("mem_clk",		rpm_msg_ram_p_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		amp_clk.c,		NULL),
-        #ifdef CONFIG_IMX074
+#ifdef CONFIG_IMX074
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-001a"),
-        #endif
-	#ifdef CONFIG_OV2720
+#endif
+#ifdef CONFIG_OV2720
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006c"),
-	#endif
-	#ifdef CONFIG_MT9M114
+#endif
+#ifdef CONFIG_MT9M114
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0048"),
-        #endif
-        #ifdef CONFIG_S5K3L1YX
+#endif
+#ifdef CONFIG_S5K3L1YX
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0020"),
-        #endif
-        #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_LITEON
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_LITEON
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-001a"),
-	#endif
-        #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_SUNNY
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_SUNNY
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-001a"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX105_SUNNY	
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX105_SUNNY	
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006d"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K3H2Y_LITEON
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K3H2Y_LITEON
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006f"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K3H2Y_SEMCO
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K3H2Y_SEMCO
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006f"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9P017_SUNNY
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9P017_SUNNY
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006b"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX
-        CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006e"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX_SEMCO
-        CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006e"),
-	#endif
-    #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_OV5647_SUNNY
-        CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006c"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_SUNNY
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX
+	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006e"),
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX_SEMCO
+	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006e"),
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_OV5647_SUNNY
+	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006c"),
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_SUNNY
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0048"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_BYD
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_BYD
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0048"),
-	#endif
-
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_TRULY
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_TRULY
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-005d"),
-	#endif
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9V113
+#endif
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9V113
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-003d"),
-	#endif
+#endif
 	CLK_LOOKUP("csi_src_clk",	csi0_src_clk.c,		"msm_csid.0"),
 	CLK_LOOKUP("csi_src_clk",	csi1_src_clk.c,		"msm_csid.1"),
 	CLK_LOOKUP("csi_src_clk",	csi2_src_clk.c,		"msm_csid.2"),

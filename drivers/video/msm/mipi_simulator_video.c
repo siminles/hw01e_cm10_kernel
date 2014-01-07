@@ -16,8 +16,6 @@
 #include "mipi_dsi.h"
 #include "mipi_simulator.h"
 
-/* optmize lcd self adapt function,delete 3 lines */
-
 static struct msm_panel_info pinfo;
 
 static struct mipi_dsi_phy_ctrl dsi_video_mode_phy_db = {
@@ -36,8 +34,7 @@ static int __init mipi_video_simulator_init(void)
 	int ret;
 /* use simulator panel driver if no mipi panel connected,use lcd id self adapt method */
 /* if there is to panel detected simlator panel shou be adapt */
-    if(-EBUSY == lcd_detect_panel("simulator_mipi_video_vga"))
-    {
+    if(-EBUSY == lcd_detect_panel("simulator_mipi_video_vga")) {
         return 0;
     }
 	printk("%s:no lcd panel connected,use simulator driver\n", __func__);

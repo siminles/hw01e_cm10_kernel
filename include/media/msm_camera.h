@@ -772,7 +772,6 @@ struct msm_snapshot_pp_status {
 #define CFG_SET_WHITEBALANCE_YUV	36
 #define CFG_SET_EFFECT_YUV	37
 #define CFG_MAX			38
-
 #define CFG_OTP_READING 39
 
 
@@ -1031,10 +1030,8 @@ struct sensor_calib_data {
 	uint16_t stroke_amt;
 	uint16_t af_pos_1m;
 	uint16_t af_pos_inf;
-
 	uint16_t af_start_code;
 	uint16_t af_max_code;
-
 };
 
 enum msm_sensor_resolution_t {

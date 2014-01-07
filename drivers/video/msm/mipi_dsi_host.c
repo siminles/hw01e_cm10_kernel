@@ -1340,8 +1340,7 @@ re_send:
 	MIPI_OUTP(MIPI_DSI_BASE + 0x08c, 0x01);	/* trigger */
 	wmb();
 
-    if((!wait_for_completion_timeout(&dsi_dma_comp,HZ/20))&&(re_send_count<3))
-    {
+    if((!wait_for_completion_timeout(&dsi_dma_comp,HZ/20))&&(re_send_count<3)) {
         printk("[%s]ERROR:wait for dma complete timeout!!!,re send cmd (%d) times\n",__func__,re_send_count);
 		mipi_dsi_sw_reset();
         re_send_count++;

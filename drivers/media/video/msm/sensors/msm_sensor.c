@@ -318,7 +318,6 @@ int32_t msm_sensor_write_res_settings_delay(struct msm_sensor_ctrl_t *s_ctrl,
 	if (rc < 0)
 		return rc;
 
-	//rc = msm_sensor_write_output_settings(s_ctrl, res);
 	return rc;
 }
 
@@ -582,8 +581,7 @@ int32_t msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 			break;
 
 		case CFG_OTP_READING:
-			if(s_ctrl->func_tbl->sensor_otp_reading == NULL)
-			{
+			if(s_ctrl->func_tbl->sensor_otp_reading == NULL) {
 				rc = -EFAULT;
 				return rc;
 			}
@@ -746,17 +744,13 @@ int32_t msm_sensor_expand_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 	
     if(POWER_SEQ_SBM==get_camera_power_seq_type()){
         rc= power_seq_enable_softbank(dev);
-    }
-    else if(POWER_SEQ_U9202L==get_camera_power_seq_type()){
+    } else if(POWER_SEQ_U9202L==get_camera_power_seq_type()){
         rc= power_seq_enable_u9202l(dev);
-    }
-    else if(POWER_SEQ_DCM==get_camera_power_seq_type()){
+    } else if(POWER_SEQ_DCM==get_camera_power_seq_type()){
         rc= power_seq_enable_docomo(dev);
-    }
-    else if(POWER_SEQ_VRZ==get_camera_power_seq_type()){
+    } else if(POWER_SEQ_VRZ==get_camera_power_seq_type()){
         rc= power_seq_enable_verizion(dev);
-    }
-    else if(POWER_SEQ_C8869L==get_camera_power_seq_type()){
+    } else if(POWER_SEQ_C8869L==get_camera_power_seq_type()){
         rc= power_seq_enable_c8869l(dev);
     }
     else
@@ -797,17 +791,13 @@ int32_t msm_sensor_expand_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 	
     if(POWER_SEQ_SBM==get_camera_power_seq_type()){
         power_seq_disable_softbank();
-    }
-    else if(POWER_SEQ_U9202L==get_camera_power_seq_type()){
+    } else if(POWER_SEQ_U9202L==get_camera_power_seq_type()){
         power_seq_disable_u9202l();
-    }
-    else if(POWER_SEQ_DCM==get_camera_power_seq_type()){
+    } else if(POWER_SEQ_DCM==get_camera_power_seq_type()){
         power_seq_disable_docomo();
-    }
-    else if(POWER_SEQ_VRZ==get_camera_power_seq_type()){
+    } else if(POWER_SEQ_VRZ==get_camera_power_seq_type()){
         power_seq_disable_verizion();
-    }
-    else if(POWER_SEQ_C8869L==get_camera_power_seq_type()){
+    } else if(POWER_SEQ_C8869L==get_camera_power_seq_type()){
         power_seq_disable_c8869l();
     }
     else

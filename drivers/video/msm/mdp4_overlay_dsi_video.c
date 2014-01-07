@@ -196,6 +196,7 @@ int mdp4_dsi_video_on(struct platform_device *pdev)
     mdp4_overlay_format2pipe(pipe);
 	pipe->dst_h = fbi->var.yres;
 	pipe->dst_w = fbi->var.xres;
+
 	mdp4_overlay_dmap_xy(pipe);	/* dma_p */
 	mdp4_overlay_dmap_cfg(mfd, 1);
 
@@ -204,6 +205,7 @@ int mdp4_dsi_video_on(struct platform_device *pdev)
 	mdp4_mixer_stage_up(pipe);
 
 	mdp4_overlayproc_cfg(pipe);
+
 	/*
 	 * DSI timing setting
 	 */
@@ -277,7 +279,6 @@ int mdp4_dsi_video_on(struct platform_device *pdev)
 	MDP_OUTP(MDP_BASE + DSI_VIDEO_BASE + 0x2c, dsi_underflow_clr);
 	MDP_OUTP(MDP_BASE + DSI_VIDEO_BASE + 0x30, dsi_hsync_skew);
 	MDP_OUTP(MDP_BASE + DSI_VIDEO_BASE + 0x38, ctrl_polarity);
-
 	mdp4_overlay_reg_flush(pipe, 1);
 	mdp_histogram_ctrl_all(TRUE);
 

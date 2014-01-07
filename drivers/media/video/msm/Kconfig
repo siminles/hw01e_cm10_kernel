@@ -31,7 +31,6 @@ config MT9D112
 	default n
 	---help---
 	  MICRON 2M YUV Sensor
-
 config IMX074
 	bool "Sensor IMX074 (BAYER 13.5M)"
 	depends on MSM_CAMERA
@@ -69,14 +68,13 @@ config WEBCAM_OV9726
 	---help---
 	  Omni Vision VGA Bayer Sensor.
 #	This Senosr is used as a webcam.
-#	This uses the CSI interface.	
+#	This uses the CSI interface.
 config VX6953
 	bool "Sensor VX6953 (BAYER 5M)"
 	depends on MSM_CAMERA && (ARCH_MSM7X30 || ARCH_MSM8X60)
 	default n
 	---help---
 	STM 5M Bayer Sensor with EDOF
-	
 config SN12M0PZ
 	bool "Sensor sn12m0pz (Bayer 12 MP)"
 	depends on MSM_CAMERA && ARCH_MSM7X30 && !MSM_CAMERA_V4L2

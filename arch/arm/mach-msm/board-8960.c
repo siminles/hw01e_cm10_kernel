@@ -103,8 +103,6 @@
 #include "msm_watchdog.h"
 
 #include <hsad/config_interface.h>
-
-
 #include <hsad/config_debugfs.h>
 
 #ifdef CONFIG_HW_POWER_TREE 
@@ -155,9 +153,9 @@ struct sx150x_platform_data msm8960_sx150x_data[] = {
 
 #endif
 
-#define MSM_PMEM_ADSP_SIZE         0x9800000
+#define MSM_PMEM_ADSP_SIZE         0x7800000 /* Need to be multiple of 64K */
 #define MSM_PMEM_AUDIO_SIZE        0x2B4000
-#define MSM_PMEM_SIZE 0x5000000 /* 80MB */
+#define MSM_PMEM_SIZE 0x2800000 /* 40 Mbytes */
 #define MSM_LIQUID_PMEM_SIZE 0x4000000 /* 64 Mbytes */
 #define MSM_HDMI_PRIM_PMEM_SIZE 0x4000000 /* 64 Mbytes */
 
@@ -1370,9 +1368,11 @@ static void __init msm8960_init_buses(void)
 	msm_bus_cpss_fpb.dev.platform_data = &msm_bus_8960_cpss_fpb_pdata;
 #endif
 }
+
 static struct msm_spi_platform_data msm8960_qup_spi_gsbi1_pdata = {
 	.max_clock_speed = 15060000,
 };
+
 #ifdef CONFIG_USB_MSM_OTG_72K
 static struct msm_otg_platform_data msm_otg_pdata;
 #else
@@ -2338,9 +2338,9 @@ static struct platform_device *common_devices[] __initdata = {
 	&msm8960_device_qup_i2c_gsbi9,
 #endif
 	&msm_slim_ctrl,
-    #ifdef CONFIG_WCNSS_CORE
+#ifdef CONFIG_WCNSS_CORE
 	&msm_device_wcnss_wlan,
-	#endif
+#endif
 #if defined(CONFIG_CRYPTO_DEV_QCRYPTO) || \
 		defined(CONFIG_CRYPTO_DEV_QCRYPTO_MODULE)
 	&qcrypto_device,
@@ -2373,7 +2373,6 @@ static struct platform_device *common_devices[] __initdata = {
 	&msm_device_rng,
 #endif
 	&msm_rpm_device,
-
 #ifdef CONFIG_ISDBTUNER
 	&msm_device_mmtuner,
 	&msm_device_tsif[1],
@@ -2707,6 +2706,7 @@ static struct i2c_board_info msm_ak6921af_boardinfo[] __initdata = {
     },
 };
 #endif
+
 /* Sensors DSPS platform data */
 #ifdef CONFIG_MSM_DSPS
 #define DSPS_PIL_GENERIC_NAME		"dsps"
@@ -2825,6 +2825,7 @@ static struct i2c_board_info msm_mhl_boardinfo[] __initdata = {
     },
 };
 #endif
+
 static struct i2c_registry msm8960_i2c_devices[] __initdata = {
 #ifdef CONFIG_ISL9519_CHARGER
 	{
@@ -2858,14 +2859,14 @@ static struct i2c_registry msm8960_i2c_devices[] __initdata = {
 		msm_isa1200_board_info,
 		ARRAY_SIZE(msm_isa1200_board_info),
 	},
-    #ifdef CONFIG_HUAWEI_USBSWITCH
+#ifdef CONFIG_HUAWEI_USBSWITCH
     {
         I2C_SURF | I2C_FFA | I2C_FLUID | I2C_RUMI,
         MSM_8960_GSBI2_QUP_I2C_BUS_ID,
         msm_usbswitch_boardinfo,
         ARRAY_SIZE(msm_usbswitch_boardinfo),
     },
-    #endif
+#endif
 #ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
     {
         I2C_SURF | I2C_FFA | I2C_FLUID | I2C_RUMI,
@@ -2874,22 +2875,22 @@ static struct i2c_registry msm8960_i2c_devices[] __initdata = {
         ARRAY_SIZE(msm_ak6921af_boardinfo),
     },
 #endif
-    #if defined(CONFIG_GPIO_SX150X) || defined(CONFIG_GPIO_SX150X_MODULE)
+#if defined(CONFIG_GPIO_SX150X) || defined(CONFIG_GPIO_SX150X_MODULE)
 	{
 		I2C_LIQUID,
 		MSM_8960_GSBI10_QUP_I2C_BUS_ID,
 		liquid_io_expander_i2c_info,
 		ARRAY_SIZE(liquid_io_expander_i2c_info),
 	},
-	#endif
-	#ifdef CONFIG_HUAWEI_MHL_SII9244
+#endif
+#ifdef CONFIG_HUAWEI_MHL_SII9244
 	{
 		I2C_SURF | I2C_FFA | I2C_FLUID | I2C_RUMI,
 		MSM_8960_GSBI5_QUP_I2C_BUS_ID,
 		msm_mhl_boardinfo,
 		ARRAY_SIZE(msm_mhl_boardinfo),
 	},
-    #endif
+#endif
 };
 #endif /* CONFIG_I2C */
 
@@ -2975,7 +2976,6 @@ cam_ISP_1P2_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_DCM),0);
     usleep_range(1000,2000);
     gpio_free(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_DCM));
-
     regulator_disable(cam_8921_l10);
 docom_8921_l10_set_optimum_mode:
     regulator_set_optimum_mode(cam_8921_l10, 0);
@@ -2988,6 +2988,7 @@ docom_8921_l10_put:
 error_out:
 	return -ENODEV;
 }
+
 static void disable_camera_power(void)
 {
     if (cam_vio) {
@@ -3008,7 +3009,6 @@ static void disable_camera_power(void)
 		cam_8921_l10 = NULL; 		
 	}
 }
-
 
 int power_seq_enable_softbank_power(void)
 {
@@ -3161,7 +3161,6 @@ cam_vaf_set_voltage:
 cam_vaf_put:
 	regulator_put(cam_vaf);
 	cam_vaf = NULL;
-
 cam_vana_disable:
 	regulator_disable(cam_vana);
 cam_vana_set_optimum_mode:
@@ -3171,17 +3170,14 @@ cam_vana_set_voltage:
 cam_vana_put:
 	regulator_put(cam_vana);
 	cam_vana = NULL;
-    
 cam_vio_disable:
     regulator_disable(cam_vio);
 cam_vio_put:
     regulator_put(cam_vio);
     cam_vio = NULL;
-
 cam_ISP_1P2_disable:    
     rc = gpio_direction_output(PM8921_GPIO_PM_TO_SYS(25), 0);
     gpio_free(PM8921_GPIO_PM_TO_SYS(25));
-	
     regulator_disable(cam_8921_l10);
 softbank_8921_l10_set_optimum_mode:
     regulator_set_optimum_mode(cam_8921_l10, 0);
@@ -3194,7 +3190,6 @@ cam_2P85_EN_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN),0);
     usleep_range(1000,2000);
     gpio_free(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN));
-
 	regulator_disable(mipi_csi_vdd);
 mipi_csi_vdd_set_optimum_mode:
     regulator_set_optimum_mode(mipi_csi_vdd, 0);
@@ -3203,7 +3198,7 @@ mipi_csi_vdd_set_voltage:
 mipi_csi_vdd_put:
 	regulator_put(mipi_csi_vdd);
 	mipi_csi_vdd = NULL;
-    
+
     printk("%s:  enable failed \n", __func__);
 	return -ENODEV;
 }
@@ -3257,13 +3252,6 @@ void power_seq_disable_softbank_power(void)
 	}
 }
 
-
-
-
-
-
-
-
 static int power_seq_enable_u9202l_power(void)
 {
     int rc=0;
@@ -3305,7 +3293,7 @@ static int power_seq_enable_u9202l_power(void)
 		}
 	}
     mdelay(1);
-    
+
 	//L16
 	if (cam_vaf == NULL) {
 		cam_vaf = regulator_get(NULL, "8921_l16");
@@ -3332,7 +3320,7 @@ static int power_seq_enable_u9202l_power(void)
 		}
 	}
     mdelay(1);
-    
+
     //CAM_ISP_1P2_EN
     rc = gpio_request(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_U9202L), "CAM_ISP_1P2_EN");
     rc = pm8xxx_gpio_config(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_U9202L), &param);
@@ -3353,7 +3341,7 @@ static int power_seq_enable_u9202l_power(void)
 		}	
 	}
     mdelay(1);
-    
+
     //L11
 	if (cam_vana == NULL) {
 		cam_vana = regulator_get(NULL, "8921_l11");
@@ -3380,7 +3368,7 @@ static int power_seq_enable_u9202l_power(void)
 		}
 	}
     mdelay(1);
-    
+
     //SMPS_2P85_EN   
     rc = gpio_request(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN), "SMPS_2P85_EN"); 
     rc = pm8xxx_gpio_config(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN), &param);
@@ -3395,17 +3383,14 @@ u9202l_cam_vana_set_voltage:
 u9202l_cam_vana_put:
 	regulator_put(cam_vana);
 	cam_vana = NULL;
-    
 u9202l_cam_vio_disable:
     regulator_disable(cam_vio);
 u9202l_cam_vio_put:
     regulator_put(cam_vio);
     cam_vio = NULL;
-
 u9202l_cam_ISP_1P2_disable:    
     rc = gpio_direction_output(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_U9202L), 0);
     gpio_free(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_U9202L));
-    
     regulator_disable(cam_vaf);
 u9202l_cam_vaf_set_optimum_mode:
 	regulator_set_optimum_mode(cam_vaf, 0);
@@ -3423,13 +3408,10 @@ u9202l_mipi_csi_vdd_set_voltage:
 u9202l_mipi_csi_vdd_put:
 	regulator_put(mipi_csi_vdd);
 	mipi_csi_vdd = NULL;
-    
+
     printk("%s:  enable failed \n", __func__);
 	return -ENODEV;
 }
-
-
-
 
 static void power_seq_disable_u9202l_power(void)
 {
@@ -3471,8 +3453,6 @@ static void power_seq_disable_u9202l_power(void)
 		mipi_csi_vdd = NULL;
 	}
 }
-
-
 
 static struct regulator *cam_vio_2;
 static struct regulator *cam_vdig_2;
@@ -3657,7 +3637,6 @@ static int power_seq_enable_c8869l_power(void)
 	}
     mdelay(1);
      return 0;   
-   
 
 c8869l_cam_vana_set_optimum_mode:
     regulator_set_optimum_mode(cam_vana, 0);
@@ -3668,13 +3647,11 @@ c8869l_cam_vana_put:
 	cam_vana = NULL;
 c8869l_cam_vaf_disable:
 	regulator_disable(cam_vaf);
-    
 c8869l_cam_vio_2_put:              
 		regulator_put(cam_vio_2);
 		cam_vio_2 = NULL; 
 c8869l_cam_vana_disable:
 	regulator_disable(cam_vana);
-    
 c8869l_cam_vaf_set_optimum_mode:
     regulator_set_optimum_mode(cam_vaf, 0);
 c8869l_cam_vaf_set_voltage:
@@ -3682,7 +3659,6 @@ c8869l_cam_vaf_set_voltage:
 c8869l_cam_vaf_put:
 	regulator_put(cam_vaf);
 	cam_vaf = NULL;
-	
 c8869l_8921_l10_disable:
     regulator_disable(cam_8921_l10);
 c8869l_8921_l10_set_optimum_mode:
@@ -3692,12 +3668,10 @@ c8869l_8921_l10_set_voltage:
 c8869l_8921_l10_put:
     regulator_put(cam_8921_l10);
     cam_8921_l10 = NULL;
-
 c8869l_cam_CAM_1P85_EN_VRZ_disable:
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(25),0);
     usleep_range(1000,2000);   
     gpio_free(PM8921_GPIO_PM_TO_SYS(25));
-//c8869l_cam_vdig_2_disable:
 	regulator_disable(cam_vdig_2);
 c8869l_cam_vdig_2_set_optimum_mode:
 	regulator_set_optimum_mode(cam_vdig_2, 0);
@@ -3742,7 +3716,7 @@ static void power_seq_disable_c8869l_power(void)
         cam_vio_2 = NULL;
     }
     mdelay(1);	
-    
+
     if (cam_vaf) {
 		regulator_set_voltage(cam_vaf, 0, 2800000);
 		regulator_set_optimum_mode(cam_vaf, 0);
@@ -3759,7 +3733,7 @@ static void power_seq_disable_c8869l_power(void)
 		regulator_put(cam_8921_l10);
 		cam_8921_l10 = NULL;
 	}
-	
+
 	mdelay(1);    
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(25),0);
     usleep_range(1000,2000);
@@ -3787,19 +3761,14 @@ static void power_seq_disable_c8869l_power(void)
     mdelay(5); //dovdd too slow
 }
 
-
-
-
-
-
 static void __init register_i2c_devices(void)
 {
-       int docom_camera_id_gpio = 0;
+	int docom_camera_id_gpio = 0;
 	int docom_camera_id_value = 0;
 	int docom_front_camera_id_gpio = 0;
 	int docom_front_camera_id_value = 0;
 
-       int u9202l_camera_id_gpio = 0;
+	int u9202l_camera_id_gpio = 0;
 	int u9202l_camera_id_value = 0;
 	int u9202l_front_camera_id_gpio = 0;
 	int u9202l_front_camera_id_value = 0;
@@ -3920,7 +3889,7 @@ static void __init register_i2c_devices(void)
 		c8869l_camera_5m_semco_1p3m_byd_board_info.board_info,
 		c8869l_camera_5m_semco_1p3m_byd_board_info.num_i2c_board_info,
 	};
-	
+
 	struct i2c_registry msm8960_camera_i2c_devices = {
 		I2C_SURF | I2C_FFA | I2C_FLUID | I2C_LIQUID | I2C_RUMI,
 		MSM_8960_GSBI4_QUP_I2C_BUS_ID,
@@ -3928,29 +3897,18 @@ static void __init register_i2c_devices(void)
 		msm8960_camera_board_info.num_i2c_board_info,
 	};
 
-	if( 0 == camera_detect_power_seq("camera_power_seq_docomo"))
-	{
+	if( 0 == camera_detect_power_seq("camera_power_seq_docomo")) {
         camera_pwdseq_type = POWER_SEQ_DCM ;
-	}
-	else if( 0 == camera_detect_power_seq("camera_power_seq_softbank"))
-	{
+	} else if( 0 == camera_detect_power_seq("camera_power_seq_softbank")) {
         camera_pwdseq_type = POWER_SEQ_SBM ;
-	}
-    else if( 0 == camera_detect_power_seq("camera_power_seq_u9202l"))
-	{
+	} else if( 0 == camera_detect_power_seq("camera_power_seq_u9202l")) {
         camera_pwdseq_type = POWER_SEQ_U9202L ;
-	}
-    else if( 0 == camera_detect_power_seq("camera_power_seq_verizion"))
-    {
+	} else if( 0 == camera_detect_power_seq("camera_power_seq_verizion")) {
         camera_pwdseq_type = POWER_SEQ_VRZ ;
-    }
-    else if( 0 == camera_detect_power_seq("camera_power_seq_c8869l"))
-    {
-        camera_pwdseq_type = POWER_SEQ_C8869L ;
-    }
-    else
-    {
-        camera_pwdseq_type = POWER_SEQ_MAX ;
+    } else if( 0 == camera_detect_power_seq("camera_power_seq_c8869l")) {
+        camera_pwdseq_type = POWER_SEQ_C8869L;
+    } else {
+        camera_pwdseq_type = POWER_SEQ_MAX;
     }
     printk("ESEN: %s, detect camera power seq , camera_pwdseq_type =%d \n",__func__,camera_pwdseq_type);
 #endif
@@ -3981,173 +3939,123 @@ static void __init register_i2c_devices(void)
 #ifdef CONFIG_MSM_CAMERA
 	if (msm8960_camera_i2c_devices.machs & mach_mask)
 	{
-	    switch(camera_pwdseq_type)
-            {
-        	case  POWER_SEQ_DCM:
-		enable_camera_power();
-	       docom_camera_id_gpio = get_gpio_num_by_name("CAM_ID");
-		docom_camera_id_value = gpio_get_value(docom_camera_id_gpio);
-		docom_front_camera_id_gpio = get_gpio_num_by_name("SCAM_ID");
-		docom_front_camera_id_value = gpio_get_value(docom_front_camera_id_gpio);
-		
-		if(1 == docom_camera_id_value)
-	        {
-
-	        	if(1 == docom_front_camera_id_gpio)
-	        	{
-			    i2c_register_board_info(docomo_camera_12m_liteon_1p3m_byd_i2c_devices.bus,
-				docomo_camera_12m_liteon_1p3m_byd_i2c_devices.info,
-				docomo_camera_12m_liteon_1p3m_byd_i2c_devices.len); 
-	        	}
-			else
-			{
-			    i2c_register_board_info(docomo_camera_12m_liteon_i2c_devices.bus,
-				docomo_camera_12m_liteon_i2c_devices.info,
-				docomo_camera_12m_liteon_i2c_devices.len); 
-			}
-
-	        }
-		else
-		{
-	        	if(1 == docom_front_camera_id_gpio)
-	        	{
-			    i2c_register_board_info(docomo_camera_12m_sunny_1p3m_byd_i2c_devices.bus,
-				docomo_camera_12m_sunny_1p3m_byd_i2c_devices.info,
-				docomo_camera_12m_sunny_1p3m_byd_i2c_devices.len); 
-	        	}
-			else
-			{
-			    i2c_register_board_info(docomo_camera_12m_sunny_i2c_devices.bus,
-				docomo_camera_12m_sunny_i2c_devices.info,
-				docomo_camera_12m_sunny_i2c_devices.len); 
-			}
-		}
-	        disable_camera_power();
-            break;
-            case  POWER_SEQ_SBM:
-		power_seq_enable_softbank_power();
-	        u9201l_front_camera_id_gpio = get_gpio_num_by_name("SCAM_ID");
-		u9201l_front_camera_id_value = gpio_get_value(u9201l_front_camera_id_gpio);
-		printk("%s ,u9201l_front_camera_id_gpio =%d,u9201l_front_camera_id_value =%d\n",__func__,u9201l_front_camera_id_gpio,u9201l_front_camera_id_value);
-		if(1 == u9201l_front_camera_id_value)
-		{
-			printk("%s,use 1.3m_byd_mt9m114.\n",__func__);
-
-			i2c_register_board_info(sbm_camera_1p3m_byd_i2c_devices.bus,
-				sbm_camera_1p3m_byd_i2c_devices.info,
-				sbm_camera_1p3m_byd_i2c_devices.len);
-		}
-		else
-		{
-			i2c_register_board_info(sbm_camera_i2c_devices.bus,
-				sbm_camera_i2c_devices.info,
-				sbm_camera_i2c_devices.len);
-		}
-
-		power_seq_disable_softbank_power();
-				
-	     break;
-            case  POWER_SEQ_U9202L:
-
-
-		power_seq_enable_u9202l_power();
-	        u9202l_camera_id_gpio = get_gpio_num_by_name("CAM_ID");
-		u9202l_camera_id_value = gpio_get_value(u9202l_camera_id_gpio);
-	        u9202l_front_camera_id_gpio = get_gpio_num_by_name("SCAM_ID");
-		u9202l_front_camera_id_value = gpio_get_value(u9202l_front_camera_id_gpio);
-		
-		printk("%s ,u9202l_camera_id_gpio =%d,u9202l_camera_id_value =%d\n",__func__,u9202l_camera_id_gpio,u9202l_camera_id_value);
-		if(1 == u9202l_camera_id_value)
-	        {
-	        	if(1 == u9202l_front_camera_id_gpio)
-	        	{
-			       i2c_register_board_info(u9202l_camera_8m_semco_1p3m_byd_i2c_devices.bus,
-					u9202l_camera_8m_semco_1p3m_byd_i2c_devices.info,
-					u9202l_camera_8m_semco_1p3m_byd_i2c_devices.len);  
-	        	}
-			else
-			{
-		                i2c_register_board_info(u9202l_camera_8m_semco_i2c_devices.bus,
-					u9202l_camera_8m_semco_i2c_devices.info,
-					u9202l_camera_8m_semco_i2c_devices.len);    
-			}
-	        }
-		else
-		{
-
-			if(1 == u9202l_front_camera_id_gpio)
-	        	{
-		                i2c_register_board_info(u9202l_camera_8m_liteon_1p3m_byd_i2c_devices.bus,
-					u9202l_camera_8m_liteon_1p3m_byd_i2c_devices.info,
-					u9202l_camera_8m_liteon_1p3m_byd_i2c_devices.len);    
-	        	}
-			else
-			{
-		                i2c_register_board_info(u9202l_camera_8m_liteon_i2c_devices.bus,
-							u9202l_camera_8m_liteon_i2c_devices.info,
-							u9202l_camera_8m_liteon_i2c_devices.len);     
-			}
-		}
-	        power_seq_disable_u9202l_power();
-
-            break;
-            case  POWER_SEQ_VRZ:
-                i2c_register_board_info(verzion_camera_i2c_devices.bus,
-					verzion_camera_i2c_devices.info,
-					verzion_camera_i2c_devices.len);
-            break;
-            case  POWER_SEQ_C8869L:
-
-
-		power_seq_enable_c8869l_power();
-	        c8869l_camera_id_gpio = get_gpio_num_by_name("CAM_ID");
-		c8869l_camera_id_value = gpio_get_value(c8869l_camera_id_gpio);
-		c8869l_front_camera_id_gpio = get_gpio_num_by_name("SCAM_ID");
-		c8869l_front_camera_id_value = gpio_get_value(c8869l_front_camera_id_gpio);
-		
-		if(1 == c8869l_camera_id_value)
-	        {
-
-			if(1 == c8869l_front_camera_id_gpio)
-	        	{
-		                i2c_register_board_info(c8869l_camera_5m_semco_1p3m_byd_i2c_devices.bus,
-							c8869l_camera_5m_semco_1p3m_byd_i2c_devices.info,
-							c8869l_camera_5m_semco_1p3m_byd_i2c_devices.len);    
-	        	}
-			else
-			{
-		                i2c_register_board_info(c8869l_camera_5m_semco_i2c_devices.bus,
-							c8869l_camera_5m_semco_i2c_devices.info,
-							c8869l_camera_5m_semco_i2c_devices.len);    
-			}       
-
-	        }
-		else
-		{	
-
-			if(1 == c8869l_front_camera_id_gpio)
-	        	{
-		                i2c_register_board_info(c8869l_camera_1p3m_byd_i2c_devices.bus,
-							c8869l_camera_1p3m_byd_i2c_devices.info,
-							c8869l_camera_1p3m_byd_i2c_devices.len);
-	        	}
-			else
-			{
-		                i2c_register_board_info(c8869l_camera_i2c_devices.bus,
-							c8869l_camera_i2c_devices.info,
-							c8869l_camera_i2c_devices.len);
-			} 				
-		}
-		power_seq_disable_c8869l_power();
-		
-            break;			
+	    switch(camera_pwdseq_type) {
+			case POWER_SEQ_DCM:
+				enable_camera_power();
+				docom_camera_id_gpio = get_gpio_num_by_name("CAM_ID");
+				docom_camera_id_value = gpio_get_value(docom_camera_id_gpio);
+				docom_front_camera_id_gpio = get_gpio_num_by_name("SCAM_ID");
+				docom_front_camera_id_value = gpio_get_value(docom_front_camera_id_gpio);
+				if(1 == docom_camera_id_value) {
+					if(1 == docom_front_camera_id_gpio) {
+						i2c_register_board_info(docomo_camera_12m_liteon_1p3m_byd_i2c_devices.bus,
+						docomo_camera_12m_liteon_1p3m_byd_i2c_devices.info,
+						docomo_camera_12m_liteon_1p3m_byd_i2c_devices.len); 
+					} else {
+						i2c_register_board_info(docomo_camera_12m_liteon_i2c_devices.bus,
+						docomo_camera_12m_liteon_i2c_devices.info,
+						docomo_camera_12m_liteon_i2c_devices.len);
+					}
+				} else {
+					if(1 == docom_front_camera_id_gpio) {
+						i2c_register_board_info(docomo_camera_12m_sunny_1p3m_byd_i2c_devices.bus,
+						docomo_camera_12m_sunny_1p3m_byd_i2c_devices.info,
+						docomo_camera_12m_sunny_1p3m_byd_i2c_devices.len); 
+					} else {
+						i2c_register_board_info(docomo_camera_12m_sunny_i2c_devices.bus,
+						docomo_camera_12m_sunny_i2c_devices.info,
+						docomo_camera_12m_sunny_i2c_devices.len); 
+					}
+				}
+				disable_camera_power();
+				break;
+        	case POWER_SEQ_SBM:
+				power_seq_enable_softbank_power();
+				u9201l_front_camera_id_gpio = get_gpio_num_by_name("SCAM_ID");
+				u9201l_front_camera_id_value = gpio_get_value(u9201l_front_camera_id_gpio);
+				printk("%s ,u9201l_front_camera_id_gpio =%d,u9201l_front_camera_id_value =%d\n",__func__,u9201l_front_camera_id_gpio,u9201l_front_camera_id_value);
+				if(1 == u9201l_front_camera_id_value) {
+					printk("%s,use 1.3m_byd_mt9m114.\n",__func__);
+					i2c_register_board_info(sbm_camera_1p3m_byd_i2c_devices.bus,
+					sbm_camera_1p3m_byd_i2c_devices.info,
+					sbm_camera_1p3m_byd_i2c_devices.len);
+				} else {
+					i2c_register_board_info(sbm_camera_i2c_devices.bus,
+					sbm_camera_i2c_devices.info,
+					sbm_camera_i2c_devices.len);
+				}
+				power_seq_disable_softbank_power();
+				break;
+        	case POWER_SEQ_U9202L:
+				power_seq_enable_u9202l_power();
+				u9202l_camera_id_gpio = get_gpio_num_by_name("CAM_ID");
+				u9202l_camera_id_value = gpio_get_value(u9202l_camera_id_gpio);
+				u9202l_front_camera_id_gpio = get_gpio_num_by_name("SCAM_ID");
+				u9202l_front_camera_id_value = gpio_get_value(u9202l_front_camera_id_gpio);
+				printk("%s ,u9202l_camera_id_gpio =%d,u9202l_camera_id_value =%d\n",__func__,u9202l_camera_id_gpio,u9202l_camera_id_value);
+				if(1 == u9202l_camera_id_value) {
+					if(1 == u9202l_front_camera_id_gpio) {
+						i2c_register_board_info(u9202l_camera_8m_semco_1p3m_byd_i2c_devices.bus,
+						u9202l_camera_8m_semco_1p3m_byd_i2c_devices.info,
+						u9202l_camera_8m_semco_1p3m_byd_i2c_devices.len);  
+					} else {
+						i2c_register_board_info(u9202l_camera_8m_semco_i2c_devices.bus,
+						u9202l_camera_8m_semco_i2c_devices.info,
+						u9202l_camera_8m_semco_i2c_devices.len);    
+					}
+				} else {
+					if(1 == u9202l_front_camera_id_gpio) {
+						i2c_register_board_info(u9202l_camera_8m_liteon_1p3m_byd_i2c_devices.bus,
+						u9202l_camera_8m_liteon_1p3m_byd_i2c_devices.info,
+						u9202l_camera_8m_liteon_1p3m_byd_i2c_devices.len);    
+					} else {
+						i2c_register_board_info(u9202l_camera_8m_liteon_i2c_devices.bus,
+						u9202l_camera_8m_liteon_i2c_devices.info,
+						u9202l_camera_8m_liteon_i2c_devices.len);     
+					}
+				}
+				power_seq_disable_u9202l_power();
+				break;
+            case POWER_SEQ_VRZ:
+				i2c_register_board_info(verzion_camera_i2c_devices.bus,
+				verzion_camera_i2c_devices.info,
+				verzion_camera_i2c_devices.len);
+				break;
+            case POWER_SEQ_C8869L:
+				power_seq_enable_c8869l_power();
+				c8869l_camera_id_gpio = get_gpio_num_by_name("CAM_ID");
+				c8869l_camera_id_value = gpio_get_value(c8869l_camera_id_gpio);
+				c8869l_front_camera_id_gpio = get_gpio_num_by_name("SCAM_ID");
+				c8869l_front_camera_id_value = gpio_get_value(c8869l_front_camera_id_gpio);
+				if(1 == c8869l_camera_id_value) {
+					if(1 == c8869l_front_camera_id_gpio) {
+						i2c_register_board_info(c8869l_camera_5m_semco_1p3m_byd_i2c_devices.bus,
+						c8869l_camera_5m_semco_1p3m_byd_i2c_devices.info,
+						c8869l_camera_5m_semco_1p3m_byd_i2c_devices.len);
+					} else {
+						i2c_register_board_info(c8869l_camera_5m_semco_i2c_devices.bus,
+						c8869l_camera_5m_semco_i2c_devices.info,
+						c8869l_camera_5m_semco_i2c_devices.len);
+					}
+				} else {
+					if(1 == c8869l_front_camera_id_gpio) {
+						i2c_register_board_info(c8869l_camera_1p3m_byd_i2c_devices.bus,
+						c8869l_camera_1p3m_byd_i2c_devices.info,
+						c8869l_camera_1p3m_byd_i2c_devices.len);
+					} else {
+						i2c_register_board_info(c8869l_camera_i2c_devices.bus,
+						c8869l_camera_i2c_devices.info,
+						c8869l_camera_i2c_devices.len);
+					}
+				}
+				power_seq_disable_c8869l_power();
+				break;
             default : 
 		i2c_register_board_info(msm8960_camera_i2c_devices.bus,
 			msm8960_camera_i2c_devices.info,
 			msm8960_camera_i2c_devices.len);
-                
-            break;
-        }
+				break;
+		}
 	}
 #endif
 #endif
@@ -4157,44 +4065,42 @@ static void __init register_i2c_devices(void)
 static void __init HuaWei_Regulator_Config(void)
 {
 	static int i;
-  config_power_tree_pdata = get_power_config_table();
+	config_power_tree_pdata = get_power_config_table();
   
-  //rpm
-  msm_rpm_regulator_pdata.init_data = config_power_tree_pdata->rpm_power_pdata;
-  msm_rpm_regulator_pdata.num_regulators = config_power_tree_pdata->rpm_reg_num;
+	//rpm
+	msm_rpm_regulator_pdata.init_data = config_power_tree_pdata->rpm_power_pdata;
+	msm_rpm_regulator_pdata.num_regulators = config_power_tree_pdata->rpm_reg_num;
     
-  //saw
-  msm_saw_regulator_pdata__ = config_power_tree_pdata->saw_power_pdata;
-  for(i=0;i<config_power_tree_pdata->saw_reg_num;i++)
-  {
-  	if(0==strcmp(msm_saw_regulator_pdata__[i].constraints.name,"8921_s5"))
-  		msm_device_saw_core0.dev.platform_data = &msm_saw_regulator_pdata__[i];
-  	else if(0==strcmp(msm_saw_regulator_pdata__[i].constraints.name,"8921_s6"))
-  		msm_device_saw_core1.dev.platform_data = &msm_saw_regulator_pdata__[i];
-  	else
-  		printk("Some msm saw regulator config error!\n");
-  }
+	//saw
+	msm_saw_regulator_pdata__ = config_power_tree_pdata->saw_power_pdata;
+	for(i=0;i<config_power_tree_pdata->saw_reg_num;i++) {
+		if(0==strcmp(msm_saw_regulator_pdata__[i].constraints.name,"8921_s5"))
+			msm_device_saw_core0.dev.platform_data = &msm_saw_regulator_pdata__[i];
+		else if(0==strcmp(msm_saw_regulator_pdata__[i].constraints.name,"8921_s6"))
+			msm_device_saw_core1.dev.platform_data = &msm_saw_regulator_pdata__[i];
+		else
+			printk("Some msm saw regulator config error!\n");
+	}
   
-  //gpio
-  msm_gpio_regulator_pdata__ = config_power_tree_pdata->gpio_power_pdata;
-  for(i=0;i<config_power_tree_pdata->gpio_reg_num;i++)
-  {
-  	if(0==strcmp(msm_gpio_regulator_pdata__[i].regulator_name,"ext_5v"))
-  		msm8960_device_ext_5v_vreg.dev.platform_data = &msm_gpio_regulator_pdata__[i];
-  	else if(0==strcmp(msm_gpio_regulator_pdata__[i].regulator_name,"ext_l2"))
-  		msm8960_device_ext_l2_vreg.dev.platform_data = &msm_gpio_regulator_pdata__[i];
-  	else if(0==strcmp(msm_gpio_regulator_pdata__[i].regulator_name,"ext_3p3v"))
-  		msm8960_device_ext_3p3v_vreg.dev.platform_data = &msm_gpio_regulator_pdata__[i];
-  	else if(0==strcmp(msm_gpio_regulator_pdata__[i].regulator_name,"ext_otg_sw")) //add new gpio power in 104050,20120303
-  		msm8960_device_ext_otg_sw_vreg.dev.platform_data = &msm_gpio_regulator_pdata__[i];
-  	else
-  		printk("Some msm gpio regulator config error!\n");
-  }
-  
-  //pmic
-  msm8960_update_pmic(config_power_tree_pdata->pmic_power_pdata,config_power_tree_pdata->pmic_reg_num);
+	//gpio
+	msm_gpio_regulator_pdata__ = config_power_tree_pdata->gpio_power_pdata;
+	for(i=0;i<config_power_tree_pdata->gpio_reg_num;i++) {
+		if(0==strcmp(msm_gpio_regulator_pdata__[i].regulator_name,"ext_5v"))
+			msm8960_device_ext_5v_vreg.dev.platform_data = &msm_gpio_regulator_pdata__[i];
+		else if(0==strcmp(msm_gpio_regulator_pdata__[i].regulator_name,"ext_l2"))
+			msm8960_device_ext_l2_vreg.dev.platform_data = &msm_gpio_regulator_pdata__[i];
+		else if(0==strcmp(msm_gpio_regulator_pdata__[i].regulator_name,"ext_3p3v"))
+			msm8960_device_ext_3p3v_vreg.dev.platform_data = &msm_gpio_regulator_pdata__[i];
+		else if(0==strcmp(msm_gpio_regulator_pdata__[i].regulator_name,"ext_otg_sw")) //add new gpio power in 104050,20120303
+			msm8960_device_ext_otg_sw_vreg.dev.platform_data = &msm_gpio_regulator_pdata__[i];
+		else
+			printk("Some msm gpio regulator config error!\n");
+	}
+	//pmic
+	msm8960_update_pmic(config_power_tree_pdata->pmic_power_pdata,config_power_tree_pdata->pmic_reg_num);
 }
 #endif
+
 static void __init msm8960_sim_init(void)
 {
 	struct msm_watchdog_pdata *wdog_pdata = (struct msm_watchdog_pdata *)
@@ -4220,6 +4126,7 @@ static void __init msm8960_sim_init(void)
 	msm8960_pm8921_gpio_mpp_init();
 	platform_add_devices(sim_devices, ARRAY_SIZE(sim_devices));
 	acpuclk_init(&acpuclk_8960_soc_data);
+
 	msm8960_device_qup_spi_gsbi1.dev.platform_data =
 				&msm8960_qup_spi_gsbi1_pdata;
 	spi_register_board_info(spi_board_info, ARRAY_SIZE(spi_board_info));

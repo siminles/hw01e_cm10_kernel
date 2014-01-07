@@ -80,5 +80,4 @@ void gpio_0_out_config_write(uint32_t bits)
 	__raw_writel(bits, GPIO_OUT_0);
 }
 EXPORT_SYMBOL(gpio_0_out_config_write);
-
 #endif

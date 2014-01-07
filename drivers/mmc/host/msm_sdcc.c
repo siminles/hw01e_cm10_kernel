@@ -1,5 +1,3 @@
-
-
 /*
  *  linux/drivers/mmc/host/msm_sdcc.c - Qualcomm MSM 7X00A SDCC Driver
  *
@@ -1973,15 +1971,11 @@ msmsdcc_request(struct mmc_host *mmc, struct mmc_request *mrq)
      * EMMC card.
      */
 #ifdef CONFIG_HUAWEI_KERNEL
-	if(SDCC_EMMC_SLOT == host->pdev_id)
-	{
-		if (MMC_SWITCH==mrq->cmd->opcode)
-		{
-			if(NULL!=mmc->card)
-			{
+	if(SDCC_EMMC_SLOT == host->pdev_id) {
+		if (MMC_SWITCH==mrq->cmd->opcode) {
+			if(NULL!=mmc->card) {
 				card_cid=mmc->card->cid;
-				if(HUAWEI_SANDISK_MID==card_cid.manfid)
-				{
+				if(HUAWEI_SANDISK_MID==card_cid.manfid) {
 				    printk("host->pdev_id is %d\n",host->pdev_id);
 				    printk("Delay 1ms after sending CMD6 to sandisk EMMC card \n");
 				    mdelay(1);                      
@@ -2311,8 +2305,7 @@ void msmsdcc_setup_clocks_for_sdcc4(bool enable)
 
 	struct msmsdcc_host *host = NULL;
 	host = g_sdcc4;
-	if (host == NULL)
-	{
+	if (host == NULL) {
 		printk("error ==== host is null \n");
 		return;
 	}
@@ -2341,7 +2334,6 @@ void msmsdcc_setup_clocks_for_sdcc4(bool enable)
 		}
 	}
 }
-
 EXPORT_SYMBOL(msmsdcc_setup_clocks_for_sdcc4);
 #endif
 
@@ -3104,7 +3096,7 @@ static int msmsdcc_enable(struct mmc_host *mmc)
 	} else if (dev->power.runtime_status == RPM_RESUMING) {
 			pm_runtime_get_noresume(dev);
 			goto out; 	
-	} 
+	}
 
 	rc = pm_runtime_get_sync(dev);
 
@@ -3747,6 +3739,7 @@ msmsdcc_slot_status(struct msmsdcc_host *host)
 {
 	int status;
 	unsigned int gpio_no = host->plat->status_gpio;
+
 	status = gpio_request(gpio_no, "SD_HW_Detect");
 	if (status) {
 		pr_err("%s: %s: Failed to request GPIO %d\n",
@@ -3761,7 +3754,7 @@ msmsdcc_slot_status(struct msmsdcc_host *host)
 		gpio_free(gpio_no);
 	}
 	if(is_sdcard_in_voltage_high())
-              status=!status;
+		status=!status;
 	return status;
 }
 
@@ -5365,26 +5358,25 @@ msmsdcc_runtime_suspend(struct device *dev)
 		 * and wifi should not be resumed when msmsdcc resume*/
 
 		if(SDIO_WLAN_ID != host->pdev_id){
-                pm_runtime_get_noresume(dev);
-                /* If there is pending detect work abort runtime suspend */
-                if (unlikely(work_busy(&mmc->detect.work)))
-                        rc = -EAGAIN;
-                else
-                        rc = mmc_suspend_host(mmc);
-                pm_runtime_put_noidle(dev);
+			pm_runtime_get_noresume(dev);
+			/* If there is pending detect work abort runtime suspend */
+			if (unlikely(work_busy(&mmc->detect.work)))
+				rc = -EAGAIN;
+			else
+				rc = mmc_suspend_host(mmc);
+			pm_runtime_put_noidle(dev);
 		}else if(host->clks_on){
-		        msmsdcc_setup_clocks(host, false);
-                host->clks_on = 0;
+			msmsdcc_setup_clocks(host, false);
+			host->clks_on = 0;
 		}
 #else
         pm_runtime_get_noresume(dev);
-        /* If there is pending detect work abort runtime suspend */
-        if (unlikely(work_busy(&mmc->detect.work)))
-                rc = -EAGAIN;
-        else
-                rc = mmc_suspend_host(mmc);
-        pm_runtime_put_noidle(dev);
-
+		/* If there is pending detect work abort runtime suspend */
+		if (unlikely(work_busy(&mmc->detect.work)))
+			rc = -EAGAIN;
+		else
+			rc = mmc_suspend_host(mmc);
+		pm_runtime_put_noidle(dev);
 #endif
 
 		if (!rc) {

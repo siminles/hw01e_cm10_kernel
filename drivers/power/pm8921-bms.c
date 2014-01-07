@@ -29,7 +29,6 @@
 #include <linux/mutex.h>
 #include <hsad/config_interface.h>
 
-
 #define BMS_CONTROL		0x224
 #define BMS_S1_DELAY		0x225
 #define BMS_OUTPUT0		0x230
@@ -2230,8 +2229,7 @@ palladium:
         get_hw_config("pm/battery_name", battery_name, BATTERY_NAME_LENGTH, NULL);
         for(i=0; i<ARRAY_SIZE(battery_data_array);i++)
         {
-            if(strncasecmp(battery_name, battery_data_array[i].battery_name,BATTERY_NAME_LENGTH) == 0)
-            {
+            if(strncasecmp(battery_name, battery_data_array[i].battery_name,BATTERY_NAME_LENGTH) == 0) {
                 p_bms_data = battery_data_array[i].bms_batt_data;
                 printk("Qualcomm columeter battery_name %s",battery_name);
                 break;

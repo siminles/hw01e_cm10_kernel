@@ -9,7 +9,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/firmware.h>
@@ -860,14 +859,17 @@ static const char *iir1_inp1_text[] = {
 	"ZERO", "DEC1", "DEC2", "DEC3", "DEC4", "DEC5", "DEC6", "DEC7", "DEC8",
 	"DEC9", "DEC10", "RX1", "RX2", "RX3", "RX4", "RX5", "RX6", "RX7"
 };
+
 static const char *iir1_inp2_text[] = {
 	"ZERO", "DEC1", "DEC2", "DEC3", "DEC4", "DEC5", "DEC6", "DEC7", "DEC8",
 	"DEC9", "DEC10", "RX1", "RX2", "RX3", "RX4", "RX5", "RX6", "RX7"
 };
+
 static const char *iir2_inp1_text[] = {
 	"ZERO", "DEC1", "DEC2", "DEC3", "DEC4", "DEC5", "DEC6", "DEC7", "DEC8",
 	"DEC9", "DEC10", "RX1", "RX2", "RX3", "RX4", "RX5", "RX6", "RX7"
 };
+
 static const struct soc_enum rx_mix1_inp1_chain_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX1_B1_CTL, 0, 12, rx_mix1_text);
 
@@ -988,10 +990,13 @@ static const struct soc_enum anc1_fb_mux_enum =
 
 static const struct soc_enum iir1_inp1_mux_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_EQ1_B1_CTL, 0, 18, iir1_inp1_text);
+	
 static const struct soc_enum iir1_inp2_mux_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_EQ1_B2_CTL, 0, 18, iir1_inp2_text);
+
 static const struct soc_enum iir2_inp1_mux_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_EQ2_B1_CTL, 0, 18, iir2_inp1_text);
+
 static const struct snd_kcontrol_new rx_mix1_inp1_mux =
 	SOC_DAPM_ENUM("RX1 MIX1 INP1 Mux", rx_mix1_inp1_chain_enum);
 
@@ -1101,8 +1106,10 @@ static const struct snd_kcontrol_new dec10_mux =
 
 static const struct snd_kcontrol_new iir1_inp1_mux =
 	SOC_DAPM_ENUM("IIR1 INP1 Mux", iir1_inp1_mux_enum);
+
 static const struct snd_kcontrol_new iir1_inp2_mux =
 	SOC_DAPM_ENUM("IIR1 INP2 Mux", iir1_inp2_mux_enum);
+
 static const struct snd_kcontrol_new iir2_inp1_mux =
 	SOC_DAPM_ENUM("IIR2 INP1 Mux", iir2_inp1_mux_enum);
 
@@ -2397,14 +2404,14 @@ static const struct snd_soc_dapm_widget tabla_dapm_widgets[] = {
 		&rx4_mix1_inp1_mux),
 	SND_SOC_DAPM_MUX("RX4 MIX1 INP2", SND_SOC_NOPM, 0, 0,
 		&rx4_mix1_inp2_mux),
-        SND_SOC_DAPM_MUX("RX4 MIX1 INP3", SND_SOC_NOPM, 0, 0,
-                &rx4_mix1_inp3_mux),	
+	SND_SOC_DAPM_MUX("RX4 MIX1 INP3", SND_SOC_NOPM, 0, 0,
+		&rx4_mix1_inp3_mux),	
 	SND_SOC_DAPM_MUX("RX5 MIX1 INP1", SND_SOC_NOPM, 0, 0,
 		&rx5_mix1_inp1_mux),
 	SND_SOC_DAPM_MUX("RX5 MIX1 INP2", SND_SOC_NOPM, 0, 0,
 		&rx5_mix1_inp2_mux),
-        SND_SOC_DAPM_MUX("RX5 MIX1 INP3", SND_SOC_NOPM, 0, 0,
-                &rx5_mix1_inp3_mux),	
+	SND_SOC_DAPM_MUX("RX5 MIX1 INP3", SND_SOC_NOPM, 0, 0,
+		&rx5_mix1_inp3_mux),	
 	SND_SOC_DAPM_MUX("RX6 MIX1 INP1", SND_SOC_NOPM, 0, 0,
 		&rx6_mix1_inp1_mux),
 	SND_SOC_DAPM_MUX("RX6 MIX1 INP2", SND_SOC_NOPM, 0, 0,
@@ -2866,6 +2873,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"RX6 MIX1 INP2", "IIR2", "IIR2"},
 	{"RX7 MIX1 INP1", "IIR2", "IIR2"},
 	{"RX7 MIX1 INP2", "IIR2", "IIR2"},
+
 	/* Decimator Inputs */
 	{"DEC1 MUX", "DMIC1", "DMIC1"},
 	{"DEC1 MUX", "ADC6", "ADC6"},
@@ -2916,6 +2924,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"IIR1 INP1 MUX", "DEC8", "DEC8 MUX"},
 	{"IIR1 INP1 MUX", "DEC9", "DEC9 MUX"},
 	{"IIR1 INP1 MUX", "DEC10", "DEC10 MUX"},
+
 	{"IIR1 INP2 MUX", "DEC1", "DEC1 MUX"},
 	{"IIR1 INP2 MUX", "DEC2", "DEC2 MUX"},
 	{"IIR1 INP2 MUX", "DEC3", "DEC3 MUX"},
@@ -4319,14 +4328,14 @@ static void tabla_mbhc_calc_thres(struct snd_soc_codec *codec)
 		    TABLA_MBHC_FAKE_INSERT_HIGH;
         tabla->mbhc_data.v_inval_ins_low =
             TABLA_MBHC_FAKE_INSERT_LOW;
-       }
+	}
 	else
-    {   
+	{   
 		tabla->mbhc_data.v_inval_ins_high =
 		    TABLA_MBHC_FAKE_INS_HIGH_NO_GPIO;
         tabla->mbhc_data.v_inval_ins_low =
             TABLA_MBHC_FAKE_INS_LOW_NO_GPIO;
-       }
+	}
 
 	if (tabla->mbhc_data.micb_mv != VDDIO_MICBIAS_MV) {
 		tabla->mbhc_data.adj_v_hs_max =
@@ -4456,20 +4465,14 @@ static bool tabla_mbhc_fw_validate(const struct firmware *fw)
 
 void tabla_hs_button_report(int status, int mask)
 {
-	if(NULL != snd_soc_tabla)
-	{
-		if(NULL != (snd_soc_tabla->mbhc_cfg.button_jack))
-		{
+	if(NULL != snd_soc_tabla) {
+		if(NULL != (snd_soc_tabla->mbhc_cfg.button_jack)) {
 			snd_soc_jack_report(snd_soc_tabla->mbhc_cfg.button_jack, status,
 				mask);
-		}
-		else
-		{
+		} else {
 			pr_err("%s: Bad snd_soc_tabla button_jack data\n", __func__);
 		}
-	}
-	else
-	{
+	} else {
 		pr_err("%s: Bad snd_soc_tabla data\n", __func__);
 	}
 }
@@ -4477,11 +4480,8 @@ EXPORT_SYMBOL(tabla_hs_button_report);
 
 void tabla_hs_jack_report(int status, int mask)
 {
-    
-	if(NULL != snd_soc_tabla)
-	{
-		if(NULL != (snd_soc_tabla->mbhc_cfg.button_jack))
-		{
+	if(NULL != snd_soc_tabla) {
+		if(NULL != (snd_soc_tabla->mbhc_cfg.button_jack)) {
             snd_soc_tabla->hph_status |= status;
 			snd_soc_jack_report(snd_soc_tabla->mbhc_cfg.button_jack, snd_soc_tabla->hph_status,
 				mask);
@@ -4489,7 +4489,6 @@ void tabla_hs_jack_report(int status, int mask)
 	}
 }
 EXPORT_SYMBOL_GPL(tabla_hs_jack_report);
-
 
 /* called under codec_resource_lock acquisition */
 static int tabla_determine_button(const struct tabla_priv *priv,
@@ -5512,6 +5511,7 @@ static void tabla_hs_remove_irq_nogpio(struct tabla_priv *priv)
 		 * switched to VDDIO.
 		 */
 		tabla_codec_switch_micbias(codec, 0);
+
 		tabla_codec_report_plug(codec, 0, SND_JACK_HEADSET);
 		tabla_codec_cleanup_hs_polling(codec);
 		tabla_codec_enable_hs_detect(codec, 1,

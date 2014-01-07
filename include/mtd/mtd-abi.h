@@ -17,7 +17,6 @@
  *
  */
 
-
 #ifndef __MTD_ABI_H__
 #define __MTD_ABI_H__
 
@@ -146,12 +145,8 @@ struct nve_flag_user
 #define MEMWRITEOOB64		_IOWR('M', 21, struct mtd_oob_buf64)
 #define MEMREADOOB64		_IOWR('M', 22, struct mtd_oob_buf64)
 #define MEMISLOCKED		_IOR('M', 23, struct erase_info_user)
-
-
-
-#define NVEACCESSDATA	_IOWR('M', 24, struct nve_info_user)
-
-#define NVWRITEFLAG	_IOWR('M', 25, struct nve_flag_user)
+#define NVEACCESSDATA		_IOWR('M', 24, struct nve_info_user)
+#define NVWRITEFLAG		_IOWR('M', 25, struct nve_flag_user)
 
 /*
  * Obsolete legacy interface. Keep it in order not to break userspace

@@ -338,8 +338,6 @@ int alarm_set_rtc_alarm(long time_sec, bool enable_irq)
 	rtc_read_time(alarm_rtc_dev, &rtc_current_rtc_time);
 	rtc_tm_to_time(&rtc_current_rtc_time, &rtc_current_time);
 	offset = tmp_time.tv_sec - rtc_current_time;
-	/* printk(KERN_INFO "%ld - %ld = %ld\n", */
-	/*        tmp_time.tv_sec, rtc_current_time, offset); */
 
 	memset(&poweroff_rtc_alarm, 0, sizeof(poweroff_rtc_alarm));
 
@@ -350,22 +348,12 @@ int alarm_set_rtc_alarm(long time_sec, bool enable_irq)
 			       &poweroff_rtc_alarm.time);
 		poweroff_rtc_alarm.enabled = (enable_irq == true ? 1 : 0);
 	} else {
-		// printk(KERN_DEBUG "%s(): remove rtc alarm\n", __FUNCTION__);
 		/* set current as alarm time, and turn off the irq */
 		rtc_time_to_tm(rtc_current_time, &poweroff_rtc_alarm.time);
 		poweroff_rtc_alarm.enabled = 0;
 	}
 
 	err = rtc_set_alarm(alarm_rtc_dev, &poweroff_rtc_alarm);
-	/* printk(KERN_INFO "%s: [%d-%d-%d] [%d:%d:%d] return: %d\n", */
-	/*        __FUNCTION__, */
-	/*        poweroff_rtc_alarm.time.tm_year + 1900, */
-	/*        poweroff_rtc_alarm.time.tm_mon + 1, */
-	/*        poweroff_rtc_alarm.time.tm_mday, */
-	/*        poweroff_rtc_alarm.time.tm_hour, */
-	/*        poweroff_rtc_alarm.time.tm_min, */
-	/*        poweroff_rtc_alarm.time.tm_sec, */
-	/*        err); */
 
 	return err;
 }
@@ -513,7 +501,7 @@ static int alarm_suspend(struct platform_device *pdev, pm_message_t state)
 
 static int alarm_resume(struct platform_device *pdev)
 {
-	struct rtc_wkalrm   alarm;
+	struct rtc_wkalrm alarm;
 	struct rtc_time     rtc_current_rtc_time;
 	int                 ret;
 	unsigned long       rtc_current_time;

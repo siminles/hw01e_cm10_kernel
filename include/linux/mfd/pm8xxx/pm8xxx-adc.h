@@ -108,7 +108,6 @@ enum pm8xxx_adc_channels {
 #define PM8XXX_AMUX_MPP_8	0x8
 
 #define PM8921_AMUX_MPP_11 0xB
-
 #define PM8XXX_ADC_DEV_NAME	"pm8xxx-adc"
 
 /**

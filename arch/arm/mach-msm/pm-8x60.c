@@ -1036,9 +1036,9 @@ int msm_pm_wait_cpu_shutdown(unsigned int cpu)
 			__func__, cpu);
 	return -EBUSY;
 }
- #ifdef CONFIG_HUAWEI_SUSPEND_GPIO
+#ifdef CONFIG_HUAWEI_SUSPEND_GPIO
 extern void suspend_gpio_write_all(void);
- #endif
+#endif
 
 static int msm_pm_enter(suspend_state_t state)
 {
@@ -1074,9 +1074,9 @@ static int msm_pm_enter(suspend_state_t state)
 			pr_info("%s: power collapse\n", __func__);
 
 		clock_debug_print_enabled();
- #ifdef CONFIG_HUAWEI_SUSPEND_GPIO
+#ifdef CONFIG_HUAWEI_SUSPEND_GPIO
 		suspend_gpio_write_all();
- #endif
+#endif
 
 #ifdef CONFIG_MSM_SLEEP_TIME_OVERRIDE
 		if (msm_pm_sleep_time_override > 0) {

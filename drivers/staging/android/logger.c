@@ -17,8 +17,6 @@
  * GNU General Public License for more details.
  */
 
-
-
 #include <linux/sched.h>
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -619,24 +617,20 @@ static int __init logger_init(void)
 {
 	int ret;
 
-	 smem_exten_huawei_paramater * param = NULL;
+	smem_exten_huawei_paramater * param = NULL;
 
-        do{
-			
-            param = smem_alloc(SMEM_ID_VENDOR0, ((sizeof(smem_exten_huawei_paramater) + 7)&~0x00000007));
+	do{
+		param = smem_alloc(SMEM_ID_VENDOR0, ((sizeof(smem_exten_huawei_paramater) + 7)&~0x00000007));
 
-            if(param == NULL)
-            {
-                printk(KERN_ERR "LOGCTL read from SMEM_ID_VENDOR0 Fail.");
-		  break;
-            }
+		if(param == NULL) {
+			printk(KERN_ERR "LOGCTL read from SMEM_ID_VENDOR0 Fail.");
+			break;
+		}
+		printk(KERN_ERR "LOGCTL = %d", param->logctl);
 
-            printk(KERN_ERR "LOGCTL = %d", param->logctl);
-
-            if(param->logctl == 0)
-		  return 0;
-
-       }while(0);
+		if(param->logctl == 0)
+			return 0;
+	}while(0);
 
 	ret = init_log(&log_main);
 	if (unlikely(ret))

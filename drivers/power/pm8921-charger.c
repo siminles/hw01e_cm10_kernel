@@ -10,8 +10,6 @@
  * GNU General Public License for more details.
  *
  */
-
-
 #define pr_fmt(fmt)	"%s: " fmt, __func__
 
 #include <linux/module.h>
@@ -339,8 +337,7 @@ void pm_fuelgauge_notify_handle(void *data, unsigned int event)
    
     if(!chip) return;
 
-    switch(event)
-    {
+    switch(event) {
         case BATTERY_LOW_WARNING:
             break;
 		case BATTERY_LOW_SHUTDOWN:
@@ -363,54 +360,54 @@ struct volt_percent_map
 
 static const struct volt_percent_map volt_2_capacity_4p2_tab[]=
 {
-			{8000000,100},//dummy
-			{4130000,100},
-			{3957000,  80},
-			{3890000,  70},
-			{3823000,  60},
-			{3782000,  50},
-			{3703000,  20},
-			{3655000,  10},	
-			{3525000,    5},	
-			{3200000,    0},
-			{0,    0}
+	{8000000,100},//dummy
+	{4130000,100},
+	{3957000,  80},
+	{3890000,  70},
+	{3823000,  60},
+	{3782000,  50},
+	{3703000,  20},
+	{3655000,  10},	
+	{3525000,    5},	
+	{3200000,    0},
+	{0,    0}
 };
 
 static const struct volt_percent_map volt_2_capacity_4p35_tab[]=
 {
-			{8000000,100},//dummy
-			{4250000,100},
-			{4000000,  75},
-			{3800000,  50},	
-			{3500000,  20},	
-			{3200000,    0},
-			{0,    0}
+	{8000000,100},//dummy
+	{4250000,100},
+	{4000000,  75},
+	{3800000,  50},	
+	{3500000,  20},	
+	{3200000,    0},
+	{0,    0}
 };
 
 static const struct volt_percent_map volt_2_capacity_4p2_charging_tab[]=
 {
-			{8000000,100},//dummy
-			{4130000+ 15000,100}, // 4.145
-			{3957000+ 25000,  80},// 3.982
-			{3890000+ 30000,  70},// 3.920
-			{3823000+ 40000,  60},// 3.863
-			{3782000+ 60000,  50},// 3.842 
-			{3703000+ 60000,  20},// 3.803
-			{3655000+ 60000,  10},// 3.77	
-			{3525000+ 80000,    5},// 3.645	
-			{3200000+ 80000,    0},// 3.34
-			{0,    0}
+	{8000000,100},//dummy
+	{4130000+ 15000,100}, // 4.145
+	{3957000+ 25000,  80},// 3.982
+	{3890000+ 30000,  70},// 3.920
+	{3823000+ 40000,  60},// 3.863
+	{3782000+ 60000,  50},// 3.842 
+	{3703000+ 60000,  20},// 3.803
+	{3655000+ 60000,  10},// 3.77	
+	{3525000+ 80000,    5},// 3.645	
+	{3200000+ 80000,    0},// 3.34
+	{0,    0}
 };
 
 static const struct volt_percent_map volt_2_capacity_4p35_charging_tab[]=
 {
-			{8000000,100},//dummy
-			{4250000,100},
-			{4000000,  75},
-			{3800000,  50},	
-			{3500000,  20},	
-			{3200000,    0},
-			{0,    0}
+	{8000000,100},//dummy
+	{4250000,100},
+	{4000000,  75},
+	{3800000,  50},	
+	{3500000,  20},	
+	{3200000,    0},
+	{0,    0}
 };
 
 int batt_gauge_convert_voltage_to_capacity(int micro_volt, int is_charging, int max_volt)
@@ -424,17 +421,14 @@ int batt_gauge_convert_voltage_to_capacity(int micro_volt, int is_charging, int 
 	const struct volt_percent_map * pMap;
 	int i;
 
-	if(micro_volt < 0)micro_volt = 0; //abnormal
-	else if(micro_volt > max_volt)micro_volt = max_volt;
-	if(last_volt < 0)last_volt = micro_volt+(is_charging?0:100000); //compensate for launch
+	if(micro_volt < 0) micro_volt = 0; //abnormal
+	else if(micro_volt > max_volt) micro_volt = max_volt;
+	if(last_volt < 0) last_volt = micro_volt+(is_charging?0:100000); //compensate for launch
 	
-	if(is_charging)
-	{
+	if(is_charging) {
 		if(max_volt == 4200000)pMap = volt_2_capacity_4p2_charging_tab;
 		else pMap = volt_2_capacity_4p35_charging_tab;
-	}
-	else
-	{
+	} else {
 		if(max_volt == 4200000)pMap = volt_2_capacity_4p2_tab;
 		else pMap = volt_2_capacity_4p35_tab;
 	}
@@ -449,17 +443,13 @@ int batt_gauge_convert_voltage_to_capacity(int micro_volt, int is_charging, int 
 	
 	if(last_capactiy < 0)last_capactiy = capacity;//first time
 	
-	if(is_charging)
-	{
+	if(is_charging) {
 		if(capacity>last_capactiy)last_capactiy = capacity;
-	}
-	else
-	{
+	} else {
 		if(capacity<last_capactiy)last_capactiy = capacity;
 	}
 	return last_capactiy;
 }
-
 
 static int pm_chg_masked_write(struct pm8921_chg_chip *chip, u16 addr,
 							u8 mask, u8 val)
@@ -912,9 +902,9 @@ static int pm_chg_iusbmax_set(struct pm8921_chg_chip *chip, int reg_val)
 {
 	u8 temp, fineres;
 	int rc;
-	#ifdef WEAK_CHARGER
+#ifdef WEAK_CHARGER
 	int i = reg_val;
-	#endif
+#endif
 
 	fineres = PM8917_IUSB_FINE_RES & usb_ma_table[reg_val].value;
 	reg_val = usb_ma_table[reg_val].value >> 1;
@@ -947,14 +937,13 @@ static int pm_chg_iusbmax_set(struct pm8921_chg_chip *chip, int reg_val)
 					rc);
 		}
 	} else {
-	    #ifdef WEAK_CHARGER
+#ifdef WEAK_CHARGER
 	    if (chip->is_use_cradle_charger) {
 			if (0 == usbswitch_is_cradle_attached()) {
 			    pm_chg_vinmin_set(the_chip, usb_ma_table[i].vin_min);
 			}
 		}
-		//printk("pm_chg_iusbmax_set set vinmin\n");
-		#endif
+#endif
 		rc = pm_chg_masked_write(chip, PBL_ACCESS2,
 			PM8921_CHG_IUSB_MASK, temp);
 		if (rc)
@@ -1401,6 +1390,7 @@ static int pm_power_get_property_mains(struct power_supply *psy,
 		if((the_chip->usb_psy.type == POWER_SUPPLY_TYPE_USB_DCP)|| (usb_target_ma > USB_WALL_THRESHOLD_MA))
 			val->intval = is_usb_chg_plugged_in(the_chip);
 			return 0;
+
 		break;
 	default:
 		return -EINVAL;
@@ -1443,9 +1433,8 @@ static int pm_power_get_property_usb(struct power_supply *psy,
 		if (psy->type == POWER_SUPPLY_TYPE_USB
 		||	psy->type == POWER_SUPPLY_TYPE_USB_CDP
 		||	psy->type == POWER_SUPPLY_TYPE_USB_ACA
-		|| nonstand_charger_flag == 1)
-		{
-		    val->intval = is_usb_chg_plugged_in(the_chip);
+		|| nonstand_charger_flag == 1) {
+			val->intval = is_usb_chg_plugged_in(the_chip);
 		}
 		else
 		    return 0;
@@ -1495,6 +1484,7 @@ static int get_prop_battery_uvolts(struct pm8921_chg_chip *chip)
 						result.measurement);
 	return (int)result.physical;
 }
+
 static int get_prop_pa_therm(struct pm8921_chg_chip *chip)
 {
 	int rc;
@@ -1506,8 +1496,6 @@ static int get_prop_pa_therm(struct pm8921_chg_chip *chip)
 					chip->pa_therm_channel, rc);
 		return rc;
 	}
-	//pr_info("pa_therm phy = %lld meas = 0x%llx\n", result.physical,
-						//result.measurement);
 	return (int)result.physical;
 }
 
@@ -1547,12 +1535,11 @@ static int get_prop_batt_capacity(struct pm8921_chg_chip *chip)
 	//if (percent_soc <= 10)
     //		pr_warn("low battery charge = %d%%\n", percent_soc);
 
-    #ifdef FUEL_GAUGE_SOC_ADJUST
-    if(percent_soc >= FUEL_GAUGE_SOC_NEAR_FULL)
-    {
+#ifdef FUEL_GAUGE_SOC_ADJUST
+    if(percent_soc >= FUEL_GAUGE_SOC_NEAR_FULL) {
         percent_soc = FUEL_GAUGE_SOC_FULL;
     }
-    #endif
+#endif
 
 	return percent_soc;
 }
@@ -1591,13 +1578,10 @@ static int get_prop_batt_health(struct pm8921_chg_chip *chip)
 {
 	int temp;
 
-    if (!get_prop_batt_present(chip))
-    {
+    if (!get_prop_batt_present(chip)) {
         return POWER_SUPPLY_HEALTH_GOOD;
-    }
-    else
-    {
-        #if 0
+    } else {
+#if 0
     	temp = pm_chg_get_rt_status(chip, BATTTEMP_HOT_IRQ);
     	if (temp)
     		return POWER_SUPPLY_HEALTH_OVERHEAT;
@@ -1607,16 +1591,14 @@ static int get_prop_batt_health(struct pm8921_chg_chip *chip)
     		return POWER_SUPPLY_HEALTH_COLD;
 
     	return POWER_SUPPLY_HEALTH_GOOD;
-        #endif
+#endif
         temp = get_prop_batt_temp(chip);
 
-        if(temp >= HIGH_WARNING_TEMP)
-        {
+        if(temp >= HIGH_WARNING_TEMP) {
             return POWER_SUPPLY_HEALTH_OVERHEAT;
         }
 
-        if(temp < COLD_WARNING_TEMP)
-        {
+        if(temp < COLD_WARNING_TEMP) {
             return POWER_SUPPLY_HEALTH_COLD;
         }
 
@@ -1671,39 +1653,32 @@ static int get_prop_batt_status(struct pm8921_chg_chip *chip)
 		if (map[i].fsm_state == fsm_state)
 			batt_state = map[i].batt_state;
 
-	#ifdef CONFIG_BATTERY_BQ275x0
-	if(fuel_gauge_flag)
-	{
+#ifdef CONFIG_BATTERY_BQ275x0
+	if(fuel_gauge_flag) {
 		if(ti_gauge_is_valid())
 			capacity = msm_batt_8921gauge->get_battery_capacity();
 		else
-	    		capacity = batt_gauge_convert_voltage_to_capacity(get_prop_battery_uvolts(chip), is_usb_chg_plugged_in(chip)||is_dc_chg_plugged_in(chip), battery_rated_voltage);
-	}
-	else
-	{
+			capacity = batt_gauge_convert_voltage_to_capacity(get_prop_battery_uvolts(chip), is_usb_chg_plugged_in(chip)||is_dc_chg_plugged_in(chip), battery_rated_voltage);
+	} else {
 		capacity = get_prop_batt_capacity(chip);
 	}
-	#else
+#else
 		capacity = get_prop_batt_capacity(chip);	
-	#endif 
+#endif 
 	
-	if(capacity == 100)
-	{
+	if(capacity == 100) {
 		if(pm_chg_get_rt_status(chip, USBIN_VALID_IRQ))
 			batt_state = POWER_SUPPLY_STATUS_FULL;
 		else if(pm_chg_get_rt_status(chip, DCIN_VALID_IRQ))
 			batt_state = POWER_SUPPLY_STATUS_FULL;
 		else
 			batt_state = POWER_SUPPLY_STATUS_DISCHARGING;
+	} else {
+		if(pm_chg_get_rt_status(chip, USBIN_VALID_IRQ))	
+			batt_state = POWER_SUPPLY_STATUS_CHARGING;
+		if(pm_chg_get_rt_status(chip, DCIN_VALID_IRQ))	
+			batt_state = POWER_SUPPLY_STATUS_CHARGING;
 	}
-	else
-	{
-	if(pm_chg_get_rt_status(chip, USBIN_VALID_IRQ))	
-          batt_state = POWER_SUPPLY_STATUS_CHARGING;
-	if(pm_chg_get_rt_status(chip, DCIN_VALID_IRQ))	
-          batt_state = POWER_SUPPLY_STATUS_CHARGING;
-	}
-
 
 	if (fsm_state == FSM_STATE_ON_CHG_HIGHI_1) {
 		if (!pm_chg_get_rt_status(chip, BATT_INSERTED_IRQ)
@@ -1714,7 +1689,6 @@ static int get_prop_batt_status(struct pm8921_chg_chip *chip)
 
 			batt_state = POWER_SUPPLY_STATUS_NOT_CHARGING;
 	}
-		
 	return batt_state;
 }
 
@@ -1735,64 +1709,46 @@ int batt_therm_filter(int therm_value)
     int cnt = 0;
 
     /*first read when power-on*/
-    if (true== batt_therm_first_read)
-    {
+    if (true== batt_therm_first_read) {
         batt_therm_before_value= therm_value;
-        if (batt_therm_before_value >= BATTERY_MAX_TEMP)
-        {
+        if (batt_therm_before_value >= BATTERY_MAX_TEMP) {
             batt_therm_before_value = 250;   
         }
         batt_therm_first_read = false;
-    }
-    else
-    { /*if the VREF_THERM isn't open or battery is remove,add this for evade VREF_THERM closed,report 78 Celsius 
-        system will power-off issue,it not a formal modification */
-        if((therm_value == BATTERY_MAX_TEMP) || (therm_value == BATTERY_MIN_TEMP))
-        {
+    } else { /*if the VREF_THERM isn't open or battery is remove,add this for evade VREF_THERM closed,report 78 Celsius 
+                system will power-off issue,it not a formal modification */
+        if((therm_value == BATTERY_MAX_TEMP) || (therm_value == BATTERY_MIN_TEMP)) {
             batt_therm_invalid_num = 0;
-        }
-        else
-        {
+        } else {
             therm_diff_value = therm_value - batt_therm_before_value;
-            if((therm_diff_value > BATT_THERM_DIFF_MAX) || (therm_diff_value < BATT_THERM_DIFF_MIN))
-            {                
+            if((therm_diff_value > BATT_THERM_DIFF_MAX) || (therm_diff_value < BATT_THERM_DIFF_MIN)) {                
                 batt_therm_buffer[batt_therm_invalid_num]= therm_value;
                 batt_therm_invalid_num++;
                 
                 /*the change has been keep 3 times,it not a interference value*/
-                if (batt_therm_invalid_num >= BATT_THERM_BUFFER_MAX)
-                {
+                if (batt_therm_invalid_num >= BATT_THERM_BUFFER_MAX) {
                     therm_sum_value= 0;
-                    for (cnt= 0; cnt < BATT_THERM_BUFFER_MAX; cnt++)
-                    {
+                    for (cnt= 0; cnt < BATT_THERM_BUFFER_MAX; cnt++) {
                        therm_sum_value += batt_therm_buffer[cnt];
                     }
 
                     therm_value = (therm_sum_value/BATT_THERM_BUFFER_MAX);
-                    if(therm_value < BATTERY_MAX_TEMP)
-                    {
+                    if(therm_value < BATTERY_MAX_TEMP) {
                          batt_therm_before_value = therm_value;
                     }
                     batt_therm_invalid_num = 0;
-                }
-                else
-                {
+                } else {
                     /*abandon the read value and before value isn't update*/
                     pr_err("BATT therm=%dC, err_cnt=%d\n",therm_value,batt_therm_invalid_num);
                 }
-            }
-            /*the temperature change is in the range of normal*/
-            else
-            {
-                if(therm_value < BATTERY_MAX_TEMP)
-                {
+            } else { /*the temperature change is in the range of normal*/
+                if(therm_value < BATTERY_MAX_TEMP) {
                      batt_therm_before_value = therm_value;
                 }
                 batt_therm_invalid_num = 0;
             }
         } 
     }
-
     return batt_therm_before_value;
 }
 
@@ -1804,12 +1760,9 @@ static int get_prop_batt_temp(struct pm8921_chg_chip *chip)
     int batt_therm;
 	struct pm8xxx_adc_chan_result result;
 
-    if (!get_prop_batt_present(chip))
-    {
+    if (!get_prop_batt_present(chip)) {
         batt_therm = NORMAL_TEMPERATURE;
-    }
-    else
-    {
+    } else {
     	rc = pm8xxx_adc_read(chip->batt_temp_channel, &result);
     	if (rc) {
     		pr_err("error reading adc channel = %d, rc = %d\n",
@@ -1823,7 +1776,6 @@ static int get_prop_batt_temp(struct pm8921_chg_chip *chip)
     		pr_err("BATT_TEMP= %d > 68degC, device will be shutdown\n",
     							batt_therm);
 	}
-
 	return batt_therm;
 }
 
@@ -1833,8 +1785,7 @@ static int get_gauge_batt_capacity(struct pm8921_chg_chip *chip)
 	int gauge_capacity = 0;
     int	battery_voltage = 0;
 	
-	if (!get_prop_batt_present(chip))
-	{
+	if (!get_prop_batt_present(chip)) {
 		battery_voltage = msm_batt_8921gauge->get_battery_voltage()*1000;
 	        pr_info("get the gauge battery voltage is %d\n",battery_voltage);		
 		if (battery_voltage < 3500000)
@@ -1850,18 +1801,15 @@ static int get_gauge_batt_capacity(struct pm8921_chg_chip *chip)
 		else if (battery_voltage >= 3900000) {
 			gauge_capacity = 100;
 		}
-	}
-	else
-	{
+	} else {
 		gauge_capacity = msm_batt_8921gauge->get_battery_capacity();
 	}
 
-    #ifdef FUEL_GAUGE_SOC_ADJUST
-	if(gauge_capacity >= FUEL_GAUGE_SOC_NEAR_FULL)
-	{
+#ifdef FUEL_GAUGE_SOC_ADJUST
+	if(gauge_capacity >= FUEL_GAUGE_SOC_NEAR_FULL) {
 	    gauge_capacity = FUEL_GAUGE_SOC_FULL;
 	}
-    #endif
+#endif
         //pr_info("get the gauge capacity is %d\n",gauge_capacity);
 	return gauge_capacity;
 }
@@ -1869,15 +1817,11 @@ static int get_gauge_batt_temperature(struct pm8921_chg_chip *chip)
 {
 	int gauge_temperature = 0;
 	
-	if (!get_prop_batt_present(chip))
-	{
+	if (!get_prop_batt_present(chip)) {
         gauge_temperature = NORMAL_TEMPERATURE;
-	}
-	else
-	{
+	} else {
 		gauge_temperature = msm_batt_8921gauge->get_battery_temperature();
 	}
-        
 	return gauge_temperature;
 }
 
@@ -1887,59 +1831,45 @@ static int gauge_health_cold_filter(int health, bool clear)
     static int count = 0;
     static unsigned long time_jiffies = 0;
 
-    if(clear)
-    {
+    if(clear) {
         count = 0;
         time_jiffies = 0;
         pr_debug("clear time & time_jiffies\n");
         return 0;
     }
 
-    if(POWER_SUPPLY_HEALTH_COLD ==health)
-    {
-        if(0 == count)
-        {
+    if(POWER_SUPPLY_HEALTH_COLD ==health) {
+        if(0 == count) {
             time_jiffies = jiffies + msecs_to_jiffies(FILTER_TIME);
             count++;
             pr_debug("cold_filter count=%d,time_jiffies=%ld\n",count,time_jiffies);
             return POWER_SUPPLY_HEALTH_GOOD;
-        }
-        else if(count)
-        {
-            if(time_is_after_jiffies(time_jiffies))  //if still in 5 seconds
-            {
+        } else if(count) {
+            if(time_is_after_jiffies(time_jiffies)) {  //if still in 5 seconds
                 pr_debug("cold_filter is still in 5 seconds\n");
                 return POWER_SUPPLY_HEALTH_GOOD;
             }
             pr_debug("after 5 seconds is still cold\n");
         }
-    }
-    else //if one cold but next is good we need to recount
-    {
+    } else { //if one cold but next is good we need to recount
         count = 0;
         time_jiffies = 0;
         pr_debug("recount count=%d,time_jiffies=%ld\n",count,time_jiffies);
     }
-
     return health;
-
 }
 
 static int get_gauge_batt_health(struct pm8921_chg_chip *chip)
 {
 	int gauge_health = 0;
 	
-	if (!get_prop_batt_present(chip))
-	{
+	if (!get_prop_batt_present(chip)) {
 	    gauge_health_cold_filter(gauge_health, true);
         gauge_health = POWER_SUPPLY_HEALTH_GOOD;
-	}
-	else
-	{
+	} else {
 	    gauge_health = msm_batt_8921gauge->get_battery_health(msm_batt_8921gauge->gauge_priv);
 		gauge_health = gauge_health_cold_filter(gauge_health, false);
 	}
-        
 	return gauge_health;
 }
 #endif
@@ -1951,136 +1881,129 @@ static int pm_batt_power_get_property(struct power_supply *psy,
 	struct pm8921_chg_chip *chip = container_of(psy, struct pm8921_chg_chip,
 								batt_psy);
 
-	if(fuel_gauge_flag)
-	{
-		if(ti_gauge_is_valid())
-		{
-switch (psp) {
-	case POWER_SUPPLY_PROP_STATUS:
-		val->intval = get_prop_batt_status(chip);
-		break;
-	case POWER_SUPPLY_PROP_CHARGE_TYPE:
-		val->intval = get_prop_charge_type(chip);
-		break;
-	case POWER_SUPPLY_PROP_HEALTH:
-         val->intval = get_gauge_batt_health(chip);
-		 break;
-	case POWER_SUPPLY_PROP_PRESENT:
-			val->intval = get_prop_batt_present(chip);
-			break;	
-	case POWER_SUPPLY_PROP_TECHNOLOGY:
-		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
-		break;
-	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-		val->intval = chip->max_voltage_mv * 1000;
-		break;
-	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-		val->intval = chip->min_voltage_mv * 1000;
-		break;
-	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-	    val->intval = msm_batt_8921gauge->get_battery_voltage()*1000;
-		break;	
-	case POWER_SUPPLY_PROP_CAPACITY:
-	    val->intval = get_gauge_batt_capacity(chip);//msm_batt_8921gauge->get_battery_capacity();
-		break;
-	case POWER_SUPPLY_PROP_CAPACITY_RM:
-		  val->intval = msm_batt_8921gauge->get_battery_capacity_rm();
-	    break;
-	case POWER_SUPPLY_PROP_CAPACITY_FCC:
-				val->intval = msm_batt_8921gauge->get_battery_fcc(msm_batt_8921gauge->gauge_priv);
-		break;
-	case POWER_SUPPLY_PROP_PA_THERM:
-		val->intval = get_prop_pa_therm(chip);
-		break;
-	case POWER_SUPPLY_PROP_CURRENT_NOW:
-	     val->intval = msm_batt_8921gauge->get_battery_current()*1000;
-	     break;		
-	case POWER_SUPPLY_PROP_TEMP:
-			val->intval = get_gauge_batt_temperature(chip);
-			break;	
-	case POWER_SUPPLY_PROP_ENERGY_FULL:
-		val->intval = get_prop_batt_fcc(chip) * 1000;
-		break;
-	case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW:
-			val->intval = msm_batt_8921gauge->get_battery_tte();
-	   break;
-	case POWER_SUPPLY_PROP_TIME_TO_FULL_NOW:
-			val->intval = msm_batt_8921gauge->get_battery_ttf();
-	   break;
-	default:
-		return -EINVAL;
-	}
-		}
-		else
-		{
+	if(fuel_gauge_flag) {
+		if(ti_gauge_is_valid()) {
 			switch (psp) {
-	case POWER_SUPPLY_PROP_STATUS:
-		val->intval = get_prop_batt_status(chip);
-		break;
-	case POWER_SUPPLY_PROP_CHARGE_TYPE:
-		val->intval = get_prop_charge_type(chip);
-		break;
-	case POWER_SUPPLY_PROP_HEALTH:
-            val->intval = get_prop_batt_health(chip);
-			break;
-	case POWER_SUPPLY_PROP_PRESENT:
-			val->intval = get_prop_batt_present(chip);
-			break;	
-	case POWER_SUPPLY_PROP_TECHNOLOGY:
-		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
-		break;
-	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-		val->intval = chip->max_voltage_mv * 1000;
-		break;
-	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-		val->intval = chip->min_voltage_mv * 1000;
-		break;
-	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-		val->intval = get_prop_battery_uvolts(chip);
-		break;	
-	case POWER_SUPPLY_PROP_CAPACITY:
-		val->intval = batt_gauge_convert_voltage_to_capacity(
-			get_prop_battery_uvolts(chip),
-			is_usb_chg_plugged_in(chip)||is_dc_chg_plugged_in(chip),
-			battery_rated_voltage);
-	    #ifdef FUEL_GAUGE_SOC_ADJUST
-		if(val->intval >= FUEL_GAUGE_SOC_NEAR_FULL)
-		{
-		    val->intval = FUEL_GAUGE_SOC_FULL;
-		}
-		#endif
-		break;
-	case POWER_SUPPLY_PROP_CAPACITY_RM:
-        val->intval = 0;
-        break;
-	case POWER_SUPPLY_PROP_CAPACITY_FCC:
-		val->intval = 0;
-		break;
-	case POWER_SUPPLY_PROP_PA_THERM:
-		val->intval = get_prop_pa_therm(chip);
-		break;
-	case POWER_SUPPLY_PROP_CURRENT_NOW:
-		val->intval = get_prop_batt_current(chip);
-		break;
-	case POWER_SUPPLY_PROP_TEMP:
-		val->intval = get_prop_batt_temp(chip);
-		break;	
-	case POWER_SUPPLY_PROP_ENERGY_FULL:
-		val->intval = get_prop_batt_fcc(chip) * 1000;
-		break;
-	case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW:
+				case POWER_SUPPLY_PROP_STATUS:
+					val->intval = get_prop_batt_status(chip);
+					break;
+				case POWER_SUPPLY_PROP_CHARGE_TYPE:
+					val->intval = get_prop_charge_type(chip);
+					break;
+				case POWER_SUPPLY_PROP_HEALTH:
+					val->intval = get_gauge_batt_health(chip);
+					break;
+				case POWER_SUPPLY_PROP_PRESENT:
+					val->intval = get_prop_batt_present(chip);
+					break;	
+				case POWER_SUPPLY_PROP_TECHNOLOGY:
+					val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
+					break;
+				case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
+					val->intval = chip->max_voltage_mv * 1000;
+					break;
+				case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
+					val->intval = chip->min_voltage_mv * 1000;
+					break;
+				case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+					val->intval = msm_batt_8921gauge->get_battery_voltage()*1000;
+					break;	
+				case POWER_SUPPLY_PROP_CAPACITY:
+					val->intval = get_gauge_batt_capacity(chip);//msm_batt_8921gauge->get_battery_capacity();
+					break;
+				case POWER_SUPPLY_PROP_CAPACITY_RM:
+					val->intval = msm_batt_8921gauge->get_battery_capacity_rm();
+					break;
+				case POWER_SUPPLY_PROP_CAPACITY_FCC:
+					val->intval = msm_batt_8921gauge->get_battery_fcc(msm_batt_8921gauge->gauge_priv);
+					break;
+				case POWER_SUPPLY_PROP_PA_THERM:
+					val->intval = get_prop_pa_therm(chip);
+					break;
+				case POWER_SUPPLY_PROP_CURRENT_NOW:
+					val->intval = msm_batt_8921gauge->get_battery_current()*1000;
+					break;		
+				case POWER_SUPPLY_PROP_TEMP:
+					val->intval = get_gauge_batt_temperature(chip);
+					break;	
+				case POWER_SUPPLY_PROP_ENERGY_FULL:
+					val->intval = get_prop_batt_fcc(chip) * 1000;
+					break;
+				case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW:
+					val->intval = msm_batt_8921gauge->get_battery_tte();
+					break;
+				case POWER_SUPPLY_PROP_TIME_TO_FULL_NOW:
+					val->intval = msm_batt_8921gauge->get_battery_ttf();
+					break;
+				default:
+					return -EINVAL;
+			}
+		} else {
+			switch (psp) {
+				case POWER_SUPPLY_PROP_STATUS:
+					val->intval = get_prop_batt_status(chip);
+					break;
+				case POWER_SUPPLY_PROP_CHARGE_TYPE:
+					val->intval = get_prop_charge_type(chip);
+					break;
+				case POWER_SUPPLY_PROP_HEALTH:
+					val->intval = get_prop_batt_health(chip);
+					break;
+				case POWER_SUPPLY_PROP_PRESENT:
+					val->intval = get_prop_batt_present(chip);
+					break;	
+				case POWER_SUPPLY_PROP_TECHNOLOGY:
+					val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
+					break;
+				case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
+					val->intval = chip->max_voltage_mv * 1000;
+					break;
+				case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
+					val->intval = chip->min_voltage_mv * 1000;
+					break;
+				case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+					val->intval = get_prop_battery_uvolts(chip);
+					break;	
+				case POWER_SUPPLY_PROP_CAPACITY:
+					val->intval = batt_gauge_convert_voltage_to_capacity(
+					get_prop_battery_uvolts(chip),
+					is_usb_chg_plugged_in(chip)||is_dc_chg_plugged_in(chip),
+					battery_rated_voltage);
+#ifdef FUEL_GAUGE_SOC_ADJUST
+					if(val->intval >= FUEL_GAUGE_SOC_NEAR_FULL) {
+						val->intval = FUEL_GAUGE_SOC_FULL;
+					}
+#endif
+					break;
+				case POWER_SUPPLY_PROP_CAPACITY_RM:
+					val->intval = 0;
+					break;
+				case POWER_SUPPLY_PROP_CAPACITY_FCC:
+					val->intval = 0;
+					break;
+				case POWER_SUPPLY_PROP_PA_THERM:
+					val->intval = get_prop_pa_therm(chip);
+					break;
+				case POWER_SUPPLY_PROP_CURRENT_NOW:
+					val->intval = get_prop_batt_current(chip);
+					break;
+				case POWER_SUPPLY_PROP_TEMP:
+					val->intval = get_prop_batt_temp(chip);
+					break;	
+				case POWER_SUPPLY_PROP_ENERGY_FULL:
+					val->intval = get_prop_batt_fcc(chip) * 1000;
+					break;
+				case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW:
 					val->intval = 0;
 				   	break;
-    case POWER_SUPPLY_PROP_TIME_TO_FULL_NOW:
+				case POWER_SUPPLY_PROP_TIME_TO_FULL_NOW:
 					val->intval = 0;
 				   	break;
-	default:
-		return -EINVAL;
-	}
+				default:
+					return -EINVAL;
+			}
 		}
-	}
-	else
-	{
+	} else {
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
 		val->intval = get_prop_batt_status(chip);
@@ -2089,11 +2012,11 @@ switch (psp) {
 		val->intval = get_prop_charge_type(chip);
 		break;
 	case POWER_SUPPLY_PROP_HEALTH:
-            val->intval = get_prop_batt_health(chip);
-			break;
+		val->intval = get_prop_batt_health(chip);
+		break;
 	case POWER_SUPPLY_PROP_PRESENT:
-			val->intval = get_prop_batt_present(chip);
-			break;	
+		val->intval = get_prop_batt_present(chip);
+		break;
 	case POWER_SUPPLY_PROP_TECHNOLOGY:
 		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
 		break;
@@ -2105,13 +2028,13 @@ switch (psp) {
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
 		val->intval = get_prop_battery_uvolts(chip);
-		break;	
+		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
 		val->intval = get_prop_batt_capacity(chip);
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY_RM:
-	val->intval = 0;
-	break;
+		val->intval = 0;
+		break;
 	case POWER_SUPPLY_PROP_CAPACITY_FCC:
 		val->intval = 0;
 		break;
@@ -2123,7 +2046,7 @@ switch (psp) {
 		break;
 	case POWER_SUPPLY_PROP_TEMP:
 		val->intval = get_prop_batt_temp(chip);
-		break;	
+		break;
 	case POWER_SUPPLY_PROP_ENERGY_FULL:
 		val->intval = get_prop_batt_fcc(chip) * 1000;
 		break;
@@ -2240,20 +2163,19 @@ void pm8921_charger_vbus_draw(unsigned int mA)
 	if (usb_target_ma == 0 && mA > USB_WALL_THRESHOLD_MA)
 		usb_target_ma = mA;
 
-	#ifdef WEAK_CHARGER
+#ifdef WEAK_CHARGER
 	if (the_chip->is_use_cradle_charger) {
 		if (0 == usbswitch_is_cradle_attached()) {
 		    pm_chg_vinmin_set(the_chip, 4500);
 		}
 	}
-	#endif
+#endif
 
 	spin_lock_irqsave(&vbus_lock, flags);
 	if (the_chip) {
 		if (mA > USB_WALL_THRESHOLD_MA)
 		{
 			__pm8921_charger_vbus_draw(USB_WALL_THRESHOLD_MA);
-
 		}
 		else
 			__pm8921_charger_vbus_draw(mA);
@@ -2262,12 +2184,10 @@ void pm8921_charger_vbus_draw(unsigned int mA)
 		 * called before pmic initialized,
 		 * save this value and use it at probe
 		 */
-
 		if (mA > USB_WALL_THRESHOLD_MA)
 			usb_chg_current = USB_WALL_THRESHOLD_MA;
 		else
 			usb_chg_current = mA;
-
 	}
 	spin_unlock_irqrestore(&vbus_lock, flags);
 }
@@ -2524,13 +2444,11 @@ static void handle_usb_insertion_removal(struct pm8921_chg_chip *chip)
 	pm_chg_failed_clear(chip, 1);
 	usb_present = is_usb_chg_plugged_in(chip);
 
-	if(notifier_call != NULL)
-	{
+	if(notifier_call != NULL) {
 		(*notifier_call)(usb_present);
 	}
 
-	if(ate_notifier_call != NULL)
-	{
+	if(ate_notifier_call != NULL) {
 		(*ate_notifier_call)(usb_present);
 	}
 
@@ -2680,6 +2598,7 @@ static void wireless_charge_start(struct pm8921_chg_chip *chip)
 	schedule_delayed_work(&chip->eoc_work, delay);
 	wake_lock(&chip->eoc_wake_lock);
 }
+
 static void turn_off_usb_ovp_fet(struct pm8921_chg_chip *chip)
 {
 	u8 temp;
@@ -2860,10 +2779,9 @@ static irqreturn_t batt_inserted_irq_handler(int irq, void *data)
 	status = pm_chg_get_rt_status(chip, BATT_INSERTED_IRQ);
 	schedule_work(&chip->battery_id_valid_work);
 	handle_start_ext_chg(chip);
-	if(chip->is_wireless_charger)
-	{
-	wireless_charge_start(chip);
-	power_supply_changed(&chip->dc_psy);
+	if(chip->is_wireless_charger) {
+		wireless_charge_start(chip);
+		power_supply_changed(&chip->dc_psy);
 	}
 	pr_debug("battery present=%d", status);
 	power_supply_changed(&chip->batt_psy);
@@ -3057,10 +2975,8 @@ static void unplug_check_worker(struct work_struct *work)
 	pr_debug("reg_loop=0x%x usb_ma = %d\n", reg_loop, usb_ma);
 
 	if (reg_loop & VIN_ACTIVE_BIT) {
-	    //printk("before decrease usb_ma=%d\n",usb_ma);
 		decrease_usb_ma_value(&usb_ma);
 		usb_target_ma = usb_ma;
-		//printk("after decrease usb_ma=%d, usb_target_ma=%d\n",usb_ma,usb_target_ma);
 		/* end AICL here */
 		__pm8921_charger_vbus_draw(usb_ma);
 		pr_debug("usb_now=%d, usb_target = %d\n",
@@ -3099,10 +3015,8 @@ static void unplug_check_worker(struct work_struct *work)
 
 	if (!(reg_loop & VIN_ACTIVE_BIT)) {
 		/* only increase iusb_max if vin loop not active */
-		if(usb_ma < usb_target_ma)
-        {
+		if (usb_ma < usb_target_ma) {
             if(usb_ma < batt_hot_current_limit){
-                //printk("before increase usb_ma=%d\n",usb_ma);
 			    increase_usb_ma_value(&usb_ma);
 			    __pm8921_charger_vbus_draw(usb_ma);
 			    //printk("after increase usb_ma=%d, usb_target_ma= %d\n",
@@ -3237,23 +3151,21 @@ static irqreturn_t bat_temp_ok_irq_handler(int irq, void *data)
 			 bat_temp_ok, pm_chg_get_fsm_state(data));
 
 	if (bat_temp_ok)
-		{
-		if(chip->is_wireless_charger)
-		{
-		wireless_charge_start(chip);
-		power_supply_changed(&chip->dc_psy);
+	{
+		if(chip->is_wireless_charger) {
+			wireless_charge_start(chip);
+			power_supply_changed(&chip->dc_psy);
 		}
 		handle_start_ext_chg(chip);
-		}
+	}
 	else
-		{
-		if(chip->is_wireless_charger)
-		{
-		wireless_charge_stop(chip);
-		power_supply_changed(&chip->dc_psy);
+	{
+		if(chip->is_wireless_charger) {
+			wireless_charge_stop(chip);
+			power_supply_changed(&chip->dc_psy);
 		}
 		handle_stop_ext_chg(chip);
-		}
+	}
 	power_supply_changed(&chip->batt_psy);
 	power_supply_changed(&chip->usb_psy);
 	bms_notify_check(chip);
@@ -3303,23 +3215,21 @@ static irqreturn_t dcin_valid_irq_handler(int irq, void *data)
 		power_supply_set_online(chip->ext_psy, dc_present);
 	chip->dc_present = dc_present;
 	if (dc_present)
-		{
-			if(chip->is_wireless_charger)
-			{
+	{
+		if(chip->is_wireless_charger) {
 			wireless_charge_start(chip);
 			power_supply_changed(&chip->dc_psy);
-			}
-			handle_start_ext_chg(chip);
 		}
+		handle_start_ext_chg(chip);
+	}
 	else
-		{
-			if(chip->is_wireless_charger)
-			{
+	{
+		if(chip->is_wireless_charger) {
 			wireless_charge_stop(chip);
 			power_supply_changed(&chip->dc_psy);
-			}
-			handle_stop_ext_chg(chip);
 		}
+		handle_stop_ext_chg(chip);
+	}
 	return IRQ_HANDLED;
 }
 
@@ -3383,25 +3293,20 @@ static void update_heartbeat(struct work_struct *work)
 
 	pm_chg_failed_clear(chip, 1);
 	
-	#ifdef CONFIG_BATTERY_BQ275x0
-	if(fuel_gauge_flag)
-	{
-		if(ti_gauge_is_valid())
-			{
-				int batt_flag = 0;
-			    	batt_flag = msm_batt_8921gauge->get_battery_status(msm_batt_8921gauge->gauge_priv);
-			    	if(( batt_flag & BQ275x0_FLAG_LOCK ) != BQ275x0_FLAG_LOCK)
-			        {
-			            printk("unlock low_power_lock\n");
-			            wake_unlock(&chip->low_power_lock);
-			        }
-			}
-		else
-			{
+#ifdef CONFIG_BATTERY_BQ275x0
+	if(fuel_gauge_flag) {
+		if(ti_gauge_is_valid()) {
+			int batt_flag = 0;
+			batt_flag = msm_batt_8921gauge->get_battery_status(msm_batt_8921gauge->gauge_priv);
+			if(( batt_flag & BQ275x0_FLAG_LOCK ) != BQ275x0_FLAG_LOCK) {
+				printk("unlock low_power_lock\n");
 				wake_unlock(&chip->low_power_lock);
 			}
+		} else {
+			wake_unlock(&chip->low_power_lock);
+		}
     }
-    #endif
+#endif
 
 	power_supply_changed(&chip->batt_psy);
 	schedule_delayed_work(&chip->update_heartbeat_work,
@@ -3415,8 +3320,6 @@ module_param(vdd_max_increase_mv, int, 0644);
 
 static int ichg_threshold_ua = -400000;
 module_param(ichg_threshold_ua, int, 0644);
-
-
 static void adjust_vdd_max_for_fastchg(struct pm8921_chg_chip *chip)
 {
 	int ichg_meas_ua, vbat_uv;
@@ -3426,7 +3329,6 @@ static void adjust_vdd_max_for_fastchg(struct pm8921_chg_chip *chip)
 	int vbat_batt_terminal_mv;
 	int reg_loop;
 	int delta_mv = 0;
-
 
 	if (chip->rconn_mohm == 0) {
 		pr_debug("Exiting as rconn_mohm is 0\n");
@@ -3510,7 +3412,6 @@ static int is_charging_finished(struct pm8921_chg_chip *chip)
 		if (fast_chg == 0)
 			return CHG_NOT_IN_PROGRESS;
 
-
 		vcp = pm_chg_get_rt_status(chip, VCP_IRQ);
 		pr_debug("vcp = %d\n", vcp);
 		if (vcp == 1)
@@ -3562,36 +3463,26 @@ static int is_charging_finished(struct pm8921_chg_chip *chip)
 		if (regulation_loop != 0 && regulation_loop != VDD_LOOP)
 			return CHG_IN_PROGRESS;
 	} /* !is_ext_charging */
-	#ifdef CONFIG_BATTERY_BQ275x0
-	if(fuel_gauge_flag)
-	{
-		if(ti_gauge_is_valid())
-		{
+#ifdef CONFIG_BATTERY_BQ275x0
+	if(fuel_gauge_flag) {
+		if(ti_gauge_is_valid()) {
 			if(msm_batt_8921gauge)
 			    capacity = msm_batt_8921gauge->get_battery_capacity();
-		       else
+			else
 			    pr_err("msm_batt_8921gauge is NULL");
-		}
-		else
-		{
+		} else {
 			capacity= batt_gauge_convert_voltage_to_capacity(get_prop_battery_uvolts(chip), 1, battery_rated_voltage);
 		}
-	}
-	else
-	{
+	} else {
 		capacity = get_prop_batt_capacity(chip);
 	}
-	#else
-	{
-		capacity = get_prop_batt_capacity(chip);	
-	}
-	#endif
-		
-	if(capacity == 100)
-	{
-    		power_supply_changed(&chip->batt_psy);
-    		power_supply_changed(&chip->usb_psy);
-    		power_supply_changed(&chip->dc_psy);
+#else
+	capacity = get_prop_batt_capacity(chip);
+#endif
+	if(capacity == 100) {
+		power_supply_changed(&chip->batt_psy);
+		power_supply_changed(&chip->usb_psy);
+		power_supply_changed(&chip->dc_psy);
 	}
 	/* reset count if battery chg current is more than iterm */
 	rc = pm_chg_iterm_get(chip, &iterm_programmed);
@@ -3629,54 +3520,38 @@ static void batt_therm_check(struct pm8921_chg_chip *chip)
 
     pm_chg_iusbmax_get(chip, &current_max);
 
-    if (usb_target_ma > USB_WALL_THRESHOLD_MA)
-    {
-        if(fuel_gauge_flag)
-        {
+    if (usb_target_ma > USB_WALL_THRESHOLD_MA) {
+        if(fuel_gauge_flag) {
             if(ti_gauge_is_valid())
                 batt_therm = msm_batt_8921gauge->get_battery_temperature();
             else
                 batt_therm = get_prop_batt_temp(chip);
-        }
-        else
-        {
+        } else {
             batt_therm = get_prop_batt_temp(chip);
         }
 
-        if(first_circle == true)
-        {
+        if(first_circle == true) {
             if(batt_therm >= (BATT_CHARGE_VERY_HOT - BATT_HYSTERISIS_DEGC)\
                     &&(batt_therm < BATT_CHARGE_VERY_HOT))
             current_iusbmax = IUSB_LIMIT_STEP;
             first_circle = false;
         }
 
-        if(batt_therm < (BATT_CHARGE_LITTLE_HOT - BATT_HYSTERISIS_DEGC))
-        {
+        if(batt_therm < (BATT_CHARGE_LITTLE_HOT - BATT_HYSTERISIS_DEGC)) {
             current_iusbmax = IUSB_AC_MAX;
-        }
-        else if((batt_therm >= BATT_CHARGE_LITTLE_HOT)\
-                &&(batt_therm < (BATT_CHARGE_VERY_HOT - BATT_HYSTERISIS_DEGC)))
-        {
+        } else if((batt_therm >= BATT_CHARGE_LITTLE_HOT)\
+                &&(batt_therm < (BATT_CHARGE_VERY_HOT - BATT_HYSTERISIS_DEGC))) {
             current_iusbmax = IUSB_LIMIT_STEP;
-        }
-        else if(batt_therm >= BATT_CHARGE_VERY_HOT)
-        {
+        } else if(batt_therm >= BATT_CHARGE_VERY_HOT) {
             current_iusbmax = USB_WALL_THRESHOLD_MA;
-        }
-        else
-        {
+        } else {
             current_iusbmax = current_max;
         }
 
-
-        if(current_iusbmax != current_max)
-        {
+        if(current_iusbmax != current_max) {
             printk("[batt_therm_check]Max_current value: old=%d, new=%d\n", current_max, current_iusbmax);
             batt_hot_current_limit = current_iusbmax;
-            if(current_iusbmax < current_max)
-            {
-                //printk("batt_therm_check=%d\n",current_iusbmax);
+            if(current_iusbmax < current_max) {
                 __pm8921_charger_vbus_draw(current_iusbmax);
             }
         }
@@ -3695,13 +3570,10 @@ static void update_vin_min(struct pm8921_chg_chip *chip)
 	int voltage;
 	
 	voltage = get_prop_battery_uvolts(chip);
-	if (voltage > VOLTAGE_COMPARE)
-	{
+	if (voltage > VOLTAGE_COMPARE) {
 		if (pm_chg_vinmin_get(chip) != VIN_MIN_DEFAULT)
 			pm8921_regulate_input_voltage(VIN_MIN_DEFAULT);
-	}
-	else
-	{
+	} else {
 		if (pm_chg_vinmin_get(chip) != VIN_MIN_CRADLE)
 			pm8921_regulate_input_voltage(VIN_MIN_CRADLE);
 	}
@@ -3834,7 +3706,6 @@ static void battery_warm(bool enter)
 		btm_config.high_thr_temp =
 			the_chip->warm_temp_dc - TEMP_HYSTERISIS_DEGC;
 		set_appropriate_battery_current(the_chip);
-
 		pm_chg_vddmax_set(the_chip, the_chip->warm_bat_voltage);
 		pm_chg_vbatdet_set(the_chip,
 			the_chip->warm_bat_voltage
@@ -3846,7 +3717,6 @@ static void battery_warm(bool enter)
 		pm_chg_vbatdet_set(the_chip,
 			the_chip->max_voltage_mv
 			- the_chip->resume_voltage_delta);
-
 	}
 	schedule_work(&btm_config_work);
 }
@@ -4003,19 +3873,18 @@ static void __devinit determine_initial_state(struct pm8921_chg_chip *chip)
 
 	chip->dc_present = !!is_dc_chg_plugged_in(chip);
 	chip->usb_present = !!is_usb_chg_plugged_in(chip);
+
 	notify_usb_of_the_plugin_event(chip->usb_present);
 	if (chip->usb_present) {
 		schedule_delayed_work(&chip->unplug_check_work,
 			round_jiffies_relative(msecs_to_jiffies
 				(UNPLUG_CHECK_WAIT_PERIOD_MS)));
 				//willow add
-			if(notifier_call != NULL)
-			{
+			if(notifier_call != NULL) {
 				(*notifier_call)(chip->usb_present);
 			}
 
-			if(ate_notifier_call != NULL)
-			{
+			if(ate_notifier_call != NULL) {
 				(*ate_notifier_call)(chip->usb_present);
 			}
 
@@ -4651,12 +4520,11 @@ static void create_debugfs_entries(struct pm8921_chg_chip *chip)
 }
 
 static int pm8921_charger_suspend_noirq(struct device *dev)
-{	
+{
 	struct pm8921_chg_chip *chip = dev_get_drvdata(dev);
 	/*if we use TI fuel gauge we need to keep VREF_THERM on otherwise it 
 	  will cause low probability of report high temperature*/
-    if(!fuel_gauge_flag)
-    {
+    if(!fuel_gauge_flag) {
         int rc;
     	rc = pm_chg_masked_write(chip, CHG_CNTRL, VREF_BATT_THERM_FORCE_ON, 0);
     	if (rc)
@@ -4802,41 +4670,38 @@ static ssize_t pm8921_charger_attr_show(struct device_driver *driver, char *buf)
     bRes = pm8921_is_battery_charging(&iRet);
 
     if(true == bRes){
-	iRet = 1;
+        iRet = 1;
     }
     else{
-	iRet = 2;
+        iRet = 2;
     }
     
     return sprintf(buf, "%s", pOut[iRet]);
 }
 static DRIVER_ATTR(diag, S_IRUGO|S_IWUSR|S_IWGRP, pm8921_charger_attr_show, pm8921_charger_attr_store);
 
-
 static ssize_t pm8921_charger_Qgaugelog(struct device_driver *driver, char *buf)
 {
     int temp, voltage, cur, capacity, fcc, health, type, status;
     
-    if(NULL == the_chip)
-    {
-    	 return sprintf(buf, "%s", "Qgauge's the_chip is NULL!\n");
-    }
-    else
-    {
-       voltage = get_prop_battery_uvolts(the_chip);
-       capacity = get_prop_batt_capacity(the_chip);
-       cur = get_prop_batt_current(the_chip);
-       temp = get_prop_batt_temp(the_chip);
-       fcc = get_prop_batt_fcc(the_chip);
-       health = get_prop_batt_health(the_chip);
-       type = get_prop_charge_type(the_chip);
-       status = get_prop_batt_status(the_chip);
-       sprintf(buf, "%-9d  %-9d  %-4d  %-6d  %-6d   %-6d  %-6d  %-6d    ",                                
+    if(NULL == the_chip) {
+        return sprintf(buf, "%s", "Qgauge's the_chip is NULL!\n");
+    } else {
+        voltage = get_prop_battery_uvolts(the_chip);
+        capacity = get_prop_batt_capacity(the_chip);
+        cur = get_prop_batt_current(the_chip);
+        temp = get_prop_batt_temp(the_chip);
+        fcc = get_prop_batt_fcc(the_chip);
+        health = get_prop_batt_health(the_chip);
+        type = get_prop_charge_type(the_chip);
+        status = get_prop_batt_status(the_chip);
+        sprintf(buf, "%-9d  %-9d  %-4d  %-6d  %-6d   %-6d  %-6d  %-6d    ",                                
                     voltage/1000,  (signed short)(cur/1000), capacity, temp/10, fcc/1000, health, type, status);
-       return strlen(buf);
+        return strlen(buf);
     }
 }
 static DRIVER_ATTR(Qgaugelog, S_IRUGO, pm8921_charger_Qgaugelog,NULL);
+
 static int __devinit pm8921_charger_probe(struct platform_device *pdev)
 {
 	int rc = 0;
@@ -4848,11 +4713,9 @@ static int __devinit pm8921_charger_probe(struct platform_device *pdev)
 	const struct pm8921_charger_platform_data *pdata
 				= pdev->dev.platform_data;
 
-
 #ifdef CONFIG_BATTERY_BQ275x0
 	fuel_gauge_flag = is_use_fuel_gauge();
 #endif
-
 
 	if (!pdata) {
 		pr_err("missing platform data\n");
@@ -4865,12 +4728,10 @@ static int __devinit pm8921_charger_probe(struct platform_device *pdev)
 		pr_err("Cannot allocate pm_chg_chip\n");
 		return -ENOMEM;
 	}
-	if(is_use_wireless_charger())
-	{
+	if(is_use_wireless_charger()) {
 		chip->is_wireless_charger=true;
 	}
-	if(is_use_cradle_adapt())
-	{
+	if(is_use_cradle_adapt()) {
 		chip->is_use_cradle_charger=true;
 	}
 	chip->dev = &pdev->dev;
@@ -4945,18 +4806,15 @@ static int __devinit pm8921_charger_probe(struct platform_device *pdev)
 	chip->batt_psy.name = "battery",
 	chip->batt_psy.type = POWER_SUPPLY_TYPE_BATTERY,
 	chip->batt_psy.properties = msm_batt_power_props;
-	#ifdef CONFIG_BATTERY_BQ275x0
-	if(fuel_gauge_flag)
-	{
-		chip->batt_psy.num_properties = ARRAY_SIZE(msm_batt_power_props) ;
-	}
-	else
-	{
+#ifdef CONFIG_BATTERY_BQ275x0
+	if(fuel_gauge_flag) {
+		chip->batt_psy.num_properties = ARRAY_SIZE(msm_batt_power_props);
+	} else {
 		chip->batt_psy.num_properties = NUM_PROP_NOT_USE_FUEL_GAUGE;
 	}
-	#else
+#else
 		chip->batt_psy.num_properties = ARRAY_SIZE(msm_batt_power_props);
-	#endif
+#endif
 	chip->batt_psy.get_property = pm_batt_power_get_property,
 	chip->batt_psy.external_power_changed = pm_batt_external_power_changed,
 	rc = power_supply_register(chip->dev, &chip->usb_psy);
@@ -4977,10 +4835,10 @@ static int __devinit pm8921_charger_probe(struct platform_device *pdev)
 		goto unregister_dc;
 	}
 
-    #ifdef CONFIG_BATTERY_BQ275x0
+#ifdef CONFIG_BATTERY_BQ275x0
 	if(fuel_gauge_flag)
         bq275x0_register_notify_callback((bq275x0_notify_handler)pm_fuelgauge_notify_handle, chip);
-    #endif
+#endif
     
 	platform_set_drvdata(pdev, chip);
 	the_chip = chip;
@@ -4998,20 +4856,17 @@ static int __devinit pm8921_charger_probe(struct platform_device *pdev)
 		return rc;
 	}
 	wake_lock_init(&chip->eoc_wake_lock, WAKE_LOCK_SUSPEND, "pm8921_eoc");
-	#ifdef CONFIG_BATTERY_BQ275x0
-    if(fuel_gauge_flag)
-    {
+#ifdef CONFIG_BATTERY_BQ275x0
+    if(fuel_gauge_flag) {
 	    wake_lock_init(&chip->low_power_lock, WAKE_LOCK_SUSPEND, "bq275x0_lowpower");
-	    if(ti_gauge_is_valid())
-	    {
+	    if(ti_gauge_is_valid()) {
 	    	batt_flag = msm_batt_8921gauge->get_battery_status(msm_batt_8921gauge->gauge_priv);
-	    	if(batt_flag >=0 && ( batt_flag & BQ275x0_FLAG_LOCK ) == BQ275x0_FLAG_LOCK)
-	        {
+	    	if(batt_flag >=0 && ( batt_flag & BQ275x0_FLAG_LOCK ) == BQ275x0_FLAG_LOCK) {
 	            wake_lock(&chip->low_power_lock);
 	        }
 	    }
     }
-	#endif
+#endif
 	INIT_DELAYED_WORK(&chip->eoc_work, eoc_worker);
 	INIT_DELAYED_WORK(&chip->vin_collapse_check_work,
 						vin_collapse_check_worker);
@@ -5043,16 +4898,14 @@ static int __devinit pm8921_charger_probe(struct platform_device *pdev)
 
 	create_debugfs_entries(chip);
 	retval = driver_create_file(&(pm8921_charger_driver.driver), &driver_attr_diag);
-        if (0 != retval)
-        {
+	if (0 != retval) {
 		printk("failed to create sysfs entry(state): %d\n", retval);
-        }
-  retval = driver_create_file(&(pm8921_charger_driver.driver), &driver_attr_Qgaugelog);
-  if (0 != retval)
-  {
-      printk("failed to create sysfs entry(gaugelog): %d\n", retval);
-      return -1;
-  }
+	}
+	retval = driver_create_file(&(pm8921_charger_driver.driver), &driver_attr_Qgaugelog);
+	if (0 != retval) {
+		printk("failed to create sysfs entry(gaugelog): %d\n", retval);
+		return -1;
+	}
 
 	INIT_WORK(&chip->bms_notify.work, bms_notify);
 	INIT_WORK(&chip->battery_id_valid_work, battery_id_valid);
@@ -5086,10 +4939,10 @@ static int __devexit pm8921_charger_remove(struct platform_device *pdev)
 {
 	struct pm8921_chg_chip *chip = platform_get_drvdata(pdev);
 
-    #ifdef CONFIG_BATTERY_BQ275x0
+#ifdef CONFIG_BATTERY_BQ275x0
     if(fuel_gauge_flag)
         wake_lock_destroy(&chip->low_power_lock);
-    #endif
+#endif
 	free_irqs(chip);
 	platform_set_drvdata(pdev, NULL);
 	the_chip = NULL;

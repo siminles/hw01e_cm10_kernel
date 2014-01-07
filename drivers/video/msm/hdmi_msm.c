@@ -622,17 +622,17 @@ static void hdmi_msm_setup_video_mode_lut(void)
 	HDMI_SETUP_LUT(1920x1080i60_16_9);
 	HDMI_SETUP_LUT(1440x480i60_4_3);
 	HDMI_SETUP_LUT(1440x480i60_16_9);
-	#ifndef CONFIG_HUAWEI_MHL_SII9244
+#ifndef CONFIG_HUAWEI_MHL_SII9244
 	HDMI_SETUP_LUT(1920x1080p60_16_9);
-	#endif
+#endif
 	HDMI_SETUP_LUT(720x576p50_4_3);
 	HDMI_SETUP_LUT(720x576p50_16_9);
 	HDMI_SETUP_LUT(1280x720p50_16_9);
 	HDMI_SETUP_LUT(1440x576i50_4_3);
 	HDMI_SETUP_LUT(1440x576i50_16_9);
-	#ifndef CONFIG_HUAWEI_MHL_SII9244
+#ifndef CONFIG_HUAWEI_MHL_SII9244
 	HDMI_SETUP_LUT(1920x1080p50_16_9);
-	#endif
+#endif
 	HDMI_SETUP_LUT(1920x1080p24_16_9);
 	HDMI_SETUP_LUT(1920x1080p25_16_9);
 	HDMI_SETUP_LUT(1920x1080p30_16_9);
@@ -1265,12 +1265,12 @@ static int check_hdmi_features(void)
 
 static boolean hdmi_msm_has_hdcp(void)
 {
-    /* RAW_FEAT_CONFIG_ROW0_LSB, HDCP_DISABLE */
-    #ifndef MHL_CERTIFICATE
+	/* RAW_FEAT_CONFIG_ROW0_LSB, HDCP_DISABLE */
+#ifndef MHL_CERTIFICATE
 	return (inpdw(QFPROM_BASE + 0x0238) & 0x00400000) ? FALSE : TRUE;
-    #else
+#else
        return FALSE;
-    #endif
+#endif
 }
 
 static boolean hdmi_msm_is_power_on(void)
@@ -2968,7 +2968,7 @@ static void hdmi_msm_hdcp_enable(void)
 		return;
 	}
 
-       msleep(200);
+	msleep(200);
 
 	mutex_lock(&hdmi_msm_state_mutex);
 	hdmi_msm_state->hdcp_activating = TRUE;
@@ -3651,15 +3651,13 @@ static uint8 hdmi_msm_avi_iframe_lut[][16] = {
 	 0x10,	0x10,	0x10,	0x10,	0x10, 0x10, 0x10}, /*00*/
 	{0x18,	0x18,	0x28,	0x28,	0x28,	 0x28,	0x28,	0x28,	0x28,
 	 0x28,	0x28,	0x28,	0x28,	0x18, 0x28, 0x18}, /*01*/
-	 
-       #ifndef MHL_CERTIFICATE
+#ifndef MHL_CERTIFICATE
 	{0x00,	0x04,	0x04,	0x04,	0x04,	 0x04,	0x04,	0x04,	0x04,
 	 0x04,	0x04,	0x04,	0x04,	0x88, 0x00, 0x04}, /*02*/
-       #else
+#else
 	{0x04,	0x04,	0x04,	0x04,	0x04,	 0x04,	0x04,	0x04,	0x04,
 	 0x04,	0x04,	0x04,	0x04,	0x88, 0x04, 0x04}, /*02*/
-       #endif
-       
+#endif
 	{0x02,	0x06,	0x11,	0x15,	0x04,	 0x13,	0x10,	0x05,	0x1F,
 	 0x14,	0x20,	0x22,	0x21,	0x01, 0x03, 0x11}, /*03*/
 	{0x00,	0x01,	0x00,	0x01,	0x00,	 0x00,	0x00,	0x00,	0x00,
@@ -3691,12 +3689,12 @@ static void hdmi_msm_avi_info_frame(void)
 	uint32 regVal;
 	int i;
 	int mode = 0;
-       /* yuanqiang add for MHL certification; begin */
-       #ifdef MHL_CERTIFICATE
+	/* yuanqiang add for MHL certification; begin */
+#ifdef MHL_CERTIFICATE
 	extern uint8_t VIDEO_CAPABILITY_D_BLOCK_found;
-       #endif
-       /* yuanqiang add for MHL certification; end */
-       
+#endif
+	/* yuanqiang add for MHL certification; end */
+
 	switch (external_common_state->video_resolution) {
 	case HDMI_VFRMT_720x480p60_4_3:
 		mode = 0;
@@ -3764,23 +3762,20 @@ static void hdmi_msm_avi_info_frame(void)
 	/* Data Byte 02: C1 C0 M1 M0 R3 R2 R1 R0 */
 	aviInfoFrame[4]  = hdmi_msm_avi_iframe_lut[1][mode];
 	/* Data Byte 03: ITC EC2 EC1 EC0 Q1 Q0 SC1 SC0 */
-    
-      /* yuanqiang add for MHL certification; begin */
-      #ifndef MHL_CERTIFICATE
+
+	/* yuanqiang add for MHL certification; begin */
+#ifndef MHL_CERTIFICATE
 	aviInfoFrame[5]  = hdmi_msm_avi_iframe_lut[2][mode];
-      #else
-	if(VIDEO_CAPABILITY_D_BLOCK_found)
-       {
+#else
+	if(VIDEO_CAPABILITY_D_BLOCK_found) {
 		aviInfoFrame[5]  = (hdmi_msm_avi_iframe_lut[2][mode]&0xF3)|0x04; 
 		DEV_DBG("VIDEO_CAPABILITY_D_BLOCK_found = true, limited range\n");
+	} else {
+		aviInfoFrame[5]  = hdmi_msm_avi_iframe_lut[2][mode]&0xF3;  
+		DEV_DBG("VIDEO_CAPABILITY_D_BLOCK_found= false. defult range\n");
 	}
-	else
-       {
-    	      aviInfoFrame[5]  = hdmi_msm_avi_iframe_lut[2][mode]&0xF3;  
-	      DEV_DBG("VIDEO_CAPABILITY_D_BLOCK_found= false. defult range\n");
-	 }
-       #endif
-       /* yuanqiang add for MHL certification; end */
+#endif
+	/* yuanqiang add for MHL certification; end */
 
 	/* Data Byte 04: 0 VIC6 VIC5 VIC4 VIC3 VIC2 VIC1 VIC0 */
 	aviInfoFrame[6]  = hdmi_msm_avi_iframe_lut[3][mode];
@@ -4567,7 +4562,6 @@ static int __init hdmi_msm_init(void)
 	int rc;
 	if(!is_hdmi_exist())
 		return -ENODEV;  //x00174118
-	
 
 	if (cpu_is_msm8930())
 		return 0;

@@ -10,7 +10,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/gpio.h>
@@ -176,9 +175,9 @@ static void msm8960_ext_spk_power_amp_on(u32 spk)
 				"turned on. spk = 0x%08x\n", __func__, spk);
 			return;
 		}
-		
+
 		//msm8960_ext_bottom_spk_pamp |= spk;
-             
+
 		if ((msm8960_ext_bottom_spk_pamp & BOTTOM_SPK_AMP_POS) &&
 			(msm8960_ext_bottom_spk_pamp & BOTTOM_SPK_AMP_NEG)) {
 
@@ -422,18 +421,16 @@ static const struct snd_soc_dapm_route common_audio_map[] = {
 
 	{"RX_BIAS", NULL, "MCLK"},
 	{"LDO_H", NULL, "MCLK"},
-		
-	
+
 	#if 0   
 	/* Speaker path */
 	{"Ext Spk Bottom Pos", NULL, "LINEOUT1"},
 	{"Ext Spk Bottom Neg", NULL, "LINEOUT3"},
 
- 
 	{"Ext Spk Top Pos", NULL, "LINEOUT2"},
 	{"Ext Spk Top Neg", NULL, "LINEOUT4"},
 	#endif
-	
+
 	/* Speaker path */ 
 	{"Ext Spk Bottom Pos", NULL, "LINEOUT1"}, 
 	{"Ext Spk Bottom Neg", NULL, "LINEOUT2"}, 
@@ -456,8 +453,10 @@ static const struct snd_soc_dapm_route common_audio_map[] = {
 	 */
 	{"AMIC3", NULL, "MIC BIAS3 Internal1"},
 	{"MIC BIAS3 Internal1", NULL, "ANCRight Headset Mic"},
+
 	{"AMIC4", NULL, "MIC BIAS4 External"},
 	{"MIC BIAS4 External", NULL, "ANCLeft Headset Mic"},
+
 	{"HEADPHONE", NULL, "LDO_H"},
 
 	/**
@@ -739,8 +738,9 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_sync(dapm);
 
 	err = snd_soc_jack_new(codec, "Headset Jack",
-		(SND_JACK_HEADSET | SND_JACK_OC_HPHL | SND_JACK_OC_HPHR|SND_JACK_HEADPHONE_MONO),
-		&hs_jack);
+			       (SND_JACK_HEADSET | SND_JACK_OC_HPHL |
+				SND_JACK_OC_HPHR|SND_JACK_HEADPHONE_MONO),
+			       &hs_jack);
 	if (err) {
 		pr_err("failed to create new jack\n");
 		return err;

@@ -817,8 +817,8 @@ static struct msm_gpiomux_config msm8960_sdcc2_configs[] __initdata = {
 		.settings = {
 			[GPIOMUX_ACTIVE]    = &sdcc2_clk_actv_cfg,
 			[GPIOMUX_SUSPENDED] = &sdcc2_suspend_cfg,
-                },
-        },
+		},
+	},
 };
 #endif
 
@@ -829,8 +829,8 @@ static struct gpiomux_setting apds990x_gpio_active_cfg = {
 	.drv = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_UP,
 };
-static struct gpiomux_setting apds990x_gpio_suspend_cfg = {
 
+static struct gpiomux_setting apds990x_gpio_suspend_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_UP,
@@ -856,31 +856,25 @@ int hw_gpio_init(void)
 
     pGpioCfgTbl = get_gpio_config_table();
 
-    if(NULL == pGpioCfgTbl)
-    {
+    if(NULL == pGpioCfgTbl) {
        pr_err(KERN_ERR "get gpio config table failed\n"); 
        return -EFAULT;
     }
 
-    for(i = 0; i < NR_GPIO_IRQS; i++)
-    {         
+    for(i = 0; i < NR_GPIO_IRQS; i++) {         
         /* get the gpio active config and suspend config from the config excel */
         if((pGpioCfgTbl + i)->init_func != NOSET   \
-            || (pGpioCfgTbl + i)->sleep_func != NOSET)
-        {
+            || (pGpioCfgTbl + i)->sleep_func != NOSET) {
             msm8960_gpio_configs[config_index].gpio = (pGpioCfgTbl + i)->gpio_number;
-    
-            if((pGpioCfgTbl + i)->init_func != NOSET)
-            {         
+
+            if((pGpioCfgTbl + i)->init_func != NOSET) {         
                 msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE] = \
                     kmalloc(sizeof(*msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE]),\
                             GFP_KERNEL);
+                memset(msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE],
+                    0,sizeof(*msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE]));
 
-		   memset(msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE],
-				0,sizeof(*msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE]));
-
-                if (!(msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE]))
-                {
+                if (!(msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE])) {
                     pr_err(KERN_ERR "failed to malloc memory for gpio config.\n");
                     goto gpio_configs_free;
                 }                                   
@@ -888,35 +882,28 @@ int hw_gpio_init(void)
                 msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE]->func = \
                     (pGpioCfgTbl + i)->init_func;
 
-                if((pGpioCfgTbl + i)->init_dir!= NOSET)
-                {
+                if((pGpioCfgTbl + i)->init_dir!= NOSET) {
                     msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE]->dir = \
                         (pGpioCfgTbl + i)->init_dir;
                 }
-
-                if((pGpioCfgTbl + i)->init_drv != NOSET)
-                {
+                if((pGpioCfgTbl + i)->init_drv != NOSET) {
                     msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE]->drv = \
                         (pGpioCfgTbl + i)->init_drv;
                 }
-
-                if((pGpioCfgTbl + i)->init_pull != NOSET)
-                {
+                if((pGpioCfgTbl + i)->init_pull != NOSET) {
                     msm8960_gpio_configs[config_index].settings[GPIOMUX_ACTIVE]->pull = \
                         (pGpioCfgTbl + i)->init_pull;
                 }
             }
 
-            if((pGpioCfgTbl + i)->sleep_func != NOSET)
-            { 
+            if((pGpioCfgTbl + i)->sleep_func != NOSET) { 
                 msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED] = \
                     kmalloc(sizeof(*msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED]),\
                             GFP_KERNEL);
-		   memset(msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED],
-				0,sizeof(*msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED]));
+                memset(msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED],
+                    0,sizeof(*msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED]));
 
-                if (!msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED])
-                {
+                if (!msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED]) {
                     pr_err(KERN_ERR "failed to malloc memory for gpio config.\n");
                     goto gpio_configs_free;
                 }
@@ -924,27 +911,21 @@ int hw_gpio_init(void)
                 msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED]->func = \
                     (pGpioCfgTbl + i)->sleep_func;
 
-                if((pGpioCfgTbl + i)->sleep_dir != NOSET)
-                {
+                if((pGpioCfgTbl + i)->sleep_dir != NOSET) {
                     msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED]->dir = \
                         (pGpioCfgTbl + i)->sleep_dir;
                 }
-
-                if((pGpioCfgTbl + i)->sleep_drv != NOSET)
-                {
+                if((pGpioCfgTbl + i)->sleep_drv != NOSET) {
                     msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED]->drv = \
                         (pGpioCfgTbl + i)->sleep_drv;
                 }
-
-                if((pGpioCfgTbl + i)->sleep_pull != NOSET)
-                {
+                if((pGpioCfgTbl + i)->sleep_pull != NOSET) {
                     msm8960_gpio_configs[config_index].settings[GPIOMUX_SUSPENDED]->pull = \
                         (pGpioCfgTbl + i)->sleep_pull;
                 }
             }
-
             config_index++;
-        }    
+        }
     }
 
     /* gpio config for active status and suspend status. */
@@ -956,19 +937,15 @@ int hw_gpio_init(void)
 
 gpio_configs_free:
     /* free memory */
-    for(i = 0; i < NR_GPIO_IRQS; i++)
-    {
-        if(msm8960_gpio_configs[i].settings[GPIOMUX_ACTIVE] != NULL)
-        {
-           kfree(msm8960_gpio_configs[i].settings[GPIOMUX_ACTIVE]); 
+    for(i = 0; i < NR_GPIO_IRQS; i++) {
+        if(msm8960_gpio_configs[i].settings[GPIOMUX_ACTIVE] != NULL) {
+           kfree(msm8960_gpio_configs[i].settings[GPIOMUX_ACTIVE]);
         }
 
-        if(msm8960_gpio_configs[i].settings[GPIOMUX_SUSPENDED] != NULL)
-        {
-           kfree(msm8960_gpio_configs[i].settings[GPIOMUX_SUSPENDED]); 
-        } 
+        if(msm8960_gpio_configs[i].settings[GPIOMUX_SUSPENDED] != NULL) {
+           kfree(msm8960_gpio_configs[i].settings[GPIOMUX_SUSPENDED]);
+        }
     }
-
     return 0;
 }
 #endif

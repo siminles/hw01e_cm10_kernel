@@ -438,13 +438,13 @@ int32_t msm_camera_flash_set_led_state(
 		break;
 
 	case MSM_CAMERA_FLASH_SRC_EXT:
-		#ifdef CONFIG_HUAWEI_LEDS_TPS61310 
+#ifdef CONFIG_HUAWEI_LEDS_TPS61310 
 		rc = msm_camera_flash_ext_ps61310(led_state);
-		#else
+#else
 		rc = msm_camera_flash_external(
 			&fdata->flash_src->_fsrc.ext_driver_src,
 			led_state);
-		#endif
+#endif
 		break;
 
 	default:

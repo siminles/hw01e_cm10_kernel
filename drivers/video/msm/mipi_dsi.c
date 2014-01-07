@@ -71,8 +71,7 @@ static int mipi_video_panel_dsi_mdp_reinit(struct msm_fb_data_type *mfd)
     int ret = 0;
 
     ret = mipi_dsi_clk_reinit(&mfd->panel_info);
-    if (ret)
-    {
+    if (ret) {
        printk("%s: mipi_dsi_clk_reinit failed!\n", __func__);
     }
 
@@ -94,8 +93,7 @@ int mipi_video_restore_default_fps(void)
     mfd->panel_info.mipi.frame_rate = panel_data->panel_info.mipi.frame_rate;
 
     ret = mipi_video_panel_dsi_mdp_reinit(mfd);
-    if (ret)
-    {
+    if (ret) {
        printk("%s: mipi_video_toshiba_720p_panel_dsi_mdp_reinit failed!\n", __func__);
     }
     pr_debug("set frame rate to %d fps\n",mfd->panel_info.mipi.frame_rate);
@@ -113,8 +111,7 @@ int mipi_video_set_low_fps(int frame_rate)
     mfd->panel_info.mipi.frame_rate = frame_rate;
 
     ret = mipi_video_panel_dsi_mdp_reinit(mfd);
-    if (ret)
-    {
+    if (ret) {
        printk("%s: mipi_video_toshiba_720p_panel_dsi_mdp_reinit failed!\n", __func__);
     }
     pr_debug("set frame rate to %d fps\n",mfd->panel_info.mipi.frame_rate);
@@ -159,28 +156,28 @@ static ssize_t framerate_store(struct device *pdev,
 static DEVICE_ATTR(frame_rate, 0664, framerate_show, framerate_store);
 
 static struct attribute *msm_fb_attrs[] = {
-        &dev_attr_frame_rate.attr,
-        NULL,
+    &dev_attr_frame_rate.attr,
+    NULL,
 };
 static struct attribute_group msm_fb_attr_group = {
-        .attrs = msm_fb_attrs,
+    .attrs = msm_fb_attrs,
 };
 
 static int msm_fb_create_sysfs(struct platform_device *pdev)
 {
-        int rc;
-        struct msm_fb_data_type *mfd = platform_get_drvdata(pdev);
+    int rc;
+    struct msm_fb_data_type *mfd = platform_get_drvdata(pdev);
 
-        rc = sysfs_create_group(&mfd->fbi->dev->kobj, &msm_fb_attr_group);
-        if (rc)
-                MSM_FB_ERR("%s: sysfs group creation failed, rc=%d\n", __func__,
-                        rc);
-        return rc;
+    rc = sysfs_create_group(&mfd->fbi->dev->kobj, &msm_fb_attr_group);
+    if (rc)
+        MSM_FB_ERR("%s: sysfs group creation failed, rc=%d\n", __func__,
+                rc);
+    return rc;
 }
 static void msm_fb_remove_sysfs(struct platform_device *pdev)
 {
-        struct msm_fb_data_type *mfd = platform_get_drvdata(pdev);
-        sysfs_remove_group(&mfd->fbi->dev->kobj, &msm_fb_attr_group);
+    struct msm_fb_data_type *mfd = platform_get_drvdata(pdev);
+    sysfs_remove_group(&mfd->fbi->dev->kobj, &msm_fb_attr_group);
 }
 
 static int mipi_dsi_off(struct platform_device *pdev)
@@ -235,7 +232,7 @@ static int mipi_dsi_off(struct platform_device *pdev)
 	}
 
 	ret = panel_next_off(pdev);
-       MIPI_OUTP(MIPI_DSI_BASE + 0x00A8, 0x1f<<0);
+	MIPI_OUTP(MIPI_DSI_BASE + 0x00A8, 0x1f<<0);
 	mdelay(1);
 #ifdef CONFIG_MSM_BUS_SCALING
 	mdp_bus_scale_update_request(0);
@@ -376,9 +373,9 @@ static int mipi_dsi_on(struct platform_device *pdev)
 	}
 
 	mipi_dsi_host_init(mipi);
-       MIPI_OUTP(MIPI_DSI_BASE + 0x00A8, (0x1f<<8) );
-       mdelay(1);
-       MIPI_OUTP(MIPI_DSI_BASE + 0x00A8, 0 );
+	MIPI_OUTP(MIPI_DSI_BASE + 0x00A8, (0x1f<<8) );
+	mdelay(1);
+	MIPI_OUTP(MIPI_DSI_BASE + 0x00A8, 0 );
 	if (mipi->force_clk_lane_hs) {
 		u32 tmp;
 
@@ -474,21 +471,18 @@ static int mipi_dsi_clk_reinit(struct msm_panel_info *pinfo)
 	uint8 lanes = 0, bpp;
 	uint32 h_period, v_period, dsi_pclk_rate;
 
-    if (!mipi_dsi_resource_initialized)
-    {
+    if (!mipi_dsi_resource_initialized) {
         printk("%s mipi_dsi_resource_initialized=0\n",__func__);
         return -EPERM;
     }
 
 	mfd = platform_get_drvdata(local_pdev);
 
-    if (!mfd)
-    {
+    if (!mfd) {
         printk("%s local mfd=0\n",__func__);
         return -ENODEV;
     }
-    if (mfd->key != MFD_KEY)
-    {
+    if (mfd->key != MFD_KEY) {
         printk("%s MFD_KEY\n",__func__);
         return -EINVAL;
     }
@@ -497,8 +491,7 @@ static int mipi_dsi_clk_reinit(struct msm_panel_info *pinfo)
      */
     mdp_dev = mfd->pdev;
 
-    if (!mdp_dev)
-    {
+    if (!mdp_dev) {
         printk("%s mdp_dev=0\n",__func__);
         return -ENOMEM;
     }
@@ -568,8 +561,7 @@ static int mipi_dsi_clk_reinit(struct msm_panel_info *pinfo)
 	pll_divider_config.clk_rate = pinfo->clk_rate;
 
 	rc = mipi_dsi_clk_div_config(bpp, lanes, &dsi_pclk_rate);
-	if (rc)
-	{
+	if (rc) {
 		printk("%s mipi_dsi_clk_div_config failed for the clk_rate %d\n",
 			__func__, pll_divider_config.clk_rate);
 	}
@@ -840,7 +832,7 @@ static int mipi_dsi_remove(struct platform_device *pdev)
 	struct msm_fb_data_type *mfd;
 
 	mfd = platform_get_drvdata(pdev);
-        msm_fb_remove_sysfs(pdev);
+	msm_fb_remove_sysfs(pdev);
 
 	iounmap(mipi_dsi_base);
 	return 0;

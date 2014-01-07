@@ -68,7 +68,7 @@ static void dsi_clock_tout(unsigned long data)
 			mdp4_overlay_dsi_state_set(ST_DSI_CLK_OFF);
 		}
 	}
-       spin_unlock(&dsi_clk_lock);
+	spin_unlock(&dsi_clk_lock);
 }
 
 static __u32 msm_fb_line_length(__u32 fb_index, __u32 xres, int bpp)
@@ -229,7 +229,7 @@ void mdp4_overlay_update_dsi_cmd(struct msm_fb_data_type *mfd)
 
 	wmb();
 /* suggestion from qualcomm,fix bug: cmd mipi panel can't bright up */
-        udelay(500);
+	udelay(500);
 }
 
 /* 3D side by side */

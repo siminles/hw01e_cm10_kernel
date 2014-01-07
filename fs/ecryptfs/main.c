@@ -176,7 +176,7 @@ enum { ecryptfs_opt_sig, ecryptfs_opt_ecryptfs_sig,
        ecryptfs_opt_fn_cipher, ecryptfs_opt_fn_cipher_key_bytes,
        ecryptfs_opt_unlink_sigs, ecryptfs_opt_mount_auth_tok_only,
        ecryptfs_opt_check_dev_ruid,
-	ecryptfs_opt_force_write_passthrough,
+       ecryptfs_opt_force_write_passthrough,
        ecryptfs_opt_err };
 
 static const match_table_t tokens = {

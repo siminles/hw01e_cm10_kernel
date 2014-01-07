@@ -521,12 +521,6 @@ _kgsl_sharedmem_page_alloc(struct kgsl_memdesc *memdesc,
 
        if ((kgsl_driver.stats.vmalloc > CONFIG_MSM_KGSL_VM_THRESHOLD) ||
                (allocated_pagetables >= KGSL_PAGETABLE_THRESHOLD)) {
-/*
-              printk(KERN_ALERT "kgsl: vmalloc=%x, ptcnt=%d, map=%lx\n",
-                       kgsl_driver.stats.vmalloc,
-                       allocated_pagetables,
-                       *kgsl_driver.ptpool.bitmap);
-*/
                if (kgsl_shrink != (void *)0)
                        (*kgsl_shrink)(allocated_pagetables < KGSL_PAGETABLE_THRESHOLD,
                                        CONFIG_MSM_KGSL_VM_RSS_THRESHOLD);

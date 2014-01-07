@@ -319,8 +319,7 @@ static int mmc_blk_ioctl_cmd(struct block_device *bdev,
 	}
 
 	card = md->queue.card;
-      if(NULL == card)
-      {
+      if(NULL == card) {
           err = -EINVAL;
           goto cmd_done;
       }
@@ -1139,6 +1138,7 @@ static struct mmc_blk_data *mmc_blk_alloc_req(struct mmc_card *card,
 {
 	struct mmc_blk_data *md;
 	int devidx, ret;
+
 	devidx = find_first_zero_bit(dev_use, max_devices);
 	if (devidx >= max_devices)
 		return ERR_PTR(-ENOSPC);
@@ -1207,10 +1207,10 @@ static struct mmc_blk_data *mmc_blk_alloc_req(struct mmc_card *card,
 	 * should use the block device creation/destruction hotplug
 	 * messages to tell when the card is present.
 	 */
+
 	snprintf(md->disk->disk_name, sizeof(md->disk->disk_name),
 		 "mmcblk%d%s", md->name_idx, subname ? subname : "");
-	if(mmc_card_sd(card) && mmc_card_ext_capacity(card))
-	{
+	if(mmc_card_sd(card) && mmc_card_ext_capacity(card)) {
 		strcat(md->disk->disk_name, "sdxc");
 	}
 

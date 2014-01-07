@@ -138,7 +138,6 @@ extern struct pm8921_bms_battery_data  palladium_1500_data;
 extern struct pm8921_bms_battery_data  desay_5200_data;
 extern struct pm8921_bms_battery_data  palladium_1930_data;
 extern struct pm8921_bms_battery_data  palladium_1650_data;
-
 /**
  * pm8921_bms_get_vsense_avg - return the voltage across the sense
  *				resitor in microvolts

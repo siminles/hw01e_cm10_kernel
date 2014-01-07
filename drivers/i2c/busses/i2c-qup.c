@@ -781,7 +781,7 @@ qup_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
 		if (dev->gsbi) {
 			if(to_platform_device(dev->dev)->id == GSBI5_ID) {
 				writel_relaxed(0x6 << 4, dev->gsbi);
-			}else
+			} else
 				writel_relaxed(0x2 << 4, dev->gsbi);
 			/* GSBI memory is not in the same 1K region as other
 			 * QUP registers. mb() here ensures that the GSBI
@@ -1469,6 +1469,7 @@ qup_i2c_init_driver(void)
 	return platform_driver_register(&qup_i2c_driver);
 }
 arch_initcall_sync(qup_i2c_init_driver);
+
 static void __exit qup_i2c_exit_driver(void)
 {
 	platform_driver_unregister(&qup_i2c_driver);

@@ -137,11 +137,11 @@ static struct device_attribute power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(voltage_min),
 	POWER_SUPPLY_ATTR(voltage_max_design),
 	POWER_SUPPLY_ATTR(voltage_min_design),
-	#ifndef CONFIG_HUAWEI_KERNEL
+#ifndef CONFIG_HUAWEI_KERNEL
 	POWER_SUPPLY_ATTR(voltage_now),
-	#else
+#else
     POWER_SUPPLY_ATTR(batt_vol),
-    #endif
+#endif
 	POWER_SUPPLY_ATTR(voltage_avg),
 	POWER_SUPPLY_ATTR(current_max),
 	POWER_SUPPLY_ATTR(current_now),
@@ -164,8 +164,6 @@ static struct device_attribute power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(capacity),
 	POWER_SUPPLY_ATTR(capacity_rm),
 	POWER_SUPPLY_ATTR(capacity_fcc),
-	//POWER_SUPPLY_ATTR(firmware_version),
-    //POWER_SUPPLY_ATTR(firmware_check),
 	POWER_SUPPLY_ATTR(pa_therm),
 	POWER_SUPPLY_ATTR(capacity_level),
 	POWER_SUPPLY_ATTR(temp),

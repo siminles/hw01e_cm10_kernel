@@ -120,7 +120,7 @@ static void leds_panel_pwm_cfg(void)
 static void led_kp_set(struct pm8xxx_led_data *led, enum led_brightness value)
 {
     /* for button-backlight */
-    #if 0
+#if 0
 	int rc;
 	u8 level;
 
@@ -135,60 +135,53 @@ static void led_kp_set(struct pm8xxx_led_data *led, enum led_brightness value)
 	if (rc < 0)
 		dev_err(led->cdev.dev,
 			"can't set keypad backlight level rc=%d\n", rc);
-    #endif
+#endif
     struct pm8xxx_mpp_config_data  mpp_config_data;
     unsigned    nmpp;
     int ret = 0;
-    if(bl_lpm)
-    {
-    			int max_brightness = get_leds_max_brightness();
-			if(-1 == max_brightness)
-			{
-				max_brightness = 15;
-			}
-			pr_info("%s, max brightness: %d.\n",__func__, max_brightness);
-			if(value > max_brightness)
-			{
-				value = max_brightness;
-			}
+    if(bl_lpm) {
+		int max_brightness = get_leds_max_brightness();
+		if(-1 == max_brightness) {
+            max_brightness = 15;
+		}
+		pr_info("%s, max brightness: %d.\n",__func__, max_brightness);
+		if(value > max_brightness) {
+            value = max_brightness;
+		}
 
-			ret = pwm_config(bl_lpm, LEDS_PWM_DUTY_LEVEL *
-				value, LEDS_PWM_PERIOD_USEC);
-			if (ret) {
-				pr_err("pwm_config on lpm failed %d\n", ret);
-				return;
-			}
-			if (value) {
-				ret = pwm_enable(bl_lpm);
-				if (ret)
-					pr_err("pwm enable/disable on lpm failed"
+		ret = pwm_config(bl_lpm, LEDS_PWM_DUTY_LEVEL *
+            value, LEDS_PWM_PERIOD_USEC);
+		if (ret) {
+            pr_err("pwm_config on lpm failed %d\n", ret);
+            return;
+		}
+		if (value) {
+            ret = pwm_enable(bl_lpm);
+            if (ret)
+				pr_err("pwm enable/disable on lpm failed"
 						"for bl %d\n",	value);
-			} else {
-				pwm_disable(bl_lpm);
-			}
-    }
-    else
-   {
-		    if(value > PM8XXX_MPP_CS_OUT_40MA)
-				value = PM8XXX_MPP_CS_OUT_40MA;
-		    mpp_config_data.type =  PM8XXX_MPP_TYPE_SINK;
-		    mpp_config_data.level = PM8XXX_MPP_CS_OUT_5MA;
-		    if(value == 0)
-		    {
-		        mpp_config_data.control = PM8XXX_MPP_CS_CTRL_MPP_HIGH_EN;
-		    }
-		    else
-		    {
-		        mpp_config_data.control = PM8XXX_MPP_CS_CTRL_MPP_LOW_EN;
-		    }
+		} else {
+            pwm_disable(bl_lpm);
+		}
+    } else {
+		if(value > PM8XXX_MPP_CS_OUT_40MA)
+            value = PM8XXX_MPP_CS_OUT_40MA;
+		mpp_config_data.type =  PM8XXX_MPP_TYPE_SINK;
+		mpp_config_data.level = PM8XXX_MPP_CS_OUT_5MA;
+		if(value == 0) {
+            mpp_config_data.control = PM8XXX_MPP_CS_CTRL_MPP_HIGH_EN;
+		} else {
+            mpp_config_data.control = PM8XXX_MPP_CS_CTRL_MPP_LOW_EN;
+		}
 
-		    #ifdef CONFIG_HUAWEI_KERNEL
-		    nmpp = led->cdev.gpio;
-		    #endif
+#ifdef CONFIG_HUAWEI_KERNEL
+		nmpp = led->cdev.gpio;
+#endif
 
-		    pm8xxx_mpp_config(nmpp, &mpp_config_data);
+		pm8xxx_mpp_config(nmpp, &mpp_config_data);
     }
 }
+
 static void led_lc_set(struct pm8xxx_led_data *led, enum led_brightness value)
 {
 	int rc, offset;
@@ -202,16 +195,11 @@ static void led_lc_set(struct pm8xxx_led_data *led, enum led_brightness value)
 	led->reg &= ~PM8XXX_DRV_LED_CTRL_MASK;
 	led->reg |= level;
 
-	if(!strcmp(led->cdev.name,"red"))
-	{
+	if(!strcmp(led->cdev.name,"red")) {
 		led->reg |= PM8XXX_LED_MODE_PWM3;
-	}
-	else if(!strcmp(led->cdev.name,"green"))
-	{
+	} else if(!strcmp(led->cdev.name,"green")) {
 		led->reg |= PM8XXX_LED_MODE_PWM2;
-	}
-	else if(!strcmp(led->cdev.name,"blue"))
-	{
+	} else if(!strcmp(led->cdev.name,"blue")) {
 		led->reg |= PM8XXX_LED_MODE_PWM1;
 	}
 	rc = pm8xxx_writeb(led->dev->parent, SSBI_REG_ADDR_LED_CTRL(offset),
@@ -317,13 +305,10 @@ static void pm8xxx_led_set(struct led_classdev *led_cdev,
 		dev_err(led->cdev.dev, "Invalid brightness value exceeds");
 		return;
 	}
-	if(!strcmp(led->cdev.name,"red") || !strcmp(led->cdev.name,"blue"))
-	{
+	if(!strcmp(led->cdev.name,"red") || !strcmp(led->cdev.name,"blue")) {
 		if(value)
 			value = 3;
-	}
-	else if(!strcmp(led->cdev.name,"green"))
-	{
+	} else if(!strcmp(led->cdev.name,"green")) {
 		if(value)
 			value = 1;
 	}
@@ -461,6 +446,7 @@ static int pm8xxx_led_pwm_configure(struct pm8xxx_led_data *led)
 
 	return rc;
 }
+
 static ssize_t led_grpfreq_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -484,6 +470,7 @@ static ssize_t led_grpfreq_store(struct device *dev,
 	return size;
 }
 DEVICE_ATTR(grpfreq,0644,led_grpfreq_show,led_grpfreq_store);
+
 static ssize_t led_pwm_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -509,6 +496,7 @@ static ssize_t led_pwm_store(struct device *dev,
 	return size;
 }
 DEVICE_ATTR(grppwm,0644,led_pwm_show,led_pwm_store);
+
 static ssize_t led_blink_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -518,6 +506,7 @@ static ssize_t led_blink_show(struct device *dev,
 
 	return snprintf(buf, 50, "%u\n", led_blink);
 }
+
 static ssize_t led_blink_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
@@ -527,21 +516,19 @@ static ssize_t led_blink_store(struct device *dev,
 	ret = strict_strtol(buf, 10, &state);
 	if (ret < 0)
 		return ret;
-	if(state)
-	{
+	if(state) {
 		if(led->pwm_period_us == 0)
 			led->pwm_period_us = PM8XXX_LED_PWM_PERIOD;
 		if (led->on_time == 0)
 			led->on_time = led->pwm_period_us;
 		pm8xxx_led_pwm_work(led);
-	}
-	 else
-	{
+	} else {
 		pwm_disable(led->pwm_dev);
 	}
 	return size;
 }
 DEVICE_ATTR(blink,0644,led_blink_show,led_blink_store);
+
 static struct attribute *led_attributes[] =
 {
 	&dev_attr_grpfreq.attr,
@@ -549,9 +536,11 @@ static struct attribute *led_attributes[] =
 	&dev_attr_blink.attr,
 	NULL,
 };
+
 static const struct attribute_group led_attr_group = {
     .attrs = led_attributes,
 };
+
 static int __devinit pm8xxx_led_probe(struct platform_device *pdev)
 {
 	const struct pm8xxx_led_platform_data *pdata = pdev->dev.platform_data;
@@ -579,19 +568,17 @@ static int __devinit pm8xxx_led_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to alloc memory\n");
 		return -ENOMEM;
 	}
-	if(is_leds_ctl_pwm())
-	{
+	if(is_leds_ctl_pwm()) {
 		 bl_lpm = pwm_request(0,"backlight");
 		  if (bl_lpm == NULL || IS_ERR(bl_lpm)) {
 			  printk("%s pwm_request() failed\n", __func__);
 			  bl_lpm = NULL;
 		  }
 		  else
-		          leds_panel_pwm_cfg();
+			  leds_panel_pwm_cfg();
 	}
 
 	for (i = 0; i < pcore_data->num_leds; i++) {
-
         if( (is_leds_ctl_tca6507()) && (0 == i))
             continue;
         
@@ -615,9 +602,9 @@ static int __devinit pm8xxx_led_probe(struct platform_device *pdev)
 		led_dat->cdev.name		= curr_led->name;
 		led_dat->cdev.default_trigger   = curr_led->default_trigger;
             /* for button-backlight */
-            #ifdef CONFIG_HUAWEI_KERNEL
-            led_dat->cdev.gpio = curr_led->gpio;
-            #endif
+#ifdef CONFIG_HUAWEI_KERNEL
+		led_dat->cdev.gpio = curr_led->gpio;
+#endif
 		led_dat->cdev.brightness_set    = pm8xxx_led_set;
 		led_dat->cdev.brightness_get    = pm8xxx_led_get;
 		led_dat->cdev.brightness	= LED_OFF;
@@ -659,9 +646,8 @@ static int __devinit pm8xxx_led_probe(struct platform_device *pdev)
 		} else {
 			__pm8xxx_led_work(led_dat, LED_OFF);
 		}
-		 rc = sysfs_create_group(&led_dat->cdev.dev->kobj, &led_attr_group);
-		if (rc)
-		{
+		rc = sysfs_create_group(&led_dat->cdev.dev->kobj, &led_attr_group);
+		if (rc) {
 			goto fail_id_check;
 		}
 	}
@@ -703,6 +689,7 @@ static int __devexit pm8xxx_led_remove(struct platform_device *pdev)
 
 	return 0;
 }
+
 static struct platform_driver pm8xxx_led_driver = {
 	.probe		= pm8xxx_led_probe,
 	.remove		= __devexit_p(pm8xxx_led_remove),

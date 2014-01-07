@@ -11,8 +11,6 @@
  *
  */
 
-
-
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
@@ -232,12 +230,10 @@ void arch_reset(char mode, const char *cmd)
 		} else if(!strncmp(cmd, "sdupdate", 8)) {
 			__raw_writel(0x77665528, restart_reason);
 		} else if(!strncmp(cmd, "usbupdate", 9)){
-		 __raw_writel(0x77665523, restart_reason);
-                /*} else if(!strncmp(cmd, "hwrddebug_recovery", 18)){
-			__raw_writel(0x77665521, restart_reason);*/
+			__raw_writel(0x77665523, restart_reason);
 		} else if(!strncmp(cmd, "blown_secboot_fuse", 18)) {
-		       __raw_writel(0xF4C3D2C1, dload_mode_addr);
-		       mb();
+			__raw_writel(0xF4C3D2C1, dload_mode_addr);
+			mb();
 #endif
 		} else if (!strncmp(cmd, "oem-", 4)) {
 			unsigned long code;
@@ -279,7 +275,6 @@ static int __init msm_restart_init(void)
 	msm_tmr0_base = msm_timer_get_timer0_base();
 	restart_reason = MSM_IMEM_BASE + RESTART_REASON_ADDR;
 	pm_power_off = msm_power_off;
-
 #ifdef CONFIG_HUAWEI_KERNEL
 	restart_flag_addr = MSM_IMEM_BASE  + RESTART_FLAG_ADDR;
 #endif

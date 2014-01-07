@@ -534,9 +534,9 @@ static struct msm_camera_sensor_info msm_camera_sensor_imx074_data = {
 	.sensor_platform_info = &sensor_board_info_imx074,
 	.csi_if	= 1,
 	.camera_type = BACK_CAMERA_2D,
-	#ifdef CONFIG_IMX074_ACT
+#ifdef CONFIG_IMX074_ACT
 	.actuator_info = &imx074_actuator_info
-	#endif
+#endif
 };
 #endif
 
@@ -814,9 +814,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_s5k3h2_liteon_data = {
 };
 #endif
 
-
-
-
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K3H2Y_SEMCO_ACT
 static struct i2c_board_info s5k3h2y_semco_actuator_i2c_info = {	
     I2C_BOARD_INFO("s5k3h2_semco_act", 0x16),
@@ -857,10 +854,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_s5k3h2_semco_data = {
 };
 #endif
 
-
-
-
-
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9P017_SUNNY_ACT
 static struct i2c_board_info mt9p017_actuator_i2c_info = {	
     I2C_BOARD_INFO("mt9p017_act", 0x6C >> 1),
@@ -900,7 +893,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_mt9p017_data = {
 };
 #endif
 
-
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX_LITEON_ACT
 static struct i2c_board_info s5k4e1gx_actuator_i2c_info = {	
     I2C_BOARD_INFO("s5k4e1gx_act", 0x18 >> 1 ),
@@ -913,9 +905,6 @@ static struct msm_actuator_info s5k4e1gx_actuator_info = {
     .vcm_enable     = 1,
 };
 #endif
-
-
-
 
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX
 static struct msm_camera_sensor_flash_data flash_s5k4e1gx_8960 = {
@@ -944,9 +933,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_s5k4e1gx_8960_data = {
 };
 #endif
 
-
-
-
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX_SEMCO_ACT
 static struct i2c_board_info s5k4e1gx_semco_actuator_i2c_info = {	
     I2C_BOARD_INFO("s5k4e1gx_semco_act", 0x18 >> 1 ),
@@ -959,7 +945,6 @@ static struct msm_actuator_info s5k4e1gx_semco_actuator_info = {
     .vcm_enable     = 1,
 };
 #endif
-
 
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX_SEMCO
 static struct msm_camera_sensor_flash_data flash_s5k4e1gx_semco = {
@@ -1028,7 +1013,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_ov5647_sunny_data = {
 };
 #endif
 
-
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_SUNNY
 static struct msm_camera_sensor_flash_data flash_mt9m114 = {
 	.flash_type	= MSM_CAMERA_FLASH_NONE,
@@ -1049,7 +1033,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_mt9m114_data = {
 };
 #endif
 
-
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_BYD
 static struct msm_camera_sensor_flash_data flash_mt9m114_byd = {
 	.flash_type	= MSM_CAMERA_FLASH_NONE,
@@ -1069,7 +1052,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_mt9m114_byd_data = {
 	.camera_type = FRONT_CAMERA_2D,
 };
 #endif
-
 
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_TRULY 
 static struct msm_camera_sensor_flash_data flash_mt9m114_truly = {
@@ -1113,16 +1095,14 @@ static struct msm_camera_sensor_info msm_camera_sensor_mt9v113_8960_data = {
 
 void __init msm8960_init_cam(void)
 {
-    //#ifndef CONFIG_HUAWEI_KERNEL
 	msm_gpiomux_install(msm8960_cam_common_configs,
 			ARRAY_SIZE(msm8960_cam_common_configs));
-	//#endif
 
 	if (machine_is_msm8960_cdp()) {
-		#ifndef CONFIG_HUAWEI_KERNEL
+#ifndef CONFIG_HUAWEI_KERNEL
 		msm_gpiomux_install(msm8960_cdp_flash_configs,
 			ARRAY_SIZE(msm8960_cdp_flash_configs));
-		#endif
+#endif
 		
 		#if defined(CONFIG_I2C) && (defined(CONFIG_GPIO_SX150X) || \
 		defined(CONFIG_GPIO_SX150X_MODULE))
@@ -1135,7 +1115,7 @@ void __init msm8960_init_cam(void)
 		#endif
 	}
 
-    #ifndef CONFIG_HUAWEI_KERNEL
+#ifndef CONFIG_HUAWEI_KERNEL
 	if (machine_is_msm8960_liquid()) {
 		struct msm_camera_sensor_info *s_info;
 		s_info = &msm_camera_sensor_imx074_data;
@@ -1144,7 +1124,7 @@ void __init msm8960_init_cam(void)
 		s_info->sensor_platform_info->ext_power_ctrl =
 			msm_camera_8960_ext_power_ctrl;
 	}
-	#endif
+#endif
 
 	platform_device_register(&msm8960_device_csiphy0);
 	platform_device_register(&msm8960_device_csiphy1);
@@ -1190,6 +1170,11 @@ static struct i2c_board_info msm8960_camera_i2c_boardinfo[] = {
 #endif
 };
 
+struct msm_camera_board_info msm8960_camera_board_info = {
+	.board_info = msm8960_camera_i2c_boardinfo,
+	.num_i2c_board_info = ARRAY_SIZE(msm8960_camera_i2c_boardinfo),
+};
+
 static struct i2c_board_info docomo_camera_12m_liteon_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_LITEON
 	{
@@ -1214,7 +1199,6 @@ static struct i2c_board_info docomo_camera_12m_liteon_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
 
 static struct i2c_board_info docomo_camera_12m_liteon_1p3m_byd_i2c_boardinfo[] = {
@@ -1241,9 +1225,7 @@ static struct i2c_board_info docomo_camera_12m_liteon_1p3m_byd_i2c_boardinfo[] =
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
-
 
 static struct i2c_board_info docomo_camera_12m_sunny_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_SUNNY
@@ -1269,9 +1251,7 @@ static struct i2c_board_info docomo_camera_12m_sunny_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
-
 
 static struct i2c_board_info docomo_camera_12m_sunny_1p3m_byd_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_SUNNY
@@ -1297,7 +1277,6 @@ static struct i2c_board_info docomo_camera_12m_sunny_1p3m_byd_i2c_boardinfo[] = 
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
 
 static struct i2c_board_info sbm_camera_i2c_boardinfo[] = {
@@ -1324,9 +1303,7 @@ static struct i2c_board_info sbm_camera_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
-
 
 static struct i2c_board_info sbm_camera_1p3m_byd_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX105_SUNNY
@@ -1352,10 +1329,7 @@ static struct i2c_board_info sbm_camera_1p3m_byd_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
-
-
 
 static struct i2c_board_info u9202l_camera_8m_liteon_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX105_SUNNY
@@ -1387,10 +1361,7 @@ static struct i2c_board_info u9202l_camera_8m_liteon_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
-
-
 
 static struct i2c_board_info u9202l_camera_8m_liteon_1p3m_byd_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX105_SUNNY
@@ -1422,7 +1393,6 @@ static struct i2c_board_info u9202l_camera_8m_liteon_1p3m_byd_i2c_boardinfo[] = 
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
 
 static struct i2c_board_info u9202l_camera_8m_semco_i2c_boardinfo[] = {
@@ -1455,9 +1425,7 @@ static struct i2c_board_info u9202l_camera_8m_semco_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
-
 
 static struct i2c_board_info u9202l_camera_8m_semco_1p3m_byd_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX105_SUNNY
@@ -1489,10 +1457,7 @@ static struct i2c_board_info u9202l_camera_8m_semco_1p3m_byd_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
-
-
 
 static struct i2c_board_info verzion_camera_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9P017_SUNNY
@@ -1518,8 +1483,8 @@ static struct i2c_board_info verzion_camera_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
+
 static struct i2c_board_info c8869l_camera_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9P017_SUNNY
 	{
@@ -1556,10 +1521,7 @@ static struct i2c_board_info c8869l_camera_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
-
-
 
 static struct i2c_board_info c8869l_camera_1p3m_byd_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9P017_SUNNY
@@ -1591,7 +1553,6 @@ static struct i2c_board_info c8869l_camera_1p3m_byd_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
 
 static struct i2c_board_info c8869l_camera_5m_semco_i2c_boardinfo[] = {
@@ -1630,8 +1591,8 @@ static struct i2c_board_info c8869l_camera_5m_semco_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
 };
+
 static struct i2c_board_info c8869l_camera_5m_semco_1p3m_byd_i2c_boardinfo[] = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9P017_SUNNY
 	{
@@ -1651,7 +1612,6 @@ static struct i2c_board_info c8869l_camera_5m_semco_1p3m_byd_i2c_boardinfo[] = {
 	.platform_data = &msm_camera_sensor_ov5647_sunny_data,
 	},
 #endif
-
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_BYD
 	{
 	I2C_BOARD_INFO("mt9m114_byd", 0x48),
@@ -1669,13 +1629,6 @@ static struct i2c_board_info c8869l_camera_5m_semco_1p3m_byd_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tps61310", 0x33),
 	},
 #endif
-
-};
-
-
-struct msm_camera_board_info msm8960_camera_board_info = {
-	.board_info = msm8960_camera_i2c_boardinfo,
-	.num_i2c_board_info = ARRAY_SIZE(msm8960_camera_i2c_boardinfo),
 };
 
 struct msm_camera_board_info docomo_camera_12m_liteon_board_info = {
@@ -1703,12 +1656,10 @@ struct msm_camera_board_info sbm_camera_board_info = {
 	.num_i2c_board_info = ARRAY_SIZE(sbm_camera_i2c_boardinfo),
 };
 
-
 struct msm_camera_board_info sbm_camera_1p3m_byd_board_info = {
 	.board_info = sbm_camera_1p3m_byd_i2c_boardinfo,
 	.num_i2c_board_info = ARRAY_SIZE(sbm_camera_1p3m_byd_i2c_boardinfo),
 };
-
 
 struct msm_camera_board_info u9202l_camera_8m_liteon_board_info = {
 	.board_info = u9202l_camera_8m_liteon_i2c_boardinfo,
@@ -1729,8 +1680,6 @@ struct msm_camera_board_info u9202l_camera_8m_semco_1p3m_byd_board_info = {
 	.board_info = u9202l_camera_8m_semco_1p3m_byd_i2c_boardinfo,
 	.num_i2c_board_info = ARRAY_SIZE(u9202l_camera_8m_semco_1p3m_byd_i2c_boardinfo),
 };
-
-
 
 struct msm_camera_board_info verzion_camera_board_info = {
 	.board_info = verzion_camera_i2c_boardinfo,
@@ -1754,7 +1703,6 @@ struct msm_camera_board_info c8869l_camera_5m_semco_1p3m_byd_board_info = {
 	.board_info = c8869l_camera_5m_semco_1p3m_byd_i2c_boardinfo,
 	.num_i2c_board_info = ARRAY_SIZE(c8869l_camera_5m_semco_1p3m_byd_i2c_boardinfo),
 };
-
 #endif
 #endif
 

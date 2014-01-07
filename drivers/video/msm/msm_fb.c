@@ -313,11 +313,10 @@ static ssize_t msm_fb_msm_lcd_type(struct device *dev,
 	int ret;
 	u32 len;
 	char panel_name[MAX_LCD_PANEL_NAME_LEN]={0};
-        ret = get_lcd_name(panel_name);
-        if(ret == false)
-       {
+	ret = get_lcd_name(panel_name);
+	if(ret == false) {
 		ret = snprintf(buf, MAX_LCD_PANEL_NAME_LEN, "unknown panel\n");
-       }
+	}
 	len = strlen(panel_name);
 	panel_name[len] = '\n';
 	ret = snprintf(buf, MAX_LCD_PANEL_NAME_LEN, panel_name);
@@ -349,6 +348,7 @@ static void msm_fb_remove_sysfs(struct platform_device *pdev)
 	struct msm_fb_data_type *mfd = platform_get_drvdata(pdev);
 	sysfs_remove_group(&mfd->fbi->dev->kobj, &msm_fb_attr_group);
 }
+
 static int msm_fb_probe(struct platform_device *pdev)
 {
 	struct msm_fb_data_type *mfd;
@@ -362,7 +362,8 @@ static int msm_fb_probe(struct platform_device *pdev)
 		fbram_size =
 			pdev->resource[0].end - pdev->resource[0].start + 1;
 		fbram_phys = (char *)pdev->resource[0].start;
-		fbram = __va(fbram_phys);		
+		fbram = __va(fbram_phys);
+
 		if (!fbram) {
 			printk(KERN_ERR "fbram ioremap failed!\n");
 			return -ENOMEM;
@@ -532,20 +533,17 @@ static int msm_fb_suspend_sub(struct msm_fb_data_type *mfd)
 		return 0;
 
 
-	if (mfd->panel_info.mipi.mode == DSI_VIDEO_MODE)	
-	{
-	        cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
-                /* for workder can't be cancelled... */
-                flush_workqueue(mdp_dynamic_frame_rate_wq);		
+	if (mfd->panel_info.mipi.mode == DSI_VIDEO_MODE) {
+		cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
+		/* for workder can't be cancelled... */
+		flush_workqueue(mdp_dynamic_frame_rate_wq);		
 				
-	        if (frame_rate != HIGH) {
-	            frame_rate = HIGH;
-	            mipi_video_restore_default_fps();
+		if (frame_rate != HIGH) {
+			frame_rate = HIGH;
+			mipi_video_restore_default_fps();
 
-		     printk("\n junger 60fps msm_fb_suspend_sub.\n");
-			 
-	        }
-
+			printk("\n junger 60fps msm_fb_suspend_sub.\n");
+		}
 		start_flag  = 1;
 	}
 
@@ -1616,8 +1614,7 @@ static int msm_fb_pan_display(struct fb_var_screeninfo *var,
 	}
 
 	if(mfd->panel.type == MIPI_VIDEO_PANEL){
-		if(fb_update_skip < 3)
-		{
+		if(fb_update_skip < 3) {
 			fb_update_skip++;
 			return 0;
 		}
@@ -3201,8 +3198,7 @@ static int msmfb_handle_pp_ioctl(struct msmfb_mdp_pp *pp_ptr)
 
 static void mdp_dynamic_frame_rate_workqueue_handler(struct work_struct *work)
 {
-	if (frame_rate != LOW)
-	{
+	if (frame_rate != LOW) {
 		frame_rate = LOW;
 		mipi_video_set_low_fps(42);
 		queue_delayed_work(mdp_dynamic_frame_rate_wq,
@@ -3235,23 +3231,20 @@ static unsigned long start_jiffies = 0;
 
 	switch (cmd) {
 #ifdef CONFIG_FB_MSM_OVERLAY
-    case FBIOGET_HWCINFO:
-	  if ((mfd->panel_info.mipi.mode == DSI_VIDEO_MODE)&&(start_flag != 0))
-        {
-            delta_jiffies = jiffies - start_jiffies;
-            //printk("delta_jiffies = %ld\n", delta_jiffies);
-            if (delta_jiffies < 5 )
-            {
-                cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
-
-                /* for workder can't be cancelled... */
-                flush_workqueue(mdp_dynamic_frame_rate_wq);
-                queue_delayed_work(mdp_dynamic_frame_rate_wq,
+	case FBIOGET_HWCINFO:
+		if ((mfd->panel_info.mipi.mode == DSI_VIDEO_MODE)&&(start_flag != 0)) {
+			delta_jiffies = jiffies - start_jiffies;
+			//printk("delta_jiffies = %ld\n", delta_jiffies);
+            if (delta_jiffies < 5 ) {
+				cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
+				/* for workder can't be cancelled... */
+				flush_workqueue(mdp_dynamic_frame_rate_wq);
+				queue_delayed_work(mdp_dynamic_frame_rate_wq,
                                    &mdp_dynamic_frame_rate_worker,
                                     mdp_dynamic_frame_buffer_duration);
-                if (frame_rate != HIGH) {
-                    frame_rate = HIGH;
-                    mipi_video_restore_default_fps();
+				if (frame_rate != HIGH) {
+					frame_rate = HIGH;
+					mipi_video_restore_default_fps();
                 }
             }
             start_jiffies = jiffies;

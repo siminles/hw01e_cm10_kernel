@@ -502,10 +502,8 @@ msm_pm8921_regulator_pdata[] __devinitdata = {
 		0, 2),
 	PM8XXX_NLDO1200(L28, "8921_l28", 0, 1, 1050000, 1050000, 200, "8921_s7",
 		0, 3),
-	/* FSI begin */
 	PM8XXX_LDO(L29,      "8921_l29", 0, 1, 2050000, 2100000, 200, "8921_s8",
 		0, 4),
-	/* FSI end */
 
 	/*	     ID        name      always_on pd en_t supply    reg_ID */
 	PM8XXX_VS300(USB_OTG,  "8921_usb_otg",  0, 1, 0,   "ext_5v", 5),
@@ -538,7 +536,6 @@ msm_rpm_regulator_init_data[] __devinitdata = {
 	RPM_LDO(L14,	 0, 1, 0, 1800000, 1800000, NULL,      0, 0),
 	RPM_LDO(L15,	 0, 1, 0, 1800000, 2950000, NULL,      0, 0),
 	RPM_LDO(L16,	 0, 1, 0, 3000000, 3000000, NULL,      0, 0),
-
 	RPM_LDO(L17,	 0, 1, 0, 1800000, 2950000, NULL,      0, 0),
 	RPM_LDO(L18,	 0, 1, 0, 1300000, 1300000, "8921_s4", 0, 0),
 	RPM_LDO(L21,	 0, 1, 0, 1900000, 1900000, "8921_s8", 0, 0),

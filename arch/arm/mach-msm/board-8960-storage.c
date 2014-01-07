@@ -24,8 +24,6 @@
 #include "board-8960.h"
 #include "board-storage-common-a.h"
 
-
-
 #ifdef CONFIG_HUAWEI_KERNEL
 #include <hsad/config_interface.h>
 #endif
@@ -161,11 +159,13 @@ static struct msm_mmc_pad_pull sdc1_pad_pull_on_cfg[] = {
 	{TLMM_PULL_SDC1_CMD, GPIO_CFG_PULL_UP},
 	{TLMM_PULL_SDC1_DATA, GPIO_CFG_PULL_UP}
 };
+
 static struct msm_mmc_pad_pull sdc1_pad_pull_off_cfg[] = {
 	{TLMM_PULL_SDC1_CLK, GPIO_CFG_NO_PULL},
 	{TLMM_PULL_SDC1_CMD, GPIO_CFG_NO_PULL},
 	{TLMM_PULL_SDC1_DATA, GPIO_CFG_NO_PULL}
 };
+
 /* SDC3 pad data */
 static struct msm_mmc_pad_drv sdc3_pad_drv_on_cfg[] = {
 	{TLMM_HDRV_SDC3_CLK, GPIO_CFG_8MA},
@@ -184,6 +184,7 @@ static struct msm_mmc_pad_pull sdc3_pad_pull_on_cfg[] = {
 	{TLMM_PULL_SDC3_CMD, GPIO_CFG_PULL_UP},
 	{TLMM_PULL_SDC3_DATA, GPIO_CFG_PULL_UP}
 };
+
 static struct msm_mmc_pad_pull sdc3_pad_pull_off_cfg[] = {
 	{TLMM_PULL_SDC3_CLK, GPIO_CFG_NO_PULL},
 	/*
@@ -199,6 +200,7 @@ static struct msm_mmc_pad_pull sdc3_pad_pull_off_cfg[] = {
 	 */
 	{TLMM_PULL_SDC3_DATA, GPIO_CFG_NO_PULL}
 };
+
 #ifdef CONFIG_MMC_MSM_SDC4_SUPPORT
 /* SDC4 pad data */
 static struct msm_mmc_pad_drv sdc4_pad_drv_on_cfg[] = {
@@ -410,13 +412,11 @@ static unsigned int sdc4_sup_clk_rates[] = {
 static struct mmc_platform_data msm8960_sdc4_data = {
 	.ocr_mask       = MMC_VDD_165_195 | MMC_VDD_27_28 | MMC_VDD_28_29, 
 	.mmc_bus_width  = MMC_CAP_4_BIT_DATA,
-	.sup_clk_table	= sdc4_sup_clk_rates,
-	.sup_clk_cnt	= ARRAY_SIZE(sdc4_sup_clk_rates),
-	.pclk_src_dfab	= 1,
-	/* do not need interrupt-polling mechanism */
-	//.sdcc_v4_sup	= true,
-	.vreg_data	= &mmc_slot_vreg_data[SDCC4],
-	.pin_data	= &mmc_slot_pin_data[SDCC4],
+	.sup_clk_table  = sdc4_sup_clk_rates,
+	.sup_clk_cnt    = ARRAY_SIZE(sdc4_sup_clk_rates),
+	.pclk_src_dfab  = 1,
+	.vreg_data      = &mmc_slot_vreg_data[SDCC4],
+	.pin_data       = &mmc_slot_pin_data[SDCC4],
 	.xpc_cap	= 1,
 	.uhs_caps	= (MMC_CAP_UHS_SDR12 | MMC_CAP_UHS_SDR25 |
 			MMC_CAP_UHS_SDR50 | MMC_CAP_UHS_DDR50 |

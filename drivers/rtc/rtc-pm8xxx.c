@@ -381,6 +381,7 @@ static void oem_rtc_reboot(struct work_struct *work)
         sys_sync();
         kernel_restart("oem-rtc");
 }
+
 static irqreturn_t pm8xxx_alarm_trigger(int irq, void *dev_id)
 {
 	struct pm8xxx_rtc *rtc_dd = dev_id;

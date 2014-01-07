@@ -1,5 +1,3 @@
-
-
 /*
  * BCMSDH Function Driver for the native SDIO/MMC driver in the Linux Kernel
  *

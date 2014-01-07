@@ -402,29 +402,29 @@ static inline void file_pos_write(struct file *file, loff_t pos)
 #ifdef CONFIG_DEBUG_READ_WRITE_FILE
 static int print_file_path(struct file *file, char *opt)
 {
-		char *tmp;
-		char *pathname;
-		struct path *path;
+	char *tmp;
+	char *pathname;
+	struct path *path;
 
-		path = &file->f_path;
-		path_get(&file->f_path);
+	path = &file->f_path;
+	path_get(&file->f_path);
 
-		tmp = (char *)__get_free_page(GFP_TEMPORARY);
-		if (!tmp)
-			return -ENOMEM;
+	tmp = (char *)__get_free_page(GFP_TEMPORARY);
+	if (!tmp)
+		return -ENOMEM;
 
-		pathname = d_path(path, tmp, PAGE_SIZE);
-		path_put(path);
+	pathname = d_path(path, tmp, PAGE_SIZE);
+	path_put(path);
 
-		if (IS_ERR(pathname)) {
-			free_page((unsigned long)tmp);
-			return PTR_ERR(pathname);
-		}
-
-		printk("file r/w: %s \"%s\"\n", opt, pathname);
-
+	if (IS_ERR(pathname)) {
 		free_page((unsigned long)tmp);
-		return 0;
+		return PTR_ERR(pathname);
+	}
+
+	printk("file r/w: %s \"%s\"\n", opt, pathname);
+
+	free_page((unsigned long)tmp);
+	return 0;
 }
 #endif
 

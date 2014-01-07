@@ -181,9 +181,9 @@ struct led_info {
 	int		flags;
 
     /* for button-backlight */
-    #ifdef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
     unsigned 	gpio;
-    #endif
+#endif
 };
 
 struct led_platform_data {

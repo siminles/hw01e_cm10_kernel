@@ -726,16 +726,12 @@ static int get_string(struct usb_composite_dev *cdev,
 		if (len > 0)
 		{																	/* ADD for FeliCa */
 			return len;
-		}																	/* ADD for FeliCa */
-		else																/* ADD for FeliCa */
-		{																	/* ADD for FeliCa */
-			if(language == 0)												/* ADD for FeliCa */
-			{																/* ADD for FeliCa */
+		} else {																	/* ADD for FeliCa */
+			if(language == 0) {																/* ADD for FeliCa */
 				language = 0x0409;											/* ADD for FeliCa */
 				len = lookup_string(composite->strings, buf, language, id);	/* ADD for FeliCa */
 			}																/* ADD for FeliCa */
-			if (len > 0)													/* ADD for FeliCa */
-			{																/* ADD for FeliCa */
+			if (len > 0) {																/* ADD for FeliCa */
 				return len;													/* ADD for FeliCa */
 			}																/* ADD for FeliCa */
 		}																	/* ADD for FeliCa */

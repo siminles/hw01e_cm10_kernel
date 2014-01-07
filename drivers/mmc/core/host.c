@@ -1,5 +1,3 @@
-
-
 /*
  *  linux/drivers/mmc/core/host.c
  *
@@ -527,8 +525,6 @@ int mmc_add_host(struct mmc_host *host)
 #ifdef CONFIG_BCMDHD
 	select_sdio_host(host, 1);
 #endif
-
-//printk("shaohua add check host %p \n", host);
 	return 0;
 }
 

@@ -16,7 +16,6 @@
 ** GNU General Public License for more details.
 */
 
-
 #include <linux/module.h>
 #include <linux/file.h>
 #include <linux/fs.h>
@@ -367,10 +366,9 @@ static int ashmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	reclaim memory. Then ashmem_shrink() is called in same thread. It will deadlock at acquiring ashmem_mutex.
 	This change lets ashmem_shrink() return failure if ashmem_mutex is not
 	available instantly. Memory will be reclaimed from other shrinks.*/
-	
-	/* mutex_lock(&ashmem_mutex); */
-	if (!mutex_trylock(&ashmem_mutex))
-	{
+
+	//mutex_lock(&ashmem_mutex);
+	if (!mutex_trylock(&ashmem_mutex)) {
 		printk(KERN_ERR "%s:get ashmem_mutex failed! \n",__func__);
 		return -1;
 	}	

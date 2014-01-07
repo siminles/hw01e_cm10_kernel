@@ -691,6 +691,7 @@ int __init parse_tag_runmode_flag (const struct tag* tags )
     return 0;
 }
 __tagtable(ATAG_RUNMODE_FLAG, parse_tag_runmode_flag);
+
 /* the function interface to check factory/normal mode in kernel */
 bool is_runmode_factory(void)
 {

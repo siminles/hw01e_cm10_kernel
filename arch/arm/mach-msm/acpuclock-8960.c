@@ -1373,31 +1373,31 @@ static struct acpu_level * __init select_freq_plan(void)
 		pvs = (pte_efuse >> 10) & 0x7;
 		if (pvs == 0x7)
 			pvs = (pte_efuse >> 13) & 0x7;
-		
+
 #ifdef CONFIG_HUAWEI_KERNEL
 		switch (pvs) { 
-              case 0x0: 
-              case 0x7: 
-                     pr_info("ACPU PVS: Slow\n"); 
-                     v1 = acpu_freq_tbl_8960_kraitv1_slow; 
-                     v2 = acpu_freq_tbl_8960_kraitv2_slow; 
-                     break; 
-              case 0x1: 
-                     pr_info("ACPU PVS: Nominal\n"); 
-                     v1 = acpu_freq_tbl_8960_kraitv1_slow; 
-                     v2 = acpu_freq_tbl_8960_kraitv2_slow; 
-                     break;
-              case 0x3: 
-                     pr_info("ACPU PVS: Fast\n"); 
-                     v1 = acpu_freq_tbl_8960_kraitv1_nom_fast; 
-                     v2 = acpu_freq_tbl_8960_kraitv2_nom; 
-                     break; 
-              default: 
-                     pr_warn("ACPU PVS: Unknown. Defaulting to slow.\n"); 
-                     v1 = acpu_freq_tbl_8960_kraitv1_nom_fast; 
-                     v2 = acpu_freq_tbl_8960_kraitv2_nom; 
-                     break; 
-              }
+			case 0x0: 
+			case 0x7: 
+				pr_info("ACPU PVS: Slow\n"); 
+				v1 = acpu_freq_tbl_8960_kraitv1_slow; 
+				v2 = acpu_freq_tbl_8960_kraitv2_slow; 
+				break; 
+			case 0x1: 
+				pr_info("ACPU PVS: Nominal\n"); 
+				v1 = acpu_freq_tbl_8960_kraitv1_slow; 
+				v2 = acpu_freq_tbl_8960_kraitv2_slow; 
+				break;
+			case 0x3: 
+				pr_info("ACPU PVS: Fast\n"); 
+				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast; 
+				v2 = acpu_freq_tbl_8960_kraitv2_nom; 
+				break; 
+			default: 
+				pr_warn("ACPU PVS: Unknown. Defaulting to slow.\n"); 
+				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast; 
+				v2 = acpu_freq_tbl_8960_kraitv2_nom; 
+				break; 
+		}
 #else
 		switch (pvs) {
 		case 0x0:
@@ -1427,7 +1427,6 @@ static struct acpu_level * __init select_freq_plan(void)
 			break;
 		}
 #endif
-
 
 		scalable = scalable_8960;
 		if (cpu_is_krait_v1()) {

@@ -11,9 +11,6 @@
  * GNU General Public License for more details.
  *
  */
-
-  
-
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/module.h>
@@ -802,16 +799,13 @@ int32_t pm8xxx_adc_scale_batt_therm(int32_t adc_code,
 
 	get_hw_config("pm/batt_ntc_type", batt_type, BATT_NTC_TYPE_LEN, NULL);
 	is_old_ntc_type = (strncasecmp(batt_type, old_ntc_type, BATT_NTC_TYPE_LEN)==0)? 1:0;
-	if(is_old_ntc_type)
-	{
+	if(is_old_ntc_type) {
 	    return pm8xxx_adc_map_batt_therm(
 			adcmap_btm_threshold_old,
 			ARRAY_SIZE(adcmap_btm_threshold_old),
 			bat_voltage,
 			&adc_chan_result->physical);
-	}
-	else
-    {
+	} else {
 	    return pm8xxx_adc_map_batt_therm(
                 adcmap_btm_threshold_universal,
                 ARRAY_SIZE(adcmap_btm_threshold_universal),
@@ -936,16 +930,13 @@ int32_t pm8xxx_adc_batt_scaler(struct pm8xxx_adc_arb_btm_param *btm_param,
     get_hw_config("pm/batt_ntc_type", batt_type, BATT_NTC_TYPE_LEN, NULL);
 	is_old_ntc_type = (strncasecmp(batt_type, old_ntc_type, BATT_NTC_TYPE_LEN)==0)? 1:0;
 
-	if(is_old_ntc_type)
-	{
+	if(is_old_ntc_type) {
 	    rc = pm8xxx_adc_map_linear(
 		    adcmap_btm_threshold_old,
 		    ARRAY_SIZE(adcmap_btm_threshold_old),
 		    (btm_param->low_thr_temp),
 		    &btm_param->low_thr_voltage);
-	}
-	else
-	{
+	} else {
         rc = pm8xxx_adc_map_linear(
             adcmap_btm_threshold_universal,
             ARRAY_SIZE(adcmap_btm_threshold_universal),
@@ -961,16 +952,13 @@ int32_t pm8xxx_adc_batt_scaler(struct pm8xxx_adc_arb_btm_param *btm_param,
 	btm_param->low_thr_voltage +=
 		chan_properties->adc_graph[ADC_CALIB_RATIOMETRIC].adc_gnd;
 
-	if(is_old_ntc_type)
-	{
+	if(is_old_ntc_type) {
         rc = pm8xxx_adc_map_linear(
             adcmap_btm_threshold_old,
             ARRAY_SIZE(adcmap_btm_threshold_old),
             (btm_param->high_thr_temp),
             &btm_param->high_thr_voltage);
-	}
-	else
-	{
+	} else {
         rc = pm8xxx_adc_map_linear(
             adcmap_btm_threshold_universal,
             ARRAY_SIZE(adcmap_btm_threshold_universal),
