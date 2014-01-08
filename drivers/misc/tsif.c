@@ -274,10 +274,7 @@ static int tsif_gpios_disable(const struct msm_gpio *table, int size)
 	for (i = size-1; i >= 0; i--) {
 		int tmp;
 		g = table + i;
-		printk("%s(%d)\n", __func__, GPIO_PIN(g->gpio_cfg));
-		tmp = gpio_tlmm_config(GPIO_CFG(GPIO_PIN(g->gpio_cfg),
-			0, GPIO_CFG_INPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA),
-			GPIO_CFG_DISABLE);
+		tmp = gpio_tlmm_config(g->gpio_cfg, GPIO_CFG_DISABLE);
 		if (tmp) {
 			pr_err("gpio_tlmm_config(0x%08x, GPIO_CFG_DISABLE)"
 			       " <%s> failed: %d\n",
@@ -301,7 +298,6 @@ static int tsif_gpios_enable(const struct msm_gpio *table, int size)
 	const struct msm_gpio *g;
 	for (i = 0; i < size; i++) {
 		g = table + i;
-		printk("%s(%d)\n", __func__, GPIO_PIN(g->gpio_cfg));
 		rc = gpio_tlmm_config(g->gpio_cfg, GPIO_CFG_ENABLE);
 		if (rc) {
 			pr_err("gpio_tlmm_config(0x%08x, GPIO_CFG_ENABLE)"
@@ -377,7 +373,6 @@ static int tsif_start_hw(struct msm_tsif_device *tsif_device)
 		  tsif_device->base + TSIF_STS_CTL_OFF);
 	wmb();
 	ctl = ioread32(tsif_device->base + TSIF_STS_CTL_OFF);
-	pr_err("tsif %s: end\n", __func__);
 	return (ctl & TSIF_STS_CTL_START) ? 0 : -EFAULT;
 }
 
@@ -441,7 +436,6 @@ static void tsif_stop_hw(struct msm_tsif_device *tsif_device)
 static void tsif_dma_schedule(struct msm_tsif_device *tsif_device)
 {
 	int i, dmwi0, dmwi1, found = 0;
-	pr_err("tsif %s: start %d %d\n", __func__, TSIF_PKTS_IN_CHUNK, TSIF_PKTS_IN_BUF);
 	/* find free entry */
 	for (i = 0; i < 2; i++) {
 		struct tsif_xfer *xfer = &tsif_device->xfer[i];
@@ -465,12 +459,10 @@ static void tsif_dma_schedule(struct msm_tsif_device *tsif_device)
 		if (dmwi1 != tsif_device->ri) {
 			tsif_device->dmwi = dmwi1;
 		} else {
-/* FSI start */
 #ifdef CONFIG_TSIF_DEBUG
 			dev_info(&tsif_device->pdev->dev,
 				 "Overflow detected\n");
 #endif
-/* FSI end */
 		}
 		xfer->wi = tsif_device->dmwi;
 #ifdef CONFIG_TSIF_DEBUG
@@ -482,14 +474,11 @@ static void tsif_dma_schedule(struct msm_tsif_device *tsif_device)
 		dma_coherent_pre_ops();
 		msm_dmov_enqueue_cmd(tsif_device->dma, &xfer->hdr);
 	}
-/* FSI start */
 #ifdef CONFIG_TSIF_DEBUG
 	if (!found)
 		dev_info(&tsif_device->pdev->dev,
 			 "All xfer entries are busy\n");
 #endif
-/* FSI end */
-	pr_err("tsif %s: end\n", __func__);
 }
 
 /**
@@ -604,12 +593,10 @@ static void tsif_dmov_complete_func(struct msm_dmov_cmd *cmd,
 			 * @tsif_stop(), when we are waiting for outstanding
 			 * DMA commands to be flushed.
 			 */
-/* FSI start */
 #ifdef CONFIG_TSIF_DEBUG
 			dev_info(&tsif_device->pdev->dev,
 				 "DMA channel flushed (0x%08x)\n", result);
 #endif
-/* FSI end */
 			if (tsif_device->state == tsif_state_flushing) {
 				if ((!tsif_device->xfer[0].busy) &&
 				    (!tsif_device->xfer[1].busy)) {
@@ -634,7 +621,6 @@ static void tsif_dmov_complete_func(struct msm_dmov_cmd *cmd,
 	 */
 	if (reschedule)
 		tasklet_schedule(&tsif_device->dma_refill);
-	pr_err("tsif %s: end\n", __func__);
 }
 
 /**
@@ -649,7 +635,6 @@ static void tsif_dmov_complete_func(struct msm_dmov_cmd *cmd,
 static void tsif_dma_refill(unsigned long data)
 {
 	struct msm_tsif_device *tsif_device = (struct msm_tsif_device *) data;
-	pr_err("tsif %s\n", __func__);
 	if (tsif_device->state == tsif_state_running)
 		tsif_dma_schedule(tsif_device);
 }
@@ -668,7 +653,7 @@ static void tsif_dma_flush(struct msm_tsif_device *tsif_device)
 		while (tsif_device->xfer[0].busy ||
 		       tsif_device->xfer[1].busy) {
 			msm_dmov_flush(tsif_device->dma, 1);
-			usleep(10000);
+			msleep(10);
 		}
 	}
 	tsif_device->state = tsif_state_stopped;
@@ -771,43 +756,33 @@ static irqreturn_t tsif_irq(int irq, void *dev_id)
 			 TSIF_STS_CTL_OVERFLOW |
 			 TSIF_STS_CTL_LOST_SYNC |
 			 TSIF_STS_CTL_TIMEOUT))) {
-/* FSI start */
 #ifdef CONFIG_TSIF_DEBUG
 		dev_warn(&tsif_device->pdev->dev, "Spurious interrupt\n");
 #endif
-/* FSI end */
 		return IRQ_NONE;
 	}
 	if (sts_ctl & TSIF_STS_CTL_PACK_AVAIL) {
-/* FSI start */
 #ifdef CONFIG_TSIF_DEBUG
 		dev_info(&tsif_device->pdev->dev, "TSIF IRQ: PACK_AVAIL\n");
 #endif
-/* FSI end */
 		tsif_device->stat_rx++;
 	}
 	if (sts_ctl & TSIF_STS_CTL_OVERFLOW) {
-/* FSI start */
 #ifdef CONFIG_TSIF_DEBUG
 		dev_info(&tsif_device->pdev->dev, "TSIF IRQ: OVERFLOW\n");
 #endif
-/* FSI end */
 		tsif_device->stat_overflow++;
 	}
 	if (sts_ctl & TSIF_STS_CTL_LOST_SYNC) {
-/* FSI start */
 #ifdef CONFIG_TSIF_DEBUG
 		dev_info(&tsif_device->pdev->dev, "TSIF IRQ: LOST SYNC\n");
 #endif
-/* FSI end */
 		tsif_device->stat_lost_sync++;
 	}
 	if (sts_ctl & TSIF_STS_CTL_TIMEOUT) {
-/* FSI start */
 #ifdef CONFIG_TSIF_DEBUG
 		dev_info(&tsif_device->pdev->dev, "TSIF IRQ: TIMEOUT\n");
 #endif
-/* FSI end */
 		tsif_device->stat_timeout++;
 	}
 	iowrite32(sts_ctl, tsif_device->base + TSIF_STS_CTL_OFF);
@@ -1098,19 +1073,10 @@ static int action_close(struct msm_tsif_device *tsif_device)
 {
 	dev_info(&tsif_device->pdev->dev, "%s, state %d\n", __func__,
 		 (int)tsif_device->state);
-
-	/* turn off the GPIO's to prevent new data from entering */
-	tsif_stop_gpios(tsif_device);
-
-	/* we unfortunately must sleep here to give the ADM time to
-	 * complete any outstanding reads after the GPIO's are turned
-	 * off.  There is no indication from the ADM hardware that
-	 * there are any outstanding reads on the bus, and if we
-	 * stop the TSIF too quickly, it can cause a bus error.
+	/*
+	 * DMA should be flushed/stopped prior to TSIF hardware stop,
+	 * otherwise "bus error" will be reported by Data Mover
 	 */
-	msleep(250);
-
-	/* now we can stop the core */
 	tsif_stop_hw(tsif_device);
 	tsif_dma_exit(tsif_device);
 	tsif_clock(tsif_device, 0);
@@ -1357,6 +1323,9 @@ static int __devinit msm_tsif_probe(struct platform_device *pdev)
 	}
 	dev_info(&pdev->dev, "remapped phys 0x%08x => virt %p\n",
 		 tsif_device->memres->start, tsif_device->base);
+	rc = tsif_start_gpios(tsif_device);
+	if (rc)
+		goto err_gpio;
 
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
@@ -1406,6 +1375,8 @@ err_attrs:
 	free_irq(tsif_device->irq, tsif_device);
 err_irq:
 	tsif_debugfs_exit(tsif_device);
+	tsif_stop_gpios(tsif_device);
+err_gpio:
 	iounmap(tsif_device->base);
 err_ioremap:
 err_rgn:

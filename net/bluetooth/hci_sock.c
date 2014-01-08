@@ -593,7 +593,7 @@ static int hci_sock_sendmsg(struct kiocb *iocb, struct socket *sock,
 #ifdef CONFIG_WCN_BT
 			err = -EPERM;
 			goto drop;
-#endif /* CONFIG_BCM_BT */
+#endif
 		}
 
 		if (test_bit(HCI_RAW, &hdev->flags) || (ogf == 0x3f)) {

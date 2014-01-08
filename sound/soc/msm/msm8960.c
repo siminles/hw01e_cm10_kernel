@@ -422,21 +422,25 @@ static const struct snd_soc_dapm_route common_audio_map[] = {
 	{"RX_BIAS", NULL, "MCLK"},
 	{"LDO_H", NULL, "MCLK"},
 
-	#if 0   
+#if 0
 	/* Speaker path */
 	{"Ext Spk Bottom Pos", NULL, "LINEOUT1"},
 	{"Ext Spk Bottom Neg", NULL, "LINEOUT3"},
 
 	{"Ext Spk Top Pos", NULL, "LINEOUT2"},
 	{"Ext Spk Top Neg", NULL, "LINEOUT4"},
-	#endif
+
+	/* Microphone path */
+	{"AMIC1", NULL, "MIC BIAS1 Internal1"},
+	{"MIC BIAS1 Internal1", NULL, "Handset Mic"},
+#endif
 
 	/* Speaker path */ 
-	{"Ext Spk Bottom Pos", NULL, "LINEOUT1"}, 
-	{"Ext Spk Bottom Neg", NULL, "LINEOUT2"}, 
+	{"Ext Spk Bottom Pos", NULL, "LINEOUT1"},
+	{"Ext Spk Bottom Neg", NULL, "LINEOUT2"},
 
-	{"Ext Spk Top Pos", NULL, "LINEOUT3"}, 
-	{"Ext Spk Top Neg", NULL, "LINEOUT4"}, 
+	{"Ext Spk Top Pos", NULL, "LINEOUT3"},
+	{"Ext Spk Top Neg", NULL, "LINEOUT4"},
 
 	/* Microphone path */
 	{"AMIC1", NULL, "MIC BIAS4 External"},
@@ -453,6 +457,11 @@ static const struct snd_soc_dapm_route common_audio_map[] = {
 	 */
 	{"AMIC3", NULL, "MIC BIAS3 Internal1"},
 	{"MIC BIAS3 Internal1", NULL, "ANCRight Headset Mic"},
+
+#if 0
+	{"AMIC4", NULL, "MIC BIAS1 Internal2"},
+	{"MIC BIAS1 Internal2", NULL, "ANCLeft Headset Mic"},
+#endif
 
 	{"AMIC4", NULL, "MIC BIAS4 External"},
 	{"MIC BIAS4 External", NULL, "ANCLeft Headset Mic"},

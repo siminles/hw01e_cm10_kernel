@@ -297,10 +297,8 @@ int pm8921_usb_ovp_set_hystersis(enum pm8921_usb_debounce_time ms);
  */
 int pm8921_usb_ovp_disable(int disable);
 int batt_therm_filter(int therm_value);
-/* Add PM8921 SMPS4 control begin */
 int pm8921_set_smps4_pwm(void);
 int pm8921_set_smps4_tcxo_en(void);
-/* Add PM8921 SMPS4 control end */
 #else
 static inline void pm8921_charger_vbus_draw(unsigned int mA)
 {
@@ -370,7 +368,6 @@ static inline int pm8921_usb_ovp_disable(int disable)
 	return -ENXIO;
 }
 
-/* Add PM8921 SMPS4 control begin */
 int pm8921_set_smps4_pwm(void)
 {
 	return -ENXIO;
@@ -380,7 +377,6 @@ int pm8921_set_smps4_tcxo_en(void)
 {
 	return -ENXIO;
 }
-/* Add PM8921 SMPS4 control end */
 #endif
 
 #endif

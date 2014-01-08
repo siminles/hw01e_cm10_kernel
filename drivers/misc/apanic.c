@@ -193,7 +193,7 @@ static int apanic_proc_read(char *buffer, char **start, off_t offset,
 		ctx->mtd->writesize,
 		&len, ctx->bounce);
 
-	//if (page_offset)//hanping
+	//if (page_offset)
 	//	count -= page_offset;
 
 	count = count < (PAGE_SIZE - page_offset) ? count : (PAGE_SIZE - page_offset);
@@ -490,6 +490,7 @@ static int apanic_write_console(struct mtd_info *mtd, unsigned int off)
 	}
 	return idx;
 }
+
 extern int msm_watchdog_suspend(void);
 extern int msm_watchdog_resume(void);
 static int apanic(struct notifier_block *this, unsigned long event,

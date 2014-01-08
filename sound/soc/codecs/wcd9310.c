@@ -70,9 +70,9 @@ enum {
 #define TABLA_MBHC_BUTTON_MIN 0x8000
 
 #define TABLA_MBHC_FAKE_INSERT_LOW 30
-#define TABLA_MBHC_FAKE_INS_LOW_NO_GPIO 100
 #define TABLA_MBHC_FAKE_INSERT_HIGH 80
 #define TABLA_MBHC_FAKE_INS_HIGH_NO_GPIO 200
+#define TABLA_MBHC_FAKE_INS_LOW_NO_GPIO 100
 
 #define TABLA_MBHC_STATUS_REL_DETECTION 0x0C
 
@@ -286,8 +286,6 @@ static unsigned short tx_digital_gain_reg[] = {
 	TABLA_A_CDC_TX9_VOL_CTL_GAIN,
 	TABLA_A_CDC_TX10_VOL_CTL_GAIN,
 };
-
-static struct tabla_priv *snd_soc_tabla = NULL;
 
 static int tabla_codec_enable_charge_pump(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *kcontrol, int event)
@@ -860,16 +858,6 @@ static const char *iir1_inp1_text[] = {
 	"DEC9", "DEC10", "RX1", "RX2", "RX3", "RX4", "RX5", "RX6", "RX7"
 };
 
-static const char *iir1_inp2_text[] = {
-	"ZERO", "DEC1", "DEC2", "DEC3", "DEC4", "DEC5", "DEC6", "DEC7", "DEC8",
-	"DEC9", "DEC10", "RX1", "RX2", "RX3", "RX4", "RX5", "RX6", "RX7"
-};
-
-static const char *iir2_inp1_text[] = {
-	"ZERO", "DEC1", "DEC2", "DEC3", "DEC4", "DEC5", "DEC6", "DEC7", "DEC8",
-	"DEC9", "DEC10", "RX1", "RX2", "RX3", "RX4", "RX5", "RX6", "RX7"
-};
-
 static const struct soc_enum rx_mix1_inp1_chain_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX1_B1_CTL, 0, 12, rx_mix1_text);
 
@@ -894,17 +882,11 @@ static const struct soc_enum rx4_mix1_inp1_chain_enum =
 static const struct soc_enum rx4_mix1_inp2_chain_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX4_B1_CTL, 4, 12, rx_mix1_text);
 
-static const struct soc_enum rx4_mix1_inp3_chain_enum =
-        SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX4_B2_CTL, 0, 12, rx_mix1_text);
-
 static const struct soc_enum rx5_mix1_inp1_chain_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX5_B1_CTL, 0, 12, rx_mix1_text);
 
 static const struct soc_enum rx5_mix1_inp2_chain_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX5_B1_CTL, 4, 12, rx_mix1_text);
-
-static const struct soc_enum rx5_mix1_inp3_chain_enum =
-        SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX5_B2_CTL, 0, 12, rx_mix1_text);
 
 static const struct soc_enum rx6_mix1_inp1_chain_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX6_B1_CTL, 0, 12, rx_mix1_text);
@@ -990,12 +972,6 @@ static const struct soc_enum anc1_fb_mux_enum =
 
 static const struct soc_enum iir1_inp1_mux_enum =
 	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_EQ1_B1_CTL, 0, 18, iir1_inp1_text);
-	
-static const struct soc_enum iir1_inp2_mux_enum =
-	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_EQ1_B2_CTL, 0, 18, iir1_inp2_text);
-
-static const struct soc_enum iir2_inp1_mux_enum =
-	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_EQ2_B1_CTL, 0, 18, iir2_inp1_text);
 
 static const struct snd_kcontrol_new rx_mix1_inp1_mux =
 	SOC_DAPM_ENUM("RX1 MIX1 INP1 Mux", rx_mix1_inp1_chain_enum);
@@ -1021,17 +997,11 @@ static const struct snd_kcontrol_new rx4_mix1_inp1_mux =
 static const struct snd_kcontrol_new rx4_mix1_inp2_mux =
 	SOC_DAPM_ENUM("RX4 MIX1 INP2 Mux", rx4_mix1_inp2_chain_enum);
 
-static const struct snd_kcontrol_new rx4_mix1_inp3_mux =
-        SOC_DAPM_ENUM("RX4 MIX1 INP3 Mux", rx4_mix1_inp3_chain_enum);
-
 static const struct snd_kcontrol_new rx5_mix1_inp1_mux =
 	SOC_DAPM_ENUM("RX5 MIX1 INP1 Mux", rx5_mix1_inp1_chain_enum);
 
 static const struct snd_kcontrol_new rx5_mix1_inp2_mux =
 	SOC_DAPM_ENUM("RX5 MIX1 INP2 Mux", rx5_mix1_inp2_chain_enum);
-
-static const struct snd_kcontrol_new rx5_mix1_inp3_mux =
-        SOC_DAPM_ENUM("RX5 MIX1 INP3 Mux", rx5_mix1_inp3_chain_enum);
 
 static const struct snd_kcontrol_new rx6_mix1_inp1_mux =
 	SOC_DAPM_ENUM("RX6 MIX1 INP1 Mux", rx6_mix1_inp1_chain_enum);
@@ -1107,12 +1077,6 @@ static const struct snd_kcontrol_new dec10_mux =
 static const struct snd_kcontrol_new iir1_inp1_mux =
 	SOC_DAPM_ENUM("IIR1 INP1 Mux", iir1_inp1_mux_enum);
 
-static const struct snd_kcontrol_new iir1_inp2_mux =
-	SOC_DAPM_ENUM("IIR1 INP2 Mux", iir1_inp2_mux_enum);
-
-static const struct snd_kcontrol_new iir2_inp1_mux =
-	SOC_DAPM_ENUM("IIR2 INP1 Mux", iir2_inp1_mux_enum);
-
 static const struct snd_kcontrol_new anc2_mux =
 	SOC_DAPM_ENUM("ANC2 MUX Mux", anc2_mux_enum);
 
@@ -1131,6 +1095,40 @@ static const struct snd_kcontrol_new lineout3_ground_switch =
 
 static const struct snd_kcontrol_new lineout4_ground_switch =
 	SOC_DAPM_SINGLE("Switch", TABLA_A_RX_LINE_4_DAC_CTL, 6, 1, 0);
+
+static const char *iir1_inp2_text[] = {
+	"ZERO", "DEC1", "DEC2", "DEC3", "DEC4", "DEC5", "DEC6", "DEC7", "DEC8",
+	"DEC9", "DEC10", "RX1", "RX2", "RX3", "RX4", "RX5", "RX6", "RX7"
+};
+
+static const char *iir2_inp1_text[] = {
+	"ZERO", "DEC1", "DEC2", "DEC3", "DEC4", "DEC5", "DEC6", "DEC7", "DEC8",
+	"DEC9", "DEC10", "RX1", "RX2", "RX3", "RX4", "RX5", "RX6", "RX7"
+};
+
+static const struct soc_enum rx4_mix1_inp3_chain_enum =
+	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX4_B2_CTL, 0, 12, rx_mix1_text);
+
+static const struct soc_enum rx5_mix1_inp3_chain_enum =
+	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_RX5_B2_CTL, 0, 12, rx_mix1_text);
+	
+static const struct soc_enum iir1_inp2_mux_enum =
+	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_EQ1_B2_CTL, 0, 18, iir1_inp2_text);
+
+static const struct soc_enum iir2_inp1_mux_enum =
+	SOC_ENUM_SINGLE(TABLA_A_CDC_CONN_EQ2_B1_CTL, 0, 18, iir2_inp1_text);
+
+static const struct snd_kcontrol_new rx4_mix1_inp3_mux =
+	SOC_DAPM_ENUM("RX4 MIX1 INP3 Mux", rx4_mix1_inp3_chain_enum);
+
+static const struct snd_kcontrol_new rx5_mix1_inp3_mux =
+	SOC_DAPM_ENUM("RX5 MIX1 INP3 Mux", rx5_mix1_inp3_chain_enum);
+
+static const struct snd_kcontrol_new iir1_inp2_mux =
+	SOC_DAPM_ENUM("IIR1 INP2 Mux", iir1_inp2_mux_enum);
+
+static const struct snd_kcontrol_new iir2_inp1_mux =
+	SOC_DAPM_ENUM("IIR2 INP1 Mux", iir2_inp1_mux_enum);
 
 static void tabla_codec_enable_adc_block(struct snd_soc_codec *codec,
 					 int enable)
@@ -3896,7 +3894,7 @@ static void tabla_codec_report_plug(struct snd_soc_codec *codec, int insertion,
 					 jack_type);
 				tabla_snd_soc_jack_report(tabla,
 						 tabla->mbhc_cfg.button_jack, 0,
-						 SND_JACK_BTN_0);
+						 tabla->buttons_pressed);
 				tabla->buttons_pressed &=
 							~TABLA_JACK_BUTTON_MASK;
 			}
@@ -4137,8 +4135,8 @@ static void btn_lpress_fn(struct work_struct *work)
 				 sta_mv, dce_mv);
 			tabla_snd_soc_jack_report(tabla,
 						  tabla->mbhc_cfg.button_jack,
-						  SND_JACK_BTN_0,
-						  SND_JACK_BTN_0);
+						  tabla->buttons_pressed,
+						  tabla->buttons_pressed);
 		}
 	} else {
 		pr_err("%s: Bad tabla private data\n", __func__);
@@ -4463,6 +4461,7 @@ static bool tabla_mbhc_fw_validate(const struct firmware *fw)
 	return true;
 }
 
+static struct tabla_priv *snd_soc_tabla = NULL;
 void tabla_hs_button_report(int status, int mask)
 {
 	if(NULL != snd_soc_tabla) {
@@ -4737,7 +4736,7 @@ static irqreturn_t tabla_release_handler(int irq, void *data)
 			if (priv->mbhc_cfg.button_jack)
 				tabla_snd_soc_jack_report(priv,
 						  priv->mbhc_cfg.button_jack, 0,
-						  SND_JACK_BTN_0);
+						  priv->buttons_pressed);
 		} else {
 			if (tabla_is_fake_press(priv)) {
 				pr_debug("%s: Fake button press interrupt\n",
@@ -4752,11 +4751,11 @@ static irqreturn_t tabla_release_handler(int irq, void *data)
 						 __func__);
 					tabla_snd_soc_jack_report(priv,
 						     priv->mbhc_cfg.button_jack,
-						     SND_JACK_BTN_0,
-						     SND_JACK_BTN_0);
+						     priv->buttons_pressed,
+						     priv->buttons_pressed);
 					tabla_snd_soc_jack_report(priv,
 						  priv->mbhc_cfg.button_jack, 0,
-						  SND_JACK_BTN_0);
+						  priv->buttons_pressed);
 				}
 			}
 		}

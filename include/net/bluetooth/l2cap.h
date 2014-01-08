@@ -534,7 +534,6 @@ struct l2cap_pinfo {
 
 	__u16		tx_win;
 	__u16		tx_win_max;
-	__u16		ack_win; /*Add a ack parameter*/
 	__u8		max_tx;
 	__u8		amp_pref;
 	__u16		remote_tx_win;
@@ -544,6 +543,7 @@ struct l2cap_pinfo {
 	__u16		monitor_timeout;
 	__u16		remote_mps;
 	__u16		mps;
+	__u16		ack_win; /*Add a ack parameter*/
 
 	__le16		sport;
 

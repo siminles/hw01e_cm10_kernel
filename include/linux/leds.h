@@ -74,7 +74,6 @@ struct led_classdev {
 	struct list_head	 trig_list;
 	void			*trigger_data;
 #endif
-
 /* for button-backlight */
 #ifdef CONFIG_HUAWEI_KERNEL
     unsigned 	gpio;
@@ -179,7 +178,6 @@ struct led_info {
 	const char	*name;
 	const char	*default_trigger;
 	int		flags;
-
     /* for button-backlight */
 #ifdef CONFIG_HUAWEI_KERNEL
     unsigned 	gpio;

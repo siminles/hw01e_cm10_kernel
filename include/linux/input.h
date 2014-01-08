@@ -783,9 +783,7 @@ struct input_keymap_entry {
 #define ABS_MT_TRACKING_ID	0x39	/* Unique ID of initiated contact */
 #define ABS_MT_PRESSURE		0x3a	/* Pressure on contact area */
 #define ABS_MT_DISTANCE		0x3b	/* Contact hover distance */
-/* <BU5D08118 zhangtao 20100419 begin */
 #define ABS_LIGHT            ABS_MISC
-/* BU5D08118 zhangtao 20100419 end> */
 
 #ifdef __KERNEL__
 /* Implementation details, userspace should not care about these */
