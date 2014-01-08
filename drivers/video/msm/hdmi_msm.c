@@ -26,7 +26,8 @@
 #include <mach/clk.h>
 #include <mach/msm_iomap.h>
 #include <mach/socinfo.h>
-#include <hsad/config_interface.h> 
+#include <hsad/config_interface.h>
+
 #include "msm_fb.h"
 #include "hdmi_msm.h"
 
@@ -1269,7 +1270,7 @@ static boolean hdmi_msm_has_hdcp(void)
 #ifndef MHL_CERTIFICATE
 	return (inpdw(QFPROM_BASE + 0x0238) & 0x00400000) ? FALSE : TRUE;
 #else
-       return FALSE;
+	return FALSE;
 #endif
 }
 
@@ -3689,11 +3690,9 @@ static void hdmi_msm_avi_info_frame(void)
 	uint32 regVal;
 	int i;
 	int mode = 0;
-	/* yuanqiang add for MHL certification; begin */
 #ifdef MHL_CERTIFICATE
 	extern uint8_t VIDEO_CAPABILITY_D_BLOCK_found;
 #endif
-	/* yuanqiang add for MHL certification; end */
 
 	switch (external_common_state->video_resolution) {
 	case HDMI_VFRMT_720x480p60_4_3:
@@ -3762,8 +3761,6 @@ static void hdmi_msm_avi_info_frame(void)
 	/* Data Byte 02: C1 C0 M1 M0 R3 R2 R1 R0 */
 	aviInfoFrame[4]  = hdmi_msm_avi_iframe_lut[1][mode];
 	/* Data Byte 03: ITC EC2 EC1 EC0 Q1 Q0 SC1 SC0 */
-
-	/* yuanqiang add for MHL certification; begin */
 #ifndef MHL_CERTIFICATE
 	aviInfoFrame[5]  = hdmi_msm_avi_iframe_lut[2][mode];
 #else
@@ -3775,8 +3772,6 @@ static void hdmi_msm_avi_info_frame(void)
 		DEV_DBG("VIDEO_CAPABILITY_D_BLOCK_found= false. defult range\n");
 	}
 #endif
-	/* yuanqiang add for MHL certification; end */
-
 	/* Data Byte 04: 0 VIC6 VIC5 VIC4 VIC3 VIC2 VIC1 VIC0 */
 	aviInfoFrame[6]  = hdmi_msm_avi_iframe_lut[3][mode];
 	/* Data Byte 05: 0 0 0 0 PR3 PR2 PR1 PR0 */
@@ -4561,7 +4556,7 @@ static int __init hdmi_msm_init(void)
 {
 	int rc;
 	if(!is_hdmi_exist())
-		return -ENODEV;  //x00174118
+		return -ENODEV;
 
 	if (cpu_is_msm8930())
 		return 0;
@@ -4582,11 +4577,11 @@ static int __init hdmi_msm_init(void)
 	}
 
 	external_common_state = &hdmi_msm_state->common;
-	#ifndef CONFIG_HUAWEI_MHL_SII9244
+#ifndef CONFIG_HUAWEI_MHL_SII9244
 	external_common_state->video_resolution = HDMI_VFRMT_1920x1080p60_16_9;
-	#else
+#else
 	external_common_state->video_resolution = HDMI_VFRMT_1920x1080p24_16_9;
-	#endif
+#endif
 #ifdef CONFIG_FB_MSM_HDMI_3D
 	external_common_state->switch_3d = hdmi_msm_switch_3d;
 #endif
@@ -4675,6 +4670,7 @@ static void __exit hdmi_msm_exit(void)
 	platform_device_unregister(&this_device);
 	platform_driver_unregister(&this_driver);
 }
+
 late_initcall(hdmi_msm_init);
 module_exit(hdmi_msm_exit);
 

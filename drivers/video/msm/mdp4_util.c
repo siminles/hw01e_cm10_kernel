@@ -1707,11 +1707,9 @@ void mdp4_dmap_csc_setup(void)
 	mdp4_dmap_csc_post_bv_setup();
 	mdp4_dmap_csc_pre_lv_setup();
 	mdp4_dmap_csc_post_lv_setup();
-//w00182148 add for mdp tuning parameter begin 20120326//
 	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
 	outpdw(MDP_BASE + 0x90070, 0x8);
 	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
-//w00182148 add for mdp tuning parameter end 20120326//
 }
 
 char gc_lut[] = {

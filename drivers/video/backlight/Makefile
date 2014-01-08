@@ -37,6 +37,5 @@ obj-$(CONFIG_BACKLIGHT_ADP8860)	+= adp8860_bl.o
 obj-$(CONFIG_BACKLIGHT_ADP8870)	+= adp8870_bl.o
 obj-$(CONFIG_BACKLIGHT_88PM860X) += 88pm860x_bl.o
 obj-$(CONFIG_BACKLIGHT_PCF50633)	+= pcf50633-backlight.o
-#add lcd_tuning function begin
 obj-$(CONFIG_LCD_TUNING_DEVICE) += lcd_tuning.o
-#add lcd_tuning function end
+

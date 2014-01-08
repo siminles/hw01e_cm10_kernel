@@ -18,11 +18,6 @@
 #include "mipi_dsi.h"
 #include "hdmi_msm.h"
 #include <mach/msm_iomap.h>
-/*
- *ugly workaround for frame rate unstable in video mode
- *to be removed when qualcomm fix this pll algorithm
- */
-#include <hsad/config_interface.h> 
 
 /* HDMI PHY macros */
 #define HDMI_PHY_REG_0                   (0x00000400)

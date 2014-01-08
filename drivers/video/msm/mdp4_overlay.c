@@ -2920,7 +2920,7 @@ int mdp4_overlay_play(struct fb_info *info, struct msmfb_overlay_data *req)
 				mdp4_iommu_attach();
 				mdp4_dsi_cmd_dma_busy_wait(mfd);
 				mdp4_dsi_cmd_kickoff_video(mfd, pipe);
-			/* signal if pan function is waiting for the update completion */
+				/* signal if pan function is waiting for the update completion */
 				if (mfd->pan_waiting) {
 					mfd->pan_waiting = FALSE;
 					complete(&mfd->pan_comp);

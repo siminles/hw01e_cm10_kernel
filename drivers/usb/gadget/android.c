@@ -63,7 +63,6 @@
 #include "f_serial.c"
 #include "f_acm.c"
 #include "f_adb.c"
-#include "f_dtf.c"
 #include "f_ccid.c"
 #include "f_mtp.c"
 #include "f_accessory.c"
@@ -71,6 +70,9 @@
 #include "f_rndis.c"
 #include "rndis.c"
 #include "u_ether.c"
+#ifdef CONFIG_HUAWEI_KERNEL
+#include "f_dtf.c"
+#endif
 
 MODULE_AUTHOR("Mike Lockwood");
 MODULE_DESCRIPTION("Android Composite USB Driver");
@@ -141,8 +143,6 @@ static void android_unbind_config(struct usb_configuration *c);
 static char manufacturer_string[256];
 static char product_string[256];
 static char serial_string[256];
-
-static int suitestate = 0xff;
 
 /* String Table */
 static struct usb_string strings_dev[] = {
@@ -639,6 +639,7 @@ static struct android_usb_function adb_function = {
 	.bind_config	= adb_function_bind_config,
 };
 
+#ifdef CONFIG_HUAWEI_KERNEL
 /* DTF */
 static int dtf_function_init(struct android_usb_function *f, struct usb_composite_dev *cdev)
 {
@@ -661,6 +662,7 @@ static struct android_usb_function dtf_function = {
 	.cleanup	= dtf_function_cleanup,
 	.bind_config	= dtf_function_bind_config,
 };
+#endif
 
 /* CCID */
 static int ccid_function_init(struct android_usb_function *f,
@@ -930,10 +932,12 @@ struct mass_storage_function_config {
 	struct fsg_common *common;
 };
 
+#ifdef CONFIG_HUAWEI_KERNEL
 #define MS_STG_SET_LEN     	(32)
 #define FSG_MAX_LUNS_HUAWEI	(2)
 static char autorun[MS_STG_SET_LEN] = "enable";		/* enable/disable autorun function "enable"/"disable" */
 static char luns[MS_STG_SET_LEN]    = "sdcard";		/* "sdcard"/"cdrom,sdcard"/"cdrom"/"sdcard,cdrom" can be used*/
+#endif
 
 static int mass_storage_function_init(struct android_usb_function *f,
 					struct usb_composite_dev *cdev)
@@ -941,15 +945,19 @@ static int mass_storage_function_init(struct android_usb_function *f,
 	struct mass_storage_function_config *config;
 	struct fsg_common *common;
 	int err;
+#ifdef CONFIG_HUAWEI_KERNEL
 	char *name = NULL;
 	char buf[MS_STG_SET_LEN];
 	char *b = NULL;
 	memset(buf, 0, sizeof(buf));
+#endif
+
 	config = kzalloc(sizeof(struct mass_storage_function_config),
 								GFP_KERNEL);
 	if (!config)
 		return -ENOMEM;
 
+#ifdef CONFIG_HUAWEI_KERNEL
 	strlcpy(buf, luns, sizeof(buf));
 	b = strim(buf);
 	config->fsg.nluns = 0;
@@ -985,6 +993,10 @@ static int mass_storage_function_init(struct android_usb_function *f,
 			break;
 		}
 	}
+#else
+	config->fsg.nluns = 1;
+	config->fsg.luns[0].removable = 1;
+#endif
 
 	common = fsg_common_init(NULL, cdev, &config->fsg);
 	if (IS_ERR(common)) {
@@ -1001,6 +1013,7 @@ static int mass_storage_function_init(struct android_usb_function *f,
 		return err;
 	}
 
+#ifdef CONFIG_HUAWEI_KERNEL
 	if(config->fsg.nluns > 1 ){
 		err = sysfs_create_link(&f->dev->kobj,&common->luns[1].dev.kobj, "lun1");
 		if (err) {
@@ -1009,6 +1022,7 @@ static int mass_storage_function_init(struct android_usb_function *f,
 			return err;
 		}
 	}
+#endif
 
 	config->common = common;
 	f->config = config;
@@ -1052,10 +1066,13 @@ static DEVICE_ATTR(inquiry_string, S_IRUGO | S_IWUSR,
 					mass_storage_inquiry_show,
 					mass_storage_inquiry_store);
 
+#ifdef CONFIG_HUAWEI_KERNEL
+static int suitestate = 0xff;
 static ssize_t suitestate_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
     return sprintf(buf, "%d\n", suitestate);
 }
+
 static ssize_t suitestate_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
     int value;
@@ -1065,7 +1082,6 @@ static ssize_t suitestate_store(struct device *dev, struct device_attribute *att
     }
     return -1;
 }
-
 static DEVICE_ATTR(suitestate, S_IRUGO | S_IWUSR, suitestate_show, suitestate_store);
 
 int get_suitestate(void)
@@ -1086,7 +1102,6 @@ static ssize_t autorun_store(
 		return -EINVAL;
 	}
 	strlcpy(autorun, buff, sizeof(autorun));
-
 	return size;
 }
 
@@ -1107,7 +1122,6 @@ static ssize_t luns_store(
 		return -EINVAL;
 	}
 	strlcpy(luns, buff, sizeof(luns));
-
 	return size;
 }
 
@@ -1116,14 +1130,16 @@ static ssize_t luns_show(struct device *dev,
 {
 	return snprintf(buf, PAGE_SIZE, "%s\n", luns);
 }
-
 static DEVICE_ATTR(luns, S_IWUSR|S_IRUSR, luns_show, luns_store);
+#endif
 
 static struct device_attribute *mass_storage_function_attributes[] = {
 	&dev_attr_inquiry_string,
+#ifdef CONFIG_HUAWEI_KERNEL
 	&dev_attr_suitestate,
 	&dev_attr_autorun,
 	&dev_attr_luns,
+#endif
 	NULL
 };
 
@@ -1184,7 +1200,9 @@ static struct android_usb_function *supported_functions[] = {
 	&rndis_function,
 	&mass_storage_function,
 	&accessory_function,
+#ifdef CONFIG_HUAWEI_KERNEL
 	&dtf_function,
+#endif
 	NULL
 };
 
@@ -1390,11 +1408,13 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 		cdev->desc.bDeviceClass = device_desc.bDeviceClass;
 		cdev->desc.bDeviceSubClass = device_desc.bDeviceSubClass;
 		cdev->desc.bDeviceProtocol = device_desc.bDeviceProtocol;
+#ifdef CONFIG_HUAWEI_KERNEL
 		if(strcmp(serial_string,"cleanup")){
 			cdev->desc.iSerialNumber = device_desc.iSerialNumber;
 		} else {
 			cdev->desc.iSerialNumber = 0;
 		}
+#endif
 		if (usb_add_config(cdev, &android_config_driver,
 							android_bind_config))
 			return size;

@@ -13,16 +13,14 @@ config FB_MSM
 	---help---
 	  Support for MSM Framebuffer.
 
-#wenjuan add for dynamic gamma function begin
 config FB_DYNAMIC_GAMMA 
 	bool "Support for DYNAMIC_GAMMA fuction of U9201L"
 	default y
-#wenjuan add for dynamic gamma function end
-#wenjuan add for cabc function begin
+
 config FB_cabc
 	bool "Support for cabc fuction of U9201L"
 	default y
-#wenjuan add for cabc function end
+
 if FB_MSM
 
 config FB_MSM_BACKLIGHT
@@ -309,8 +307,7 @@ config FB_MSM_MIPI_SIMULATOR_VIDEO
 	bool
 	select FB_MSM_MIPI_DSI_SIMULATOR
 	default n
-	
-#/* add comment for bool;add samsung config */
+
 config HUAWEI_FB_MSM_MIPI_R63306_TOSHIBA_720P_VIDEO_PT
 	bool "toshiba mipi 720p video panel driver"
 	select FB_MSM_MIPI_DSI
@@ -325,10 +322,12 @@ config HUAWEI_FB_MSM_MIPI_R61408_CMI_WVGA_CMD_PT
         bool "cmi r61408 mipi wvga cmd panel driver"
         select FB_MSM_MIPI_DSI
         default n
+
 config HUAWEI_FB_MSM_MIPI_HX8369_TIANMA_WVGA_CMD_PT
         bool "tianma hx8369 mipi wvga cmd panel driver"
         select FB_MSM_MIPI_DSI
         default n
+
 config FB_MSM_OVERLAY0_WRITEBACK
 	depends on FB_MSM_OVERLAY
         bool "MDP overlay0 write back mode enable"

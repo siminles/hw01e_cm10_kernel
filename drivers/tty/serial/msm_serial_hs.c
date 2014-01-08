@@ -1429,7 +1429,7 @@ static irqreturn_t msm_hs_isr(int irq, void *dev)
 
 		if (rx->flush == FLUSH_NONE) {
 			rx->flush = FLUSH_DATA_READY;
-			msm_dmov_flush(msm_uport->dma_rx_channel, 1);
+			msm_dmov_flush(msm_uport->dma_rx_channel);
 		}
 	}
 	/* tx ready interrupt */

@@ -2026,6 +2026,7 @@ static int check_command(struct fsg_common *common, int cmnd_size,
 	return 0;
 }
 
+#ifdef CONFIG_HUAWEI_KERNEL
 int get_suitestate(void);
 static int do_get_suitestate(struct fsg_common *common, struct fsg_buffhd *bh)
 {
@@ -2033,6 +2034,7 @@ static int do_get_suitestate(struct fsg_common *common, struct fsg_buffhd *bh)
     buf[0] = get_suitestate();
     return 1;
 }
+#endif
 
 static int do_scsi_command(struct fsg_common *common)
 {
@@ -2067,11 +2069,13 @@ static int do_scsi_command(struct fsg_common *common)
 			reply = do_inquiry(common, bh);
 		break;
 
+#ifdef CONFIG_HUAWEI_KERNEL
 	case SEEK_6:
 		common->data_size_from_cmnd = 1;
 		if(common->cmnd[1] == 0x01 && common->curlun->cdrom == 1)
 			reply = do_get_suitestate(common, bh);
 		break;
+#endif
 
 	case MODE_SELECT:
 		common->data_size_from_cmnd = common->cmnd[4];

@@ -41,6 +41,7 @@
 #include <linux/leds.h>
 #include <linux/pm_runtime.h>
 #include <hsad/config_interface.h>
+
 #define MSM_FB_C
 #include "msm_fb.h"
 #include "mddihosti.h"
@@ -306,6 +307,7 @@ static ssize_t msm_fb_msm_fb_type(struct device *dev,
 }
 
 static DEVICE_ATTR(msm_fb_type, S_IRUGO, msm_fb_msm_fb_type, NULL);
+
 #define MAX_LCD_PANEL_NAME_LEN  40
 static ssize_t msm_fb_msm_lcd_type(struct device *dev,
 				  struct device_attribute *attr, char *buf)
@@ -323,6 +325,7 @@ static ssize_t msm_fb_msm_lcd_type(struct device *dev,
 	return ret;
 }
 static DEVICE_ATTR(msm_lcd_type, S_IRUGO, msm_fb_msm_lcd_type, NULL);
+
 static struct attribute *msm_fb_attrs[] = {
 	&dev_attr_msm_fb_type.attr,
 	&dev_attr_msm_lcd_type.attr,
@@ -536,8 +539,8 @@ static int msm_fb_suspend_sub(struct msm_fb_data_type *mfd)
 	if (mfd->panel_info.mipi.mode == DSI_VIDEO_MODE) {
 		cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
 		/* for workder can't be cancelled... */
-		flush_workqueue(mdp_dynamic_frame_rate_wq);		
-				
+		flush_workqueue(mdp_dynamic_frame_rate_wq);
+
 		if (frame_rate != HIGH) {
 			frame_rate = HIGH;
 			mipi_video_restore_default_fps();
@@ -1603,6 +1606,7 @@ static int msm_fb_pan_display(struct fb_var_screeninfo *var,
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
 	struct msm_fb_panel_data *pdata;
 	static int fb_update_skip = 0;
+
 	/*
 	 * If framebuffer is 1 or 2, io pen display is not allowed.
 	 */
@@ -3234,7 +3238,6 @@ static unsigned long start_jiffies = 0;
 	case FBIOGET_HWCINFO:
 		if ((mfd->panel_info.mipi.mode == DSI_VIDEO_MODE)&&(start_flag != 0)) {
 			delta_jiffies = jiffies - start_jiffies;
-			//printk("delta_jiffies = %ld\n", delta_jiffies);
             if (delta_jiffies < 5 ) {
 				cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
 				/* for workder can't be cancelled... */

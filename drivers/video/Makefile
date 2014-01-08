@@ -142,7 +142,6 @@ obj-$(CONFIG_FB_NUC900)           += nuc900fb.o
 obj-$(CONFIG_FB_JZ4740)		  += jz4740_fb.o
 obj-$(CONFIG_FB_PUV3_UNIGFX)      += fb-puv3.o
 
-obj-$(CONFIG_HUAWEI_MHL_SII9244)         += hdmi/sii9244/
 # Platform or fallback drivers go here
 obj-$(CONFIG_FB_UVESA)            += uvesafb.o
 obj-$(CONFIG_FB_VESA)             += vesafb.o
@@ -163,4 +162,5 @@ obj-$(CONFIG_FB_VIRTUAL)          += vfb.o
 
 #video output switch sysfs driver
 obj-$(CONFIG_VIDEO_OUTPUT_CONTROL) += output.o
-obj-$(CONFIG_ISDBTUNER)           += mm_tuner/
+obj-$(CONFIG_ISDBTUNER)            += mm_tuner/
+obj-$(CONFIG_HUAWEI_MHL_SII9244)   += hdmi/sii9244/

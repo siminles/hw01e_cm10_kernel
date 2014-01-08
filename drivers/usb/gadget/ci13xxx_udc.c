@@ -65,6 +65,7 @@
 #include <linux/usb/gadget.h>
 #include <linux/usb/otg.h>
 #include <linux/wakelock.h>
+
 #include "ci13xxx_udc.h"
 
 #define NON_STANDARD_CHARGER_TIMER_FREQ		(round_jiffies_relative(msecs_to_jiffies(3000)))
@@ -172,8 +173,6 @@ static struct {
 #define CAP_ENDPTCOMPLETE   (hw_bank.lpm ? 0x0E8UL : 0x07CUL)
 #define CAP_ENDPTCTRL       (hw_bank.lpm ? 0x0ECUL : 0x080UL)
 #define CAP_LAST            (hw_bank.lpm ? 0x12CUL : 0x0C0UL)
-
-static void enum_delay_work_func(struct work_struct *work);
 
 /* maximum number of enpoints: valid only after hw_device_reset() */
 static unsigned hw_ep_max;
@@ -1101,6 +1100,7 @@ static ssize_t show_inters(struct device *dev, struct device_attribute *attr,
 	return n;
 }
 
+static void enum_delay_work_func(struct work_struct *work);
 void ci13xxx_udc_set_enum_flag(void)
 {
 	g_enum_flag = 1;
@@ -2912,7 +2912,6 @@ static int ci13xxx_vbus_session(struct usb_gadget *_gadget, int is_active)
 				hw_device_state(udc->ep0out.qh.dma);
 			ci13xxx_udc_clr_enum_flag();
 			schedule_delayed_work(&udc->enmu_delay_work,NON_STANDARD_CHARGER_TIMER_FREQ);
-
 		} else {
 			hw_device_state(0);
 			_gadget_stop_activity(&udc->gadget);

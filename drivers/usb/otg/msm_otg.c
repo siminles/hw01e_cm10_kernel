@@ -1880,8 +1880,8 @@ static void msm_otg_sm_work(struct work_struct *w)
 				case USB_DCP_CHARGER:
 					/* Enable VDP_SRC */
 					ulpi_write(otg, 0x2, 0x85);
-                    if(ci13xxx_udc_get_enum_count())
-                       ci13xxx_udc_set_enum_count(0);
+					if(ci13xxx_udc_get_enum_count())
+						ci13xxx_udc_set_enum_count(0);
 					msm_otg_notify_charger(motg,
 							IDEV_CHG_MAX);
 					pm_runtime_put_noidle(otg->dev);

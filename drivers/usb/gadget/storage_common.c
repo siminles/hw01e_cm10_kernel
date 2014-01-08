@@ -840,6 +840,7 @@ static ssize_t fsg_store_file(struct device *dev, struct device_attribute *attr,
 
 	/* Load new medium */
 	if (count > 0 && buf[0]) {
+#ifdef CONFIG_HUAWEI_KERNEL
 		pr_info("fsg_store_file: count=%d, buf=%p, curlun=%p\n", count, buf, curlun);
 		if( count>3 && buf!=NULL && 0==memcmp(&buf[count-4], ".iso",4) ){
 			pr_info("buf=%s, buf[count-4]=%s\n", buf, &buf[count-4]);
@@ -857,6 +858,7 @@ static ssize_t fsg_store_file(struct device *dev, struct device_attribute *attr,
 				curlun->nofua = 1;
 			}
 		}
+#endif
 		rc = fsg_lun_open(curlun, buf);
 		if (rc == 0)
 			curlun->unit_attention_data =
