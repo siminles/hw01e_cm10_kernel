@@ -63,7 +63,7 @@ static struct task_struct *lowmem_deathpending;
 static DEFINE_SPINLOCK(lowmem_deathpending_lock);
 #else
 static unsigned long lowmem_deathpending_timeout;
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
+#endif
 
 #define lowmem_print(level, x...)			\
 	do {						\
@@ -89,7 +89,7 @@ static void task_free_fn(struct work_struct *work)
         spin_unlock_irqrestore(&lowmem_deathpending_lock, flags);
 }
 static DECLARE_WORK(task_free_work, task_free_fn);
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
+#endif
 
 static int
 task_notify_func(struct notifier_block *self, unsigned long val, void *data)
@@ -178,7 +178,7 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	if (lowmem_deathpending &&
 	    time_before_eq(jiffies, lowmem_deathpending_timeout))
 		return 0;
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
+#endif
 
 	if (lowmem_adj_size < array_size)
 		array_size = lowmem_adj_size;
@@ -257,7 +257,7 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		rem -= selected_tasksize;
 	    }
 	    spin_unlock_irqrestore(&lowmem_deathpending_lock, flags);
-#else//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
+#else
 
 		lowmem_print(1, "send sigkill to %d (%s), adj %d, size %d\n",
 			     selected->pid, selected->comm,
@@ -269,7 +269,7 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 #endif
 		force_sig(SIGKILL, selected);
 		rem -= selected_tasksize;
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
+#endif
 	}
 	lowmem_print(4, "lowmem_shrink %lu, %x, return %d\n",
 		     sc->nr_to_scan, sc->gfp_mask, rem);
@@ -381,7 +381,7 @@ static void lowmem_vm_shrinker(int largest, int rss_threshold)
 	read_unlock(&tasklist_lock);
 	return;
 }
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
+#endif
 
 static struct shrinker lowmem_shrinker = {
 	.shrink = lowmem_shrink,
@@ -396,7 +396,7 @@ static int __init lowmem_init(void)
 	kgsl_register_shrinker(lowmem_vm_shrinker);
 #else
 	task_free_register(&task_nb);
-#endif//CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
+#endif
 	register_shrinker(&lowmem_shrinker);
 #ifdef CONFIG_MEMORY_HOTPLUG
 	hotplug_memory_notifier(lmk_hotplug_callback, 0);

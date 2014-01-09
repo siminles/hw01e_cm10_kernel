@@ -190,6 +190,7 @@ from_old_alarm_set:
 		}
 		alarm_set_rtc_alarm(new_alarm_time.tv_sec, true);
 		break;
+
 	default:
 		rv = -EINVAL;
 		goto err1;
