@@ -18,8 +18,6 @@
 #include <linux/interrupt.h>	/* request_irq() */
 #include <linux/memory.h>	/* memset */
 
-#include <linux/vmalloc.h>
-
 #include "sps_bam.h"
 #include "bam.h"
 #include "spsi.h"
@@ -905,17 +903,7 @@ int sps_bam_pipe_disconnect(struct sps_bam *dev, u32 pipe_index)
 		dev->pipe_remote_mask &= ~(1UL << pipe_index);
 		bam_pipe_exit(dev->base, pipe_index, dev->props.ee);
 		if (pipe->sys.desc_cache != NULL) {
-            //PATCH for bam error begin 
-			u32 size = pipe->num_descs * sizeof(void *);
-			if (pipe->desc_size + size <= PAGE_SIZE)
-            //PATCH for bam error end 
-
 			kfree(pipe->sys.desc_cache);
-            //PATCH for bam error begin 
-			else
-				vfree(pipe->sys.desc_cache);
-            //PATCH for bam error end 
-
 			pipe->sys.desc_cache = NULL;
 		}
 		dev->pipes[pipe_index] = BAM_PIPE_UNASSIGNED;
@@ -1035,19 +1023,8 @@ int sps_bam_pipe_set_params(struct sps_bam *dev, u32 pipe_index, u32 options)
 	    && (pipe->state & BAM_STATE_BAM2BAM) == 0) {
 		/* Allocate both descriptor cache and user pointer array */
 		size = pipe->num_descs * sizeof(void *);
-        //PATCH for bam error begin
-		if (pipe->desc_size + size <= PAGE_SIZE)
-        //PATCH for bam error end
 		pipe->sys.desc_cache =
 		kzalloc(pipe->desc_size + size, GFP_KERNEL);
-        //PATCH for bam error begin
-		else {
-			pipe->sys.desc_cache =
-				vmalloc(pipe->desc_size + size);
-			memset(pipe->sys.desc_cache, 0, pipe->desc_size + size);
-		}
-        //PATCH for bam error end
-		
 		if (pipe->sys.desc_cache == NULL) {
 			/*** MUST BE LAST POINT OF FAILURE (see below) *****/
 			SPS_ERR("sps:Desc cache error: BAM 0x%x pipe %d: %d",

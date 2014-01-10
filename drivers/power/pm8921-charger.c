@@ -478,20 +478,16 @@ static int pm_chg_get_rt_status(struct pm8921_chg_chip *chip, int irq_id)
 					chip->pmic_chg_irq[irq_id]);
 }
 
-
-
 /* Treat OverVoltage/UnderVoltage as source missing */
 static int is_usb_chg_plugged_in(struct pm8921_chg_chip *chip)
 {
 	return pm_chg_get_rt_status(chip, USBIN_VALID_IRQ);
 }
 
-
 int is_usb_chg_exist(void)
 {
     return is_usb_chg_plugged_in(the_chip);
 }
-
 EXPORT_SYMBOL(is_usb_chg_exist);
 
 /* Treat OverVoltage/UnderVoltage as source missing */
