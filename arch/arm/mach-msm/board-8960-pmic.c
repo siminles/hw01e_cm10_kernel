@@ -167,12 +167,12 @@ void __init msm8960_pm8921_gpio_mpp_init(void)
 		}
 	}
 
-	#ifdef CONFIG_HUAWEI_GPIO_UNITE
+#ifdef CONFIG_HUAWEI_GPIO_UNITE
 	rc = hw_pm8921_gpio_init();
 	if (rc) {
 		pr_err("%s: hw_pm8921_gpio_init: rc=%d\n", __func__, rc);
 	}
-	#endif
+#endif
 }
 
 static struct pm8xxx_adc_amux pm8xxx_adc_channels_data[] = {
@@ -558,6 +558,15 @@ static struct led_info pm8921_led_info[] = {
 	[3] = {
 		.name			= "blue",
 		.default_trigger        = "led_blue",
+	},
+#else
+	[0] = {
+		.name			= "led:battery_charging",
+		.default_trigger	= "battery-charging",
+	},
+	[1] = {
+		.name			= "led:battery_full",
+		.default_trigger	= "battery-full",
 	},
 #endif
 };

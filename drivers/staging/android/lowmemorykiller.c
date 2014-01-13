@@ -104,6 +104,7 @@ task_notify_func(struct notifier_block *self, unsigned long val, void *data)
 	if (task == lowmem_deathpending)
 		lowmem_deathpending = NULL;
 #endif
+
 	return NOTIFY_OK;
 }
 
@@ -258,7 +259,6 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	    }
 	    spin_unlock_irqrestore(&lowmem_deathpending_lock, flags);
 #else
-
 		lowmem_print(1, "send sigkill to %d (%s), adj %d, size %d\n",
 			     selected->pid, selected->comm,
 			     selected_oom_adj, selected_tasksize);
@@ -392,7 +392,6 @@ static int __init lowmem_init(void)
 {
 #ifdef CONFIG_HUAWEI_VM_LOW_MEMORY_KILLER
 	extern void kgsl_register_shrinker(void (*shrink)(int largest, int threshold));
-
 	kgsl_register_shrinker(lowmem_vm_shrinker);
 #else
 	task_free_register(&task_nb);

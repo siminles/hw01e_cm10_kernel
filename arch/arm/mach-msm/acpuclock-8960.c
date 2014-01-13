@@ -518,6 +518,7 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_nom[] = {
 	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(19), 1200000 },
 	{ 0, { 0 } }
 };
+
 #ifndef CONFIG_HUAWEI_KERNEL
 static struct acpu_level acpu_freq_tbl_8960_kraitv2_fast[] = {
 	{ 0, { STBY_KHZ, QSB,   0, 0, 0x00 }, L2(0),   850000 },
@@ -546,6 +547,7 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_fast[] = {
 	{ 0, { 0 } }
 };
 #endif
+
 /* TODO: Update vdd_dig and vdd_mem when voltage data is available. */
 #undef L2
 #define L2(x) (&l2_freq_tbl_8064[(x)])
@@ -1042,6 +1044,7 @@ static unsigned int calculate_vdd_dig(struct acpu_level *tgt)
 
 	return max(tgt->l2_level->vdd_dig, pll_vdd_dig);
 }
+
 #ifdef CONFIG_HUAWEI_KERNEL
 #define BOOST_UV 0
 #else

@@ -1155,6 +1155,7 @@ void mmc_power_off(struct mmc_host *host)
 	host->ios.timing = MMC_TIMING_LEGACY;
 	mmc_set_ios(host);
 	mmc_delay(10);
+
 	mmc_host_clk_release(host);
 }
 

@@ -3765,7 +3765,7 @@ static void hdmi_msm_avi_info_frame(void)
 	aviInfoFrame[5]  = hdmi_msm_avi_iframe_lut[2][mode];
 #else
 	if(VIDEO_CAPABILITY_D_BLOCK_found) {
-		aviInfoFrame[5]  = (hdmi_msm_avi_iframe_lut[2][mode]&0xF3)|0x04; 
+		aviInfoFrame[5]  = (hdmi_msm_avi_iframe_lut[2][mode]&0xF3)|0x04;
 		DEV_DBG("VIDEO_CAPABILITY_D_BLOCK_found = true, limited range\n");
 	} else {
 		aviInfoFrame[5]  = hdmi_msm_avi_iframe_lut[2][mode]&0xF3;  

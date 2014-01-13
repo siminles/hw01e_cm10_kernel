@@ -32,11 +32,11 @@
 #include <mach/msm_memtypes.h>
 #ifdef CONFIG_ISDBTUNER
 #include <mach/dma.h>
-#include <mach/msm_tsif.h>
 #endif
 #include <mach/msm_xo.h>
 #include <sound/msm-dai-q6.h>
 #include <sound/apr_audio.h>
+#include <mach/msm_tsif.h>
 #include "clock.h"
 #include "devices.h"
 #include "devices-msm8x60.h"
@@ -77,6 +77,7 @@
 #define MSM_UART11DM_PHYS	(MSM_GSBI11_PHYS + 0x10000)
 #define MSM_UART12DM_PHYS	(MSM_GSBI12_PHYS + 0x10000)
 #endif
+
 /* GSBI QUP devices */
 #define MSM_GSBI1_QUP_PHYS	(MSM_GSBI1_PHYS + 0x80000)
 #define MSM_GSBI2_QUP_PHYS	(MSM_GSBI2_PHYS + 0x80000)
@@ -1646,13 +1647,6 @@ struct platform_device msm8960_device_qup_i2c_gsbi9 = {
 	.num_resources	= ARRAY_SIZE(resources_qup_i2c_gsbi9),
 	.resource	= resources_qup_i2c_gsbi9,
 };
-/* The temporariness.. */
-#define DMOV_TSIF_CHAN         4
-#define DMOV_TSIF_CRCI        1
-/* The temporariness.. */
-static void tsif_release(struct device *dev)
-{
-}
 
 #define MSM_TSIF0_PHYS       (0x18200000)
 #define MSM_TSIF1_PHYS       (0x18201000)
@@ -1804,7 +1798,6 @@ struct platform_device msm_device_tsif[2] = {
 		.num_resources = ARRAY_SIZE(tsif0_resources),
 		.resource      = tsif0_resources,
 		.dev = {
-			.release       = tsif_release,
 			.platform_data = &tsif0_platform_data
 		},
 	},
@@ -1814,7 +1807,6 @@ struct platform_device msm_device_tsif[2] = {
 		.num_resources = ARRAY_SIZE(tsif1_resources),
 		.resource      = tsif1_resources,
 		.dev = {
-			.release       = tsif_release,
 			.platform_data = &tsif1_platform_data
 		},
 	}
@@ -2779,7 +2771,7 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 			.bus_freq = 0,
 		},
 	},
-	.init_level = 1,
+	.init_level = 0,
 	.num_levels = 5,
 	.set_grp_async = NULL,
 	.idle_timeout = HZ/12,

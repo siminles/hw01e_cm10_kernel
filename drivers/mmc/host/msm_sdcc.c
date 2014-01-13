@@ -56,13 +56,14 @@
 #include <mach/sdio_al.h>
 #include <mach/mpm.h>
 #include <mach/msm_bus.h>
-
-#include "msm_sdcc.h"
-#include "msm_sdcc_dml.h"
+#include <hsad/config_interface.h>
 #ifdef CONFIG_BCMDHD
 #include "../core/mmc_wifi.h"
 #endif
-#include <hsad/config_interface.h>
+
+#include "msm_sdcc.h"
+#include "msm_sdcc_dml.h"
+
 #define DRIVER_NAME "msm-sdcc"
 
 #ifdef CONFIG_HUAWEI_KERNEL
