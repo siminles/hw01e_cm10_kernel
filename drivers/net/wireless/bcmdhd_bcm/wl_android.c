@@ -570,6 +570,7 @@ int wl_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		snprintf(command, 3, "OK");
 		bytes_written = strlen("OK");
 	}
+
 	if (bytes_written >= 0) {
 		if (bytes_written == 0)
 			command[0] = '\0';

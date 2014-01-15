@@ -23,7 +23,6 @@
  *
  * $Id: bcmsdh_sdmmc.c 282820 2011-09-09 15:40:35Z $
  */
-
 #include <typedefs.h>
 
 #include <bcmdevs.h>

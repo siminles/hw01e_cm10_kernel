@@ -16,14 +16,13 @@
  * the license of that module.  An independent module is a module which is not
  * derived from this software.  The special exception does not apply to any
  * modifications of the software.
- *
+ * 
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
  * $Id: wl_cfg80211.c,v 1.1.4.1.2.14 2011/02/09 01:40:07 Exp $
  */
-
 
 #include <typedefs.h>
 #include <linuxver.h>
@@ -67,9 +66,7 @@
 #include <wl_cfg80211.h>
 #include <wl_cfgp2p.h>
 
-
 #define IW_WSEC_ENABLED(wsec)   ((wsec) & (WEP_ENABLED | TKIP_ENABLED | AES_ENABLED))
-
 
 static struct device *cfg80211_parent_dev = NULL;
 //static struct sdio_func *cfg80211_sdio_func;

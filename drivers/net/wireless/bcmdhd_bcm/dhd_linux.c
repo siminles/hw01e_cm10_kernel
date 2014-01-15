@@ -3,13 +3,13 @@
  * Basically selected code segments from usb-cdc.c and usb-rndis.c
  *
  * Copyright (C) 1999-2011, Broadcom Corporation
- *
+ * 
  *         Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
- *
+ * 
  *      As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
@@ -17,7 +17,7 @@
  * the license of that module.  An independent module is a module which is not
  * derived from this software.  The special exception does not apply to any
  * modifications of the software.
- *
+ * 
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
@@ -1382,7 +1382,6 @@ dhd_txflowcontrol(dhd_pub_t *dhdp, int ifidx, bool state)
 	int i;
 
 	DHD_TRACE(("%s: Enter\n", __FUNCTION__));
-
 
 	ASSERT(dhdp);
 	dhd = dhdp->info;
@@ -2966,18 +2965,19 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 	} else {
 #endif /* GET_CUSTOM_MAC_ENABLE */
 		/* Get the default device MAC address directly from firmware */
-	memset(buf, 0, sizeof(buf));
-	bcm_mkiovar("cur_etheraddr", 0, 0, buf, sizeof(buf));
-	if ((ret = dhd_wl_ioctl_cmd(dhd, WLC_GET_VAR, buf, sizeof(buf),
-		FALSE, 0)) < 0) {
-		DHD_ERROR(("%s: can't get MAC address , error=%d\n", __FUNCTION__, ret));
-		return BCME_NOTUP;
-	}
+		memset(buf, 0, sizeof(buf));
+		bcm_mkiovar("cur_etheraddr", 0, 0, buf, sizeof(buf));
+		if ((ret = dhd_wl_ioctl_cmd(dhd, WLC_GET_VAR, buf, sizeof(buf),
+			FALSE, 0)) < 0) {
+			DHD_ERROR(("%s: can't get MAC address , error=%d\n", __FUNCTION__, ret));
+			return BCME_NOTUP;
+		}
 		/* Update public MAC address after reading from Firmware */
 		memcpy(dhd->mac.octet, buf, ETHER_ADDR_LEN);
 #ifdef GET_CUSTOM_MAC_ENABLE
 	}
 #endif /* GET_CUSTOM_MAC_ENABLE */
+
 #ifdef SET_RANDOM_MAC_SOFTAP
 	if (strstr(fw_path, "_apsta") != NULL) {
 		uint rand_mac;
@@ -3784,40 +3784,40 @@ dhd_module_init(void)
 	    wl_android_init();
 
 #ifdef DHDTHREAD
-    	/* Sanity check on the module parameters */
-    	do {
-    		/* Both watchdog and DPC as tasklets are ok */
-    		if ((dhd_watchdog_prio < 0) && (dhd_dpc_prio < 0))
-    			break;
+	/* Sanity check on the module parameters */
+	do {
+		/* Both watchdog and DPC as tasklets are ok */
+		if ((dhd_watchdog_prio < 0) && (dhd_dpc_prio < 0))
+			break;
 
-    		/* If both watchdog and DPC are threads, TX must be deferred */
-    		if ((dhd_watchdog_prio >= 0) && (dhd_dpc_prio >= 0) && dhd_deferred_tx)
-    			break;
+		/* If both watchdog and DPC are threads, TX must be deferred */
+		if ((dhd_watchdog_prio >= 0) && (dhd_dpc_prio >= 0) && dhd_deferred_tx)
+			break;
 
-    		DHD_ERROR(("Invalid module parameters.\n"));
-    		return -EINVAL;
-    	} while (0);
+		DHD_ERROR(("Invalid module parameters.\n"));
+		return -EINVAL;
+	} while (0);
 #endif /* DHDTHREAD */
 
-    	/* Call customer gpio to turn on power with WL_REG_ON signal */
-    	dhd_customer_gpio_wlan_ctrl(WLAN_POWER_ON);
+	/* Call customer gpio to turn on power with WL_REG_ON signal */
+	dhd_customer_gpio_wlan_ctrl(WLAN_POWER_ON);
 
 #if defined(CONFIG_WIFI_CONTROL_FUNC)
-    	if (wl_android_wifictrl_func_add() < 0)
-    		goto fail_1;
+	if (wl_android_wifictrl_func_add() < 0)
+		goto fail_1;
 #endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 		sema_init(&dhd_registration_sem, 0);
 #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) */
-    	error = dhd_bus_register();
+	error = dhd_bus_register();
 
-    	if (!error)
-    		printf("\n%s\n", dhd_version);
-    	else {
-    		DHD_ERROR(("%s: sdio_register_driver failed\n", __FUNCTION__));
-    		goto fail_1;
-    	}
+	if (!error)
+		printf("\n%s\n", dhd_version);
+	else {
+		DHD_ERROR(("%s: sdio_register_driver failed\n", __FUNCTION__));
+		goto fail_1;
+	}
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 		/*
@@ -3825,31 +3825,31 @@ dhd_module_init(void)
 		 * It's needed to make sync up exit from dhd insmod  and
 		 * Kernel MMC sdio device callback registration
 		 */
-	    if (down_timeout(&dhd_registration_sem,  msecs_to_jiffies(DHD_REGISTRATION_TIMEOUT)) != 0) {
-		    error = -EINVAL;
-		    DHD_ERROR(("%s: sdio_register_driver timeout\n", __FUNCTION__));
-		    goto fail_2;
+	if (down_timeout(&dhd_registration_sem,  msecs_to_jiffies(DHD_REGISTRATION_TIMEOUT)) != 0) {
+		error = -EINVAL;
+		DHD_ERROR(("%s: sdio_register_driver timeout\n", __FUNCTION__));
+		goto fail_2;
 		}
 #endif
 #if defined(WL_CFG80211)
-	    error = wl_android_post_init();
+	error = wl_android_post_init();
 #endif
 
 	    printk("%s: turn off sdcc4 clock\n", __FUNCTION__);
 	    msmsdcc_setup_clocks_for_sdcc4(FALSE);
 
-	    return error;
+	return error;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) && 1
 fail_2:
-	    dhd_bus_unregister();
+	dhd_bus_unregister();
 #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) */
 fail_1:
 #if defined(CONFIG_WIFI_CONTROL_FUNC)
-	    wl_android_wifictrl_func_del();
-#endif
+	wl_android_wifictrl_func_del();
+#endif 
 
-	    /* Call customer gpio to turn off power with WL_REG_ON signal */
-	    dhd_customer_gpio_wlan_ctrl(WLAN_POWER_OFF);
+	/* Call customer gpio to turn off power with WL_REG_ON signal */
+	dhd_customer_gpio_wlan_ctrl(WLAN_POWER_OFF);
     }
     
 	return error;
@@ -4842,6 +4842,15 @@ int dhd_os_check_wakelock(void *dhdp)
 	return 0;
 }
 
+int dhd_os_check_if_up(void *dhdp)
+{
+	dhd_pub_t *pub = (dhd_pub_t *)dhdp;
+
+	if (!pub)
+		return 0;
+	return pub->up;
+}
+
 int net_os_wake_unlock(struct net_device *dev)
 {
 	dhd_info_t *dhd = *(dhd_info_t **)netdev_priv(dev);
@@ -4852,14 +4861,6 @@ int net_os_wake_unlock(struct net_device *dev)
 	return ret;
 }
 
-int dhd_os_check_if_up(void *dhdp)
-{
-	dhd_pub_t *pub = (dhd_pub_t *)dhdp;
-
-	if (!pub)
-		return 0;
-	return pub->up;
-}
 int dhd_ioctl_entry_local(struct net_device *net, wl_ioctl_t *ioc, int cmd)
 {
 	int ifidx;
