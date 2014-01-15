@@ -327,7 +327,6 @@ static int mipi_dsi_liquid_panel_power(int on)
 	return 0;
 }
 
-/*use huawei power function*/
 #ifndef CONFIG_HUAWEI_KERNEL
 static int mipi_dsi_cdp_panel_power(int on)
 {
@@ -450,9 +449,8 @@ static int mipi_dsi_cdp_panel_power(int on)
 	}
 	return 0;
 }
-#endif
 
-/*use huawei power function*/
+#else
 static int mipi_dsi_huawei_panel_power(int on)
 {
 	static struct regulator *reg_l2;
@@ -500,8 +498,8 @@ static int mipi_dsi_huawei_panel_power(int on)
 	}
 	return 0;
 }
+#endif
 
-/*use huawei power function*/
 static int mipi_dsi_panel_power(int on)
 {
 	int ret;

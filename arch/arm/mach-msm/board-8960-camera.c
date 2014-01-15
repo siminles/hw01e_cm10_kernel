@@ -94,7 +94,6 @@ static struct gpiomux_setting cam_settings[] = {
 
 };
 
-#ifndef CONFIG_HUAWEI_KERNEL
 static struct msm_gpiomux_config msm8960_cdp_flash_configs[] = {
 	{
 		.gpio = 3,
@@ -104,7 +103,6 @@ static struct msm_gpiomux_config msm8960_cdp_flash_configs[] = {
 		},
 	},
 };
-#endif
 
 #ifdef CONFIG_HUAWEI_KERNEL
 static struct msm_gpiomux_config msm8960_cam_common_configs[] = {
@@ -163,7 +161,6 @@ static struct msm_gpiomux_config msm8960_cam_common_configs[] = {
 };
 #endif
 
-#ifndef CONFIG_HUAWEI_KERNEL
 static struct msm_gpiomux_config msm8960_cam_2d_configs[] = {
 	{
 		.gpio = 18,
@@ -194,7 +191,6 @@ static struct msm_gpiomux_config msm8960_cam_2d_configs[] = {
 		},
 	},
 };
-#endif
 
 #ifdef CONFIG_MSM_CAMERA
 #define VFE_CAMIF_TIMER1_GPIO 2
@@ -435,7 +431,6 @@ static struct msm_camera_device_platform_data msm_camera_csi_device_data[] = {
 	},
 };
 
-#ifndef CONFIG_HUAWEI_KERNEL
 static struct camera_vreg_t msm_8960_back_cam_vreg[] = {
 	{"cam_vdig", REG_LDO, 1200000, 1200000, 105000},
 	{"cam_vio", REG_VS, 0, 0, 0},
@@ -448,7 +443,6 @@ static struct camera_vreg_t msm_8960_front_cam_vreg[] = {
 	{"cam_vana", REG_LDO, 2800000, 2850000, 85600},
 	{"cam_vdig", REG_LDO, 1200000, 1200000, 105000},
 };
-#endif
 
 static struct gpio msm8960_common_cam_gpio[] = {
 	{5, GPIOF_DIR_IN, "CAMIF_MCLK"},
@@ -456,7 +450,6 @@ static struct gpio msm8960_common_cam_gpio[] = {
 	{21, GPIOF_DIR_IN, "CAMIF_I2C_CLK"},
 };
 
-#ifndef CONFIG_HUAWEI_KERNEL
 static struct gpio msm8960_front_cam_gpio[] = {
 	{76, GPIOF_DIR_OUT, "CAM_RESET"},
 };
@@ -496,9 +489,7 @@ static struct msm_camera_gpio_conf msm_8960_back_cam_gpio_conf = {
 	.cam_gpio_set_tbl = msm8960_back_cam_gpio_set_tbl,
 	.cam_gpio_set_tbl_size = ARRAY_SIZE(msm8960_back_cam_gpio_set_tbl),
 };
-#endif
 
-#ifdef CONFIG_IMX074_ACT
 static struct i2c_board_info imx074_actuator_i2c_info = {
 	I2C_BOARD_INFO("imx074_act", 0x11),
 };
@@ -509,9 +500,7 @@ static struct msm_actuator_info imx074_actuator_info = {
 	.vcm_pwd        = 0,
 	.vcm_enable     = 1,
 };
-#endif
 
-#ifdef CONFIG_IMX074
 static struct msm_camera_sensor_flash_data flash_imx074 = {
 	.flash_type	= MSM_CAMERA_FLASH_LED,
 #ifdef CONFIG_MSM_CAMERA_FLASH
@@ -534,11 +523,8 @@ static struct msm_camera_sensor_info msm_camera_sensor_imx074_data = {
 	.sensor_platform_info = &sensor_board_info_imx074,
 	.csi_if	= 1,
 	.camera_type = BACK_CAMERA_2D,
-#ifdef CONFIG_IMX074_ACT
 	.actuator_info = &imx074_actuator_info
-#endif
 };
-#endif
 
 #ifdef CONFIG_MT9M114
 static struct camera_vreg_t msm_8960_mt9m114_vreg[] = {
@@ -569,7 +555,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_mt9m114_data = {
 };
 #endif
 
-#ifdef CONFIG_OV2720
 static struct msm_camera_sensor_flash_data flash_ov2720 = {
 	.flash_type	= MSM_CAMERA_FLASH_NONE,
 };
@@ -589,9 +574,7 @@ static struct msm_camera_sensor_info msm_camera_sensor_ov2720_data = {
 	.csi_if	= 1,
 	.camera_type = FRONT_CAMERA_2D,
 };
-#endif
 
-#ifdef CONFIG_S5K3L1YX
 static struct camera_vreg_t msm_8960_s5k3l1yx_vreg[] = {
 	{"cam_vdig", REG_LDO, 1200000, 1200000, 105000},
 	{"cam_vana", REG_LDO, 2800000, 2850000, 85600},
@@ -618,7 +601,6 @@ static struct msm_camera_sensor_info msm_camera_sensor_s5k3l1yx_data = {
 	.csi_if               = 1,
 	.camera_type          = BACK_CAMERA_2D,
 };
-#endif
 
 #ifndef CONFIG_HUAWEI_KERNEL
 static struct pm8xxx_mpp_config_data privacy_light_on_config = {
@@ -688,9 +670,9 @@ struct msm_camera_sensor_info msm_camera_sensor_imx091_liteon_data = {
 	.sensor_platform_info = &sensor_board_info_imx091_liteon,
 	.csi_if	= 1,
 	.camera_type = BACK_CAMERA_2D,
-	#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_LITEON_ACT
+#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_LITEON_ACT
 	.actuator_info = &imx091_liteon_actuator_info
-	#endif
+#endif
 };
 #endif
 
@@ -800,17 +782,14 @@ void __init msm8960_init_cam(void)
 			ARRAY_SIZE(msm8960_cam_common_configs));
 
 	if (machine_is_msm8960_cdp()) {
-#ifndef CONFIG_HUAWEI_KERNEL
 		msm_gpiomux_install(msm8960_cdp_flash_configs,
 			ARRAY_SIZE(msm8960_cdp_flash_configs));
-#endif
-		
-		#if defined(CONFIG_I2C) && (defined(CONFIG_GPIO_SX150X) || \
-		defined(CONFIG_GPIO_SX150X_MODULE))
 		msm_flash_src._fsrc.ext_driver_src.led_en =
 			GPIO_CAM_GP_LED_EN1;
 		msm_flash_src._fsrc.ext_driver_src.led_flash_en =
 			GPIO_CAM_GP_LED_EN2;
+		#if defined(CONFIG_I2C) && (defined(CONFIG_GPIO_SX150X) || \
+		defined(CONFIG_GPIO_SX150X_MODULE))
 		msm_flash_src._fsrc.ext_driver_src.expander_info =
 			cam_expander_info;
 		#endif
@@ -840,30 +819,24 @@ void __init msm8960_init_cam(void)
 
 #ifdef CONFIG_I2C
 static struct i2c_board_info msm8960_camera_i2c_boardinfo[] = {
-#ifdef CONFIG_IMX074
 	{
 	I2C_BOARD_INFO("imx074", 0x1A),
 	.platform_data = &msm_camera_sensor_imx074_data,
 	},
-#endif
-#ifdef CONFIG_OV2720
 	{
 	I2C_BOARD_INFO("ov2720", 0x6C),
 	.platform_data = &msm_camera_sensor_ov2720_data,
 	},
-#endif
 #ifdef CONFIG_MT9M114
 	{
 	I2C_BOARD_INFO("mt9m114", 0x48),
 	.platform_data = &msm_camera_sensor_mt9m114_data,
 	},
 #endif
-#ifdef CONFIG_S5K3L1YX
 	{
 	I2C_BOARD_INFO("s5k3l1yx", 0x20),
 	.platform_data = &msm_camera_sensor_s5k3l1yx_data,
 	},
-#endif
 #ifdef CONFIG_MSM_CAMERA_FLASH_SC628A
 	{
 	I2C_BOARD_INFO("sc628a", 0x6E),
@@ -1001,4 +974,3 @@ struct msm_camera_board_info docomo_camera_12m_sunny_1p3m_byd_board_info = {
 };
 #endif
 #endif
-

@@ -73,9 +73,7 @@ enum {
 
 #endif
 
-#if defined(CONFIG_GPIO_SX150X) || defined(CONFIG_GPIO_SX150X_MODULE)
 extern struct sx150x_platform_data msm8960_sx150x_data[];
-#endif
 extern struct msm_camera_board_info msm8960_camera_board_info;
 extern unsigned char hdmi_is_primary;
 
