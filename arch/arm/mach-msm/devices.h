@@ -21,10 +21,6 @@
 #include <linux/platform_device.h>
 #include "clock.h"
 
-#ifdef CONFIG_BCM_BT
-#define GSBI11_HIGH_SPEED
-#endif /*end of CONFIG_BCM_BT*/
-
 void __init msm9615_device_init(void);
 void __init msm9615_map_io(void);
 void __init msm_map_msm9615_io(void);
@@ -54,31 +50,27 @@ extern struct platform_device *msm_device_uart_gsbi9;
 extern struct platform_device msm_device_uart_dm6;
 
 #ifdef CONFIG_BCM_BT
-#ifdef GSBI11_LOW_SPEED
-extern struct platform_device msm8960_device_uart_gsbi11;//gsbi11 low speed
+extern struct platform_device msm_device_uart_dm11;
 #endif
-
-#ifdef GSBI11_HIGH_SPEED
-extern struct platform_device msm_device_uart_dm11; //gsbihighspeed11
-#endif
-#endif /*end of CONFIG_BCM_BT*/
-
+#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
 extern struct platform_device msm8960_device_uart_gsbi1;
-extern struct platform_device msm8960_device_uart_gsbi2;
-extern struct platform_device msm8960_device_uart_gsbi5;
-extern struct platform_device msm8960_device_ssbi_pmic;
+#endif
 #ifdef CONFIG_HUAWEI_KERNEL
 extern struct platform_device msm8960_device_qup_i2c_gsbi2;
 extern struct platform_device msm8960_device_qup_i2c_gsbi5;
 #endif
+#ifdef CONFIG_ISDBTUNER
+extern struct platform_device msm8960_device_qup_i2c_gsbi9;
+#endif
+
+extern struct platform_device msm8960_device_uart_gsbi2;
+extern struct platform_device msm8960_device_uart_gsbi5;
+extern struct platform_device msm8960_device_ssbi_pmic;
 extern struct platform_device msm8960_device_qup_i2c_gsbi3;
 extern struct platform_device msm8960_device_qup_i2c_gsbi4;
 extern struct platform_device msm8960_device_qup_i2c_gsbi10;
 extern struct platform_device msm8960_device_qup_i2c_gsbi12;
 extern struct platform_device msm8960_device_qup_spi_gsbi1;
-#ifdef CONFIG_ISDBTUNER
-extern struct platform_device msm8960_device_qup_i2c_gsbi9;
-#endif
 extern struct platform_device msm8960_gemini_device;
 extern struct platform_device msm8960_device_csiphy0;
 extern struct platform_device msm8960_device_csiphy1;

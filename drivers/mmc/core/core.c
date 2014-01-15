@@ -54,10 +54,8 @@ int use_spi_crc = 1;
 module_param(use_spi_crc, bool, 0);
 
 #ifdef CONFIG_BCMDHD
-
 /* this flag is defined in mmc_wifi.h.
  * initialize this flag here.*/
-
 int wifi_detect_flag = 0;
 #endif
 
@@ -994,12 +992,10 @@ u32 mmc_select_voltage(struct mmc_host *host, u32 ocr)
 
 	bit = ffs(ocr);
 #ifdef CONFIG_BCMDHD
-
 /* this is a broadcom bug.
  * "bit" is sometimes incorrect or not available, * so we force to assign a correct value to "bit" */
-
-        if (MMC_SDIO_INDEX == host->index) {
-                        bit = 17;
+	if (MMC_SDIO_INDEX == host->index) {
+		bit = 17;
     }
 #endif	
 	if (bit) {
@@ -1771,25 +1767,22 @@ void mmc_rescan(struct work_struct *work)
 		return;
 
 #ifdef CONFIG_BCMDHD
-
 /* broadcom wifi can detect card by itself, and do not need to detect card by mmc.
  * if host is wifi, and wifi have not detected card,
  * we will do nothing when mmc rescan;
  * or the function is called by bcm_detect_card(), namely, wifi_detect_flag is 0
  * we will set "wifi_detect_flag" to 0 and continue mmc rescan operation */
-
 	if (MMC_SDIO_INDEX == host->index){
-           if (0 == wifi_detect_flag){
-                printk(KERN_WARNING "%s: if detect_flag = %d\n",
+		if (0 == wifi_detect_flag){
+			printk(KERN_WARNING "%s: if detect_flag = %d\n",
                                             __func__, wifi_detect_flag);
-                goto out;
-            }
-            else{
-                printk(KERN_WARNING "%s: else detect_flag = %d\n",
+			goto out;
+		} else{
+			printk(KERN_WARNING "%s: else detect_flag = %d\n",
                                             __func__, wifi_detect_flag);
-                wifi_detect_flag = 0;
-            }
-        }
+			wifi_detect_flag = 0;
+		}
+	}
 #endif	
 	mmc_bus_get(host);
 

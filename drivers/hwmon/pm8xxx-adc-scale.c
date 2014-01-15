@@ -15,9 +15,7 @@
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/mfd/pm8xxx/pm8xxx-adc.h>
-#include <hsad/config_interface.h>
 #define KELVINMIL_DEGMIL	273160
-#define BATT_NTC_TYPE_LEN   20
 
 /* Units for temperature below (on x axis) is in 0.1DegC as
    required by the battery driver. Note the resolution used
@@ -27,7 +25,6 @@
    and provided to the battery driver in the units desired for
    their framework which is 0.1DegC. True resolution of 0.1DegC
    will result in the below table size to increase by 10 times */
-
 static const struct pm8xxx_adc_map_pt adcmap_btm_threshold_universal[] = {
 	{-400,        1669.835617},
 	{-390,        1663.227791},
@@ -150,128 +147,91 @@ static const struct pm8xxx_adc_map_pt adcmap_btm_threshold_universal[] = {
 	{780,        294.8114964}
 };
 
-static const struct pm8xxx_adc_map_pt adcmap_btm_threshold_old[] = {
-	{-400,        1728},
-	{-390,        1723},
-	{-380,        1718},
-	{-370,        1713},
-	{-360,        1708},
-	{-350,        1702},
-	{-340,        1696},
-	{-330,        1690},
-	{-320,        1683},
-	{-310,        1676},
-	{-300,        1669},
-	{-290,        1661},
-	{-280,        1653},
-	{-270,        1645},
-	{-260,        1636},
-	{-250,        1627},
-	{-240,        1618},
-	{-230,        1608},
-	{-220,        1598},
-	{-210,        1587},
-	{-200,        1576},
-	{-190,        1565},
-	{-180,        1553},
-	{-170,        1541},
-	{-160,        1528},
-	{-150,        1515},
-	{-140,        1502},
-	{-130,        1488},
-	{-120,        1474},
-	{-110,        1459},
-	{-100,        1444},
-	{-90,         1429},
-	{-80,         1413},
-	{-70,         1397},
-	{-60,         1380},
-	{-50,         1364},
-	{-40,         1347},
-	{-30,         1329},
-	{-20,         1311},
-	{-10,         1293},
-	{0,           1275},
-	{10,          1257},
-	{20,          1238},
-	{30,          1219},
-	{40,          1200},
-	{50,          1181},
-	{60,          1162},
-	{70,          1142},
-	{80,          1123},
-	{90,          1103},
-	{100,         1083},
-	{110,         1064},
-	{120,         1044},
-	{130,         1024},
-	{140,         1005},
-	{150,          985},
-	{160,          966},
-	{170,          947},
-	{180,          927},
-	{190,          908},
-	{200,          889},
-	{210,          871},
-	{220,          852},
-	{230,          834},
-	{240,          816},
-	{250,          798},
-	{260,          780},
-	{270,          763},
-	{280,          746},
-	{290,          729},
-	{300,          713},
-	{310,          696},
-	{320,          681},
-	{330,          665},
-	{340,          650},
-	{350,          635},
-	{360,          620},
-	{370,          606},
-	{380,          592},
-	{390,          578},
-	{400,          565},
-	{410,          552},
-	{420,          539},
-	{430,          527},
-	{440,          514},
-	{450,          503},
-	{460,          491},
-	{470,          480},
-	{480,          469},
-	{490,          458},
-	{500,          448},
-	{510,          438},
-	{520,          428},
-	{530,          419},
-	{540,          410},
-	{550,          401},
-	{560,          392},
-	{570,          384},
-	{580,          376},
-	{590,          368},
-	{600,          360},
-	{610,          353},
-	{620,          345},
-	{630,          338},
-	{640,          332},
-	{650,          325},
-	{660,          319},
-	{670,          312},
-	{680,          307},
-	{690,          301},
-	{700,          295},
-	{710,          290},
-	{720,          284},
-	{730,          279},
-	{740,          274},
-	{750,          269},
-	{760,          265},
-	{770,          260},
-	{780,          256}
+static const struct pm8xxx_adc_map_pt adcmap_btm_threshold[] = {
+	{-300,	1642},
+	{-200,	1544},
+	{-100,	1414},
+	{0,	1260},
+	{10,	1244},
+	{20,	1228},
+	{30,	1212},
+	{40,	1195},
+	{50,	1179},
+	{60,	1162},
+	{70,	1146},
+	{80,	1129},
+	{90,	1113},
+	{100,	1097},
+	{110,	1080},
+	{120,	1064},
+	{130,	1048},
+	{140,	1032},
+	{150,	1016},
+	{160,	1000},
+	{170,	985},
+	{180,	969},
+	{190,	954},
+	{200,	939},
+	{210,	924},
+	{220,	909},
+	{230,	894},
+	{240,	880},
+	{250,	866},
+	{260,	852},
+	{270,	838},
+	{280,	824},
+	{290,	811},
+	{300,	798},
+	{310,	785},
+	{320,	773},
+	{330,	760},
+	{340,	748},
+	{350,	736},
+	{360,	725},
+	{370,	713},
+	{380,	702},
+	{390,	691},
+	{400,	681},
+	{410,	670},
+	{420,	660},
+	{430,	650},
+	{440,	640},
+	{450,	631},
+	{460,	622},
+	{470,	613},
+	{480,	604},
+	{490,	595},
+	{500,	587},
+	{510,	579},
+	{520,	571},
+	{530,	563},
+	{540,	556},
+	{550,	548},
+	{560,	541},
+	{570,	534},
+	{580,	527},
+	{590,	521},
+	{600,	514},
+	{610,	508},
+	{620,	502},
+	{630,	496},
+	{640,	490},
+	{650,	485},
+	{660,	281},
+	{670,	274},
+	{680,	267},
+	{690,	260},
+	{700,	254},
+	{710,	247},
+	{720,	241},
+	{730,	235},
+	{740,	229},
+	{750,	224},
+	{760,	218},
+	{770,	213},
+	{780,	208},
+	{790,	203}
 };
-char old_ntc_type[] = "OLD_NTC";
 
 static const struct pm8xxx_adc_map_pt adcmap_pa_therm[] = {
 	{1763.850005,      -40},
@@ -789,29 +749,23 @@ int32_t pm8xxx_adc_scale_batt_therm(int32_t adc_code,
 		struct pm8xxx_adc_chan_result *adc_chan_result)
 {
 	int64_t bat_voltage = 0;
-    char batt_type[BATT_NTC_TYPE_LEN+1];
-    int is_old_ntc_type;
-
-    memset(batt_type, 0, BATT_NTC_TYPE_LEN+1);
 
 	bat_voltage = pm8xxx_adc_scale_ratiometric_calib(adc_code,
 			adc_properties, chan_properties);
 
-	get_hw_config("pm/batt_ntc_type", batt_type, BATT_NTC_TYPE_LEN, NULL);
-	is_old_ntc_type = (strncasecmp(batt_type, old_ntc_type, BATT_NTC_TYPE_LEN)==0)? 1:0;
-	if(is_old_ntc_type) {
-	    return pm8xxx_adc_map_batt_therm(
-			adcmap_btm_threshold_old,
-			ARRAY_SIZE(adcmap_btm_threshold_old),
+#ifndef CONFIG_HUAWEI_KERNEL
+	return pm8xxx_adc_map_batt_therm(
+			adcmap_btm_threshold,
+			ARRAY_SIZE(adcmap_btm_threshold),
 			bat_voltage,
 			&adc_chan_result->physical);
-	} else {
-	    return pm8xxx_adc_map_batt_therm(
-                adcmap_btm_threshold_universal,
-                ARRAY_SIZE(adcmap_btm_threshold_universal),
-                bat_voltage,
-                &adc_chan_result->physical);
-	}
+#else
+	return pm8xxx_adc_map_batt_therm(
+			adcmap_btm_threshold_universal,
+			ARRAY_SIZE(adcmap_btm_threshold_universal),
+			bat_voltage,
+			&adc_chan_result->physical);
+#endif
 }
 EXPORT_SYMBOL_GPL(pm8xxx_adc_scale_batt_therm);
 
@@ -924,25 +878,20 @@ int32_t pm8xxx_adc_batt_scaler(struct pm8xxx_adc_arb_btm_param *btm_param,
 		const struct pm8xxx_adc_chan_properties *chan_properties)
 {
 	int rc;
-	char batt_type[BATT_NTC_TYPE_LEN+1];
-    int is_old_ntc_type;
 
-    get_hw_config("pm/batt_ntc_type", batt_type, BATT_NTC_TYPE_LEN, NULL);
-	is_old_ntc_type = (strncasecmp(batt_type, old_ntc_type, BATT_NTC_TYPE_LEN)==0)? 1:0;
-
-	if(is_old_ntc_type) {
-	    rc = pm8xxx_adc_map_linear(
-		    adcmap_btm_threshold_old,
-		    ARRAY_SIZE(adcmap_btm_threshold_old),
-		    (btm_param->low_thr_temp),
-		    &btm_param->low_thr_voltage);
-	} else {
-        rc = pm8xxx_adc_map_linear(
-            adcmap_btm_threshold_universal,
-            ARRAY_SIZE(adcmap_btm_threshold_universal),
-            (btm_param->low_thr_temp),
-            &btm_param->low_thr_voltage);
-	}
+#ifndef CONFIG_HUAWEI_KERNEL
+	rc = pm8xxx_adc_map_linear(
+		adcmap_btm_threshold,
+		ARRAY_SIZE(adcmap_btm_threshold),
+		(btm_param->low_thr_temp),
+		&btm_param->low_thr_voltage);
+#else
+	rc = pm8xxx_adc_map_linear(
+		adcmap_btm_threshold_universal,
+		ARRAY_SIZE(adcmap_btm_threshold_universal),
+		(btm_param->low_thr_temp),
+		&btm_param->low_thr_voltage);
+#endif
 	if (rc)
 		return rc;
 
@@ -952,19 +901,19 @@ int32_t pm8xxx_adc_batt_scaler(struct pm8xxx_adc_arb_btm_param *btm_param,
 	btm_param->low_thr_voltage +=
 		chan_properties->adc_graph[ADC_CALIB_RATIOMETRIC].adc_gnd;
 
-	if(is_old_ntc_type) {
-        rc = pm8xxx_adc_map_linear(
-            adcmap_btm_threshold_old,
-            ARRAY_SIZE(adcmap_btm_threshold_old),
-            (btm_param->high_thr_temp),
-            &btm_param->high_thr_voltage);
-	} else {
-        rc = pm8xxx_adc_map_linear(
-            adcmap_btm_threshold_universal,
-            ARRAY_SIZE(adcmap_btm_threshold_universal),
-            (btm_param->high_thr_temp),
-            &btm_param->high_thr_voltage);
-	}
+#ifndef CONFIG_HUAWEI_KERNEL
+	rc = pm8xxx_adc_map_linear(
+		adcmap_btm_threshold,
+		ARRAY_SIZE(adcmap_btm_threshold),
+		(btm_param->high_thr_temp),
+		&btm_param->high_thr_voltage);
+#else
+	rc = pm8xxx_adc_map_linear(
+		adcmap_btm_threshold_universal,
+		ARRAY_SIZE(adcmap_btm_threshold_universal),
+		(btm_param->high_thr_temp),
+		&btm_param->high_thr_voltage);
+#endif
 	if (rc)
 		return rc;
 

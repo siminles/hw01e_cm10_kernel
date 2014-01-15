@@ -709,12 +709,4 @@ int msm_camera_request_gpio_table
 
 int power_seq_enable_docomo(struct device *dev);
 void power_seq_disable_docomo(void);
-int power_seq_enable_softbank(struct device *dev);
-void power_seq_disable_softbank(void);
-int power_seq_enable_u9202l(struct device *dev);
-void power_seq_disable_u9202l(void);
-int power_seq_enable_verizion(struct device *dev);
-void power_seq_disable_verizion(void);
-int power_seq_enable_c8869l(struct device *dev);
-void power_seq_disable_c8869l(void);
 #endif

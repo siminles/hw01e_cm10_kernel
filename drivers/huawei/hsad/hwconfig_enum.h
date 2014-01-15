@@ -1,5 +1,3 @@
-
-
 #ifndef _HWCONFIG_ENUM_H
 #define _HWCONFIG_ENUM_H
 

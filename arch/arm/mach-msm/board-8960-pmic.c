@@ -446,7 +446,6 @@ static int pm8921_therm_mitigation[] = {
 
 #define MAX_VOLTAGE_MV		4200
 #define RESUME_VOLTAGE_DROP   30
-
 static struct pm8921_charger_platform_data pm8921_chg_pdata __devinitdata = {
 	.safety_time		= 280,
 	.update_time		= 60000,

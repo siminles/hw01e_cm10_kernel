@@ -26,10 +26,6 @@
 
 DEFINE_MUTEX(mt9m114_mut);
 static struct msm_sensor_ctrl_t mt9m114_s_ctrl;
-static struct msm_sensor_ctrl_t c8869l_mt9m114_s_ctrl;
-
-
-
 
 static struct msm_camera_i2c_reg_conf mt9m114_960p_settings[] = {
 	{0xdc00, 0x50, MSM_CAMERA_I2C_BYTE_DATA, MSM_CAMERA_I2C_CMD_WRITE},
@@ -661,26 +657,6 @@ static struct msm_camera_i2c_reg_conf mt9m114_config_change_settings[] = {
 	{0xDC01, 0x31, MSM_CAMERA_I2C_BYTE_DATA},
 };
 
-
-static struct msm_camera_i2c_reg_conf c8869l_mt9m114_config_change_settings[] = {
-	{0xdc00, 0x28, MSM_CAMERA_I2C_BYTE_DATA, MSM_CAMERA_I2C_CMD_WRITE},
-
-	{MT9M114_COMMAND_REGISTER, MT9M114_COMMAND_REGISTER_SET_STATE,
-		MSM_CAMERA_I2C_UNSET_WORD_MASK, MSM_CAMERA_I2C_CMD_POLL},
-
-	{MT9M114_COMMAND_REGISTER, (MT9M114_COMMAND_REGISTER_OK |
-		MT9M114_COMMAND_REGISTER_SET_STATE), MSM_CAMERA_I2C_WORD_DATA,
-		MSM_CAMERA_I2C_CMD_WRITE},
-
-	{MT9M114_COMMAND_REGISTER, MT9M114_COMMAND_REGISTER_SET_STATE,
-		MSM_CAMERA_I2C_UNSET_WORD_MASK, MSM_CAMERA_I2C_CMD_POLL},
-
-	{0xDC01, 0x31, MSM_CAMERA_I2C_BYTE_DATA},
-
-	{MT9M114_COMMAND_REGISTER, MT9M114_COMMAND_REGISTER_SET_STATE,
-		MSM_CAMERA_I2C_UNSET_WORD_MASK, MSM_CAMERA_I2C_CMD_POLL},
-};
-
 static void mt9m114_stop_stream(struct msm_sensor_ctrl_t *s_ctrl) {}
 
 static struct msm_camera_i2c_conf_array mt9m114_init_conf[] = {
@@ -691,20 +667,10 @@ static struct msm_camera_i2c_conf_array mt9m114_init_conf[] = {
 	0, MSM_CAMERA_I2C_WORD_DATA},
 };
 
-
-static struct msm_camera_i2c_conf_array c8869l_mt9m114_init_conf[] = {
-	{mt9m114_recommend_settings,
-	ARRAY_SIZE(mt9m114_recommend_settings), 0, MSM_CAMERA_I2C_WORD_DATA},
-	{c8869l_mt9m114_config_change_settings,
-	ARRAY_SIZE(c8869l_mt9m114_config_change_settings),
-	0, MSM_CAMERA_I2C_WORD_DATA},
-};
-
 static struct msm_camera_i2c_conf_array mt9m114_confs[] = {
 	{mt9m114_960p_settings,
 	ARRAY_SIZE(mt9m114_960p_settings), 0, MSM_CAMERA_I2C_WORD_DATA},
 };
-
 
 static struct msm_camera_i2c_reg_conf mt9m114_saturation[][1] = {
 	{{0xCC12, 0x00},},
@@ -869,21 +835,8 @@ static const struct i2c_device_id mt9m114_i2c_id[] = {
 	{ }
 };
 
-static const struct i2c_device_id c8869l_mt9m114_i2c_id[] = {
-	{SENSOR_NAME, (kernel_ulong_t)&c8869l_mt9m114_s_ctrl},
-	{ }
-};
-
 static struct i2c_driver mt9m114_i2c_driver = {
 	.id_table = mt9m114_i2c_id,
-	.probe  = msm_sensor_i2c_probe,
-	.driver = {
-		.name = SENSOR_NAME,
-	},
-};
-
-static struct i2c_driver c8869l_mt9m114_i2c_driver = {
-	.id_table = c8869l_mt9m114_i2c_id,
 	.probe  = msm_sensor_i2c_probe,
 	.driver = {
 		.name = SENSOR_NAME,
@@ -900,8 +853,7 @@ int32_t mt9m114_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 	int reset_gpio;
 
 	msm_sensor_expand_power_up(s_ctrl);
-	
-	
+
     reset_gpio = get_gpio_num_by_name("SCAM_RST");
 	if(reset_gpio < 0)
 	{
@@ -1135,17 +1087,7 @@ int mt9m114_sensor_set_whitebalance (struct msm_sensor_ctrl_t * s_ctrl,char wb)
 extern int get_camera_power_seq_type(void);
 static int __init mt9m114_sunny_init_module(void)
 {
-	
-    if(POWER_SEQ_C8869L==get_camera_power_seq_type())
-    {
-      	return i2c_add_driver(&c8869l_mt9m114_i2c_driver);
-
-    }
-    else
-    {
 	return i2c_add_driver(&mt9m114_i2c_driver);
-    }
-
 }
 
 static struct v4l2_subdev_core_ops mt9m114_subdev_core_ops = {
@@ -1190,21 +1132,6 @@ static struct msm_sensor_reg_t mt9m114_regs = {
 	.num_conf = ARRAY_SIZE(mt9m114_confs),
 };
 
-
-
-static struct msm_sensor_reg_t c8869l_mt9m114_regs = {
-	.default_data_type = MSM_CAMERA_I2C_BYTE_DATA,
-	.start_stream_conf = c8869l_mt9m114_config_change_settings,
-	.start_stream_conf_size = ARRAY_SIZE(c8869l_mt9m114_config_change_settings),
-	.init_settings = &c8869l_mt9m114_init_conf[0],
-	.init_size = ARRAY_SIZE(c8869l_mt9m114_init_conf),
-	.mode_settings = &mt9m114_confs[0],
-	.output_settings = &mt9m114_dimensions[0],
-	.num_conf = ARRAY_SIZE(mt9m114_confs),
-};
-
-
-
 static struct msm_sensor_ctrl_t mt9m114_s_ctrl = {
 	.msm_sensor_reg = &mt9m114_regs,
 	.msm_sensor_v4l2_ctrl_info = mt9m114_v4l2_ctrl_info,
@@ -1217,24 +1144,6 @@ static struct msm_sensor_ctrl_t mt9m114_s_ctrl = {
 	.csi_params = &mt9m114_csi_params_array[0],
 	.msm_sensor_mutex = &mt9m114_mut,
 	.sensor_i2c_driver = &mt9m114_i2c_driver,
-	.sensor_v4l2_subdev_info = mt9m114_subdev_info,
-	.sensor_v4l2_subdev_info_size = ARRAY_SIZE(mt9m114_subdev_info),
-	.sensor_v4l2_subdev_ops = &mt9m114_subdev_ops,
-	.func_tbl = &mt9m114_func_tbl,
-};
-
-static struct msm_sensor_ctrl_t c8869l_mt9m114_s_ctrl = {
-	.msm_sensor_reg = &c8869l_mt9m114_regs,
-	.msm_sensor_v4l2_ctrl_info = mt9m114_v4l2_ctrl_info,
-	.num_v4l2_ctrl = ARRAY_SIZE(mt9m114_v4l2_ctrl_info),
-	.sensor_i2c_client = &mt9m114_sensor_i2c_client,
-	.sensor_i2c_addr = 0x90,
-	.sensor_output_reg_addr = &mt9m114_reg_addr,
-	.sensor_id_info = &mt9m114_id_info,
-	.cam_mode = MSM_SENSOR_MODE_INVALID,
-	.csi_params = &mt9m114_csi_params_array[0],
-	.msm_sensor_mutex = &mt9m114_mut,
-	.sensor_i2c_driver = &c8869l_mt9m114_i2c_driver,
 	.sensor_v4l2_subdev_info = mt9m114_subdev_info,
 	.sensor_v4l2_subdev_info_size = ARRAY_SIZE(mt9m114_subdev_info),
 	.sensor_v4l2_subdev_ops = &mt9m114_subdev_ops,

@@ -761,7 +761,7 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 		        new_freq = min(policy->max, dbs_tuners_ins.restrict_freq);
 		        dbs_freq_increase(policy, new_freq);
 		    } else {
-		        dbs_freq_increase(policy, policy->max);
+		dbs_freq_increase(policy, policy->max);
 		    }
 		} else {
 		    dbs_freq_increase(policy, policy->max);
@@ -920,16 +920,15 @@ static void dbs_refresh_callback(struct work_struct *unused)
 	                &this_dbs_info->prev_cpu_wall);
 	    }
 	} else {
-	    if (policy->cur < policy->max) {
-	        policy->cur = policy->max;
+	if (policy->cur < policy->max) {
+		policy->cur = policy->max;
 
-	        __cpufreq_driver_target(policy, policy->max,
-	                    CPUFREQ_RELATION_L);
-	        this_dbs_info->prev_cpu_idle = get_cpu_idle_time(cpu,
-	                &this_dbs_info->prev_cpu_wall);
+		__cpufreq_driver_target(policy, policy->max,
+					CPUFREQ_RELATION_L);
+		this_dbs_info->prev_cpu_idle = get_cpu_idle_time(cpu,
+				&this_dbs_info->prev_cpu_wall);
 	    }
 	}
-
 	unlock_policy_rwsem_write(cpu);
 }
 

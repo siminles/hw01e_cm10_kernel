@@ -789,7 +789,7 @@ qup_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
 			if(to_platform_device(dev->dev)->id == GSBI5_ID) {
 				writel_relaxed(0x6 << 4, dev->gsbi);
 			} else
-				writel_relaxed(0x2 << 4, dev->gsbi);
+			writel_relaxed(0x2 << 4, dev->gsbi);
 			/* GSBI memory is not in the same 1K region as other
 			 * QUP registers. mb() here ensures that the GSBI
 			 * register is updated in correct order and that the

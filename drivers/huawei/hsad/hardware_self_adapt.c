@@ -1,5 +1,3 @@
-
-
 #include "config_mgr.h"
 #include <linux/kernel.h>
 #include <linux/init.h>

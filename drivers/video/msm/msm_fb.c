@@ -535,7 +535,6 @@ static int msm_fb_suspend_sub(struct msm_fb_data_type *mfd)
 	if ((!mfd) || (mfd->key != MFD_KEY))
 		return 0;
 
-
 	if (mfd->panel_info.mipi.mode == DSI_VIDEO_MODE) {
 		cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
 		/* for workder can't be cancelled... */

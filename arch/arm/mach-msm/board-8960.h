@@ -79,28 +79,9 @@ extern struct sx150x_platform_data msm8960_sx150x_data[];
 extern struct msm_camera_board_info msm8960_camera_board_info;
 extern unsigned char hdmi_is_primary;
 
-extern struct msm_camera_board_info docomo_camera_12m_sunny_board_info;
-extern struct msm_camera_board_info docomo_camera_12m_sunny_1p3m_byd_board_info;
-extern struct msm_camera_board_info docomo_camera_12m_liteon_board_info;
-extern struct msm_camera_board_info docomo_camera_12m_liteon_1p3m_byd_board_info;
-
-extern struct msm_camera_board_info sbm_camera_board_info;
-extern struct msm_camera_board_info sbm_camera_1p3m_byd_board_info;
-
-extern struct msm_camera_board_info u9202l_camera_8m_liteon_board_info;
-extern struct msm_camera_board_info u9202l_camera_8m_liteon_1p3m_byd_board_info;
-extern struct msm_camera_board_info u9202l_camera_8m_semco_board_info;
-extern struct msm_camera_board_info u9202l_camera_8m_semco_1p3m_byd_board_info;
-
-extern struct msm_camera_board_info verzion_camera_board_info;
-extern struct msm_camera_board_info c8869l_camera_board_info;
-extern struct msm_camera_board_info c8869l_camera_1p3m_byd_board_info;
-extern struct msm_camera_board_info c8869l_camera_5m_semco_board_info;
-extern struct msm_camera_board_info c8869l_camera_5m_semco_1p3m_byd_board_info;
 void msm8960_init_cam(void);
 void msm8960_init_fb(void);
 void msm8960_init_pmic(void);
-void msm8960_update_pmic(struct pm8xxx_regulator_platform_data* pData,int num);
 void msm8960_init_mmc(void);
 int msm8960_init_gpiomux(void);
 void msm8960_allocate_fb_region(void);
@@ -109,10 +90,14 @@ void msm8960_pm8921_gpio_mpp_init(void);
 void msm8960_mdp_writeback(struct memtype_reserve *reserve_table);
 uint32_t msm_rpm_get_swfi_latency(void);
 
+extern struct msm_camera_board_info docomo_camera_12m_sunny_board_info;
+extern struct msm_camera_board_info docomo_camera_12m_sunny_1p3m_byd_board_info;
+extern struct msm_camera_board_info docomo_camera_12m_liteon_board_info;
+extern struct msm_camera_board_info docomo_camera_12m_liteon_1p3m_byd_board_info;
+void msm8960_update_pmic(struct pm8xxx_regulator_platform_data* pData,int num);
 #ifdef CONFIG_HUAWEI_GPIO_UNITE
 int hw_gpio_init(void);
 #endif
-
 #ifdef CONFIG_BCMDHD
 void msm8960_init_wifi(void);
 #endif
@@ -120,6 +105,10 @@ void msm8960_init_wifi(void);
 void msm8960_init_bluetooth(void);
 #endif
 void msm8960_init_audio(void);
+#ifdef CONFIG_HUAWEI_KERNEL
+#define MSM_8960_GSBI2_QUP_I2C_BUS_ID 2
+#define MSM_8960_GSBI5_QUP_I2C_BUS_ID 5
+#endif
 
 #define PLATFORM_IS_CHARM25() \
 	(machine_is_msm8960_cdp() && \
@@ -129,7 +118,3 @@ void msm8960_init_audio(void);
 #define MSM_8960_GSBI4_QUP_I2C_BUS_ID 4
 #define MSM_8960_GSBI3_QUP_I2C_BUS_ID 3
 #define MSM_8960_GSBI10_QUP_I2C_BUS_ID 10
-#ifdef CONFIG_HUAWEI_KERNEL
-#define MSM_8960_GSBI2_QUP_I2C_BUS_ID 2
-#define MSM_8960_GSBI5_QUP_I2C_BUS_ID 5
-#endif

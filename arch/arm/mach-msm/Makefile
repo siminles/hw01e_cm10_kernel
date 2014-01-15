@@ -228,17 +228,15 @@ obj-$(CONFIG_ARCH_MSM8960) += footswitch-8x60.o
 obj-$(CONFIG_ARCH_MSM8960) += acpuclock-8960.o
 obj-$(CONFIG_ARCH_MSM8960) += memory_topology.o
 obj-$(CONFIG_ARCH_MSM8960) += saw-regulator.o
-#k81004046
-obj-$(CONFIG_ARCH_MSM8960) += board-mahimahi-tpa2028d1.o
-#k81004046
 obj-$(CONFIG_ARCH_MSM8960) += devices-8960.o
 obj-$(CONFIG_ARCH_APQ8064) += devices-8960.o devices-8064.o
 board-8960-all-objs += board-8960.o board-8960-camera.o board-8960-display.o board-8960-pmic.o board-8960-storage.o board-8960-gpiomux.o  board-8960-audio.o
 
-#ifeq ($(CONNECTIVITY_TYPE),bcm)
 ifdef CONFIG_BCM_BT
 board-8960-all-objs += board-msm8960-bluetooth.o
 endif
+obj-$(CONFIG_BCMDHD) += board-msm8960-wifi.o
+obj-$(CONFIG_ARCH_MSM8960) += board-mahimahi-tpa2028d1.o
 
 # board-8930-all-objs += board-8930.o board-8930-camera.o board-8930-display.o board-8930-pmic.o board-8930-storage.o board-8930-gpiomux.o
 # board-8064-all-objs += board-8064.o board-8064-pmic.o board-8064-storage.o board-8064-gpiomux.o board-8064-camera.o
@@ -250,7 +248,7 @@ obj-$(CONFIG_MACH_MSM8960_FLUID) += board-8960-all.o board-8960-regulator.o
 obj-$(CONFIG_MACH_MSM8930_CDP) += board-8930-all.o board-8930-regulator.o
 obj-$(CONFIG_MACH_MSM8930_MTP) += board-8930-all.o board-8930-regulator.o
 obj-$(CONFIG_MACH_MSM8930_FLUID) += board-8930-all.o board-8930-regulator.o
-obj-$(CONFIG_PM8921_BMS) += bms-batterydata.o bms-batterydata-desay.o bms-batterydata-sony-1930.o bms-batterydata-sony-1650.o
+obj-$(CONFIG_PM8921_BMS) += bms-batterydata.o bms-batterydata-desay.o
 obj-$(CONFIG_MACH_APQ8064_SIM) += board-8064-all.o board-8064-regulator.o
 obj-$(CONFIG_MACH_APQ8064_RUMI3) += board-8064-all.o board-8064-regulator.o
 obj-$(CONFIG_ARCH_MSM9615) += board-9615.o devices-9615.o board-9615-regulator.o board-9615-gpiomux.o board-9615-storage.o
@@ -327,4 +325,3 @@ obj-$(CONFIG_ARCH_MSM8960) += mdm2.o mdm_common.o
 obj-$(CONFIG_MSM_RTB) += msm_rtb.o
 obj-$(CONFIG_MSM_CACHE_ERP) += cache_erp.o
 obj-$(CONFIG_MSM_CACHE_DUMP) += msm_cache_dump.o
-obj-$(CONFIG_BCMDHD) += board-msm8960-wifi.o

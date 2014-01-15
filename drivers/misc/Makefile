@@ -51,13 +51,13 @@ obj-y				+= carma/
 obj-$(CONFIG_WL127X_RFKILL)	+= wl127x-rfkill.o
 obj-$(CONFIG_APANIC)		+= apanic.o
 obj-$(CONFIG_SENSORS_AK8975)	+= akm8975.o
-# TSIF Drv ADD S 
+# TSIF Drv ADD S
 obj-y += msm_tsif.o
-# TSIF Drv ADD E 
+# TSIF Drv ADD E
 msm_tsif-objs := tsif.o
-# TSIF Drv ADD S 
+# TSIF Drv ADD S
 obj-y += tsif_chrdev.o
-# TSIF Drv ADD E 
+# TSIF Drv ADD E
 obj-$(CONFIG_TSPP) += tspp.o
 obj-$(CONFIG_HAPTIC_ISA1200)		+= isa1200.o
 obj-$(CONFIG_PMIC8058_PWM) += pmic8058-pwm.o

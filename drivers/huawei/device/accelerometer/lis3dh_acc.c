@@ -46,8 +46,6 @@
 
  ******************************************************************************/
 
-
-
 #include    <linux/err.h>
 #include    <linux/errno.h>
 #include    <linux/delay.h>
@@ -65,9 +63,6 @@
 
 #include    "lis3dh.h"
 #include "../sensors.h"
-//#include    "board_sensors.h"
-
-//#include    <linux/input/lis3dh.h>
 
 static int16_t accl_data[3] = {0, 0, 0};
 #include    <linux/hrtimer.h>
@@ -574,14 +569,6 @@ static void lis3dh_get_layout(struct lis3dh_acc_data *acc)
 		acc->pdata->negate_x = 0;
 		acc->pdata->negate_y = 1;
 		acc->pdata->negate_z = 1;
-	}
-	if(product_type("C8868L_VA"))
-	{
-		acc->pdata->negate_x = 0;
-		acc->pdata->negate_y = 1;
-		acc->pdata->negate_z = 0;
-		acc->pdata->axis_map_x = 1;
-		acc->pdata->axis_map_y = 0;
 	}
 }
 static int lis3dh_acc_get_acceleration_data(struct lis3dh_acc_data *acc,
@@ -1263,25 +1250,6 @@ static int lis3dh_acc_probe(struct i2c_client *client,
         goto exit_check_functionality_failed;
     }
 
-    /*
-    if (!i2c_check_functionality(client->adapter,
-                    I2C_FUNC_SMBUS_BYTE |
-                    I2C_FUNC_SMBUS_BYTE_DATA |
-                    I2C_FUNC_SMBUS_WORD_DATA)) {
-        dev_err(&client->dev, "client not smb-i2c capable:2\n");
-        err = -EIO;
-        goto exit_check_functionality_failed;
-    }
-
-
-    if (!i2c_check_functionality(client->adapter,
-                        I2C_FUNC_SMBUS_I2C_BLOCK)){
-        dev_err(&client->dev, "client not smb-i2c capable:3\n");
-        err = -EIO;
-        goto exit_check_functionality_failed;
-    }
-    */
-
     acc = kzalloc(sizeof(struct lis3dh_acc_data), GFP_KERNEL);
     if (acc == NULL) {
         err = -ENOMEM;
@@ -1290,7 +1258,6 @@ static int lis3dh_acc_probe(struct i2c_client *client,
                     "%d\n", err);
         goto exit_check_functionality_failed;
     }
-
 
     mutex_init(&acc->lock);
     mutex_lock(&acc->lock);

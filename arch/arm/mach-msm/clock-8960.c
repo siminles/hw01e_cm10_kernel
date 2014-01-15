@@ -5205,26 +5205,21 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		gsbi4_uart_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi5_uart_clk.c, "msm_serial_hsl.0"),
 #ifdef CONFIG_BCM_BT
-	CLK_LOOKUP("core_clk",		gsbi6_uart_clk.c, NULL), 
-#endif /* end of CONFIG_BCM_BT */
+	CLK_LOOKUP("core_clk",		gsbi6_uart_clk.c, NULL),
+#endif
 #ifdef CONFIG_WCN_BT
 	CLK_LOOKUP("core_clk",		gsbi6_uart_clk.c, "msm_serial_hs.0"),
-#endif /* end of CONFIG_WCN_BT */
+#endif
 	CLK_LOOKUP("core_clk",		gsbi7_uart_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi8_uart_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi9_uart_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi10_uart_clk.c,	NULL),
 #ifdef CONFIG_BCM_BT
-#ifdef GSBI11_LOW_SPEED 
-	CLK_LOOKUP("core_clk",	gsbi11_uart_clk.c, "msm_serial_hsl.1"),
+	CLK_LOOKUP("core_clk",	gsbi11_uart_clk.c,	"msm_serial_hs.0"),
 #endif
-#ifdef GSBI11_HIGH_SPEED  //gsbihighspeed11
-	CLK_LOOKUP("core_clk",	gsbi11_uart_clk.c,	"msm_serial_hs.0"),  //uartdm_pclk
-#endif
-#endif /* end of CONFIG_BCM_BT */
 #ifdef CONFIG_WCN_BT
 	CLK_LOOKUP("core_clk",		gsbi11_uart_clk.c,	NULL),
-#endif  /* end of CONFIG_WCN_BT */
+#endif
 	CLK_LOOKUP("core_clk",		gsbi12_uart_clk.c,	NULL),
 #ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
     CLK_LOOKUP("core_clk",		gsbi1_qup_clk.c,	"msm_serial_hsl.2"),
@@ -5296,10 +5291,10 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #endif
 #ifdef CONFIG_BCM_BT
 	CLK_LOOKUP("iface_clk",		gsbi6_p_clk.c,  NULL),
-#endif  /* end of CONFIG_BCM_BT */
+#endif
 #ifdef CONFIG_WCN_BT
 	CLK_LOOKUP("iface_clk",		gsbi6_p_clk.c,  "msm_serial_hs.0"),
-#endif /* end of CONFIG_WCN_BT */
+#endif
 	CLK_LOOKUP("iface_clk",		gsbi7_p_clk.c,		NULL),
 	CLK_LOOKUP("iface_clk",		gsbi8_p_clk.c,		NULL),
 #ifdef CONFIG_ISDBTUNER
@@ -5307,16 +5302,11 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #endif
 	CLK_LOOKUP("iface_clk",		gsbi10_p_clk.c,		"qup_i2c.10"),
 #ifdef CONFIG_BCM_BT
-#ifdef GSBI11_LOW_SPEED
-    CLK_LOOKUP("iface_clk",		gsbi11_p_clk.c,	"msm_serial_hsl.1"),//gsbi11
-#endif  /* end of GSBI11_LOW_SPEED */
-#ifdef GSBI11_HIGH_SPEED //gsbihighspeed11
 	CLK_LOOKUP("iface_clk",		gsbi11_p_clk.c,		"msm_serial_hs.0"),
-#endif	
-#endif /* end of CONFIG_BCM_BT */
+#endif
 #ifdef CONFIG_WCN_BT
 	CLK_LOOKUP("iface_clk",		gsbi11_p_clk.c,		NULL),
-#endif /* end of CONFIG_WCN_BT */
+#endif
 	CLK_LOOKUP("iface_clk",		gsbi12_p_clk.c,		"qup_i2c.12"),
 #ifdef CONFIG_ISDBTUNER
 	CLK_LOOKUP("iface_clk",         tsif_p_clk.c,           "msm_tsif.1"),
@@ -5354,27 +5344,6 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX091_SUNNY
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-001a"),
 #endif
-#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_IMX105_SUNNY	
-	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006d"),
-#endif
-#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K3H2Y_LITEON
-	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006f"),
-#endif
-#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K3H2Y_SEMCO
-	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006f"),
-#endif
-#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9P017_SUNNY
-	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006b"),
-#endif
-#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX
-	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006e"),
-#endif
-#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4E1GX_SEMCO
-	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006e"),
-#endif
-#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_OV5647_SUNNY
-	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006c"),
-#endif
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_SUNNY
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0048"),
 #endif
@@ -5383,9 +5352,6 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #endif
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9M114_TRULY
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-005d"),
-#endif
-#ifdef CONFIG_HUAWEI_CAMERA_SENSOR_MT9V113
-	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-003d"),
 #endif
 	CLK_LOOKUP("csi_src_clk",	csi0_src_clk.c,		"msm_csid.0"),
 	CLK_LOOKUP("csi_src_clk",	csi1_src_clk.c,		"msm_csid.1"),

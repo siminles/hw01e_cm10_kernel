@@ -88,8 +88,6 @@
 #define TPS61310_HIGH_MODE_REG_0_VAL 0x00	/* flash mode */
 #define TPS61310_HIGH_MODE_REG_1_VAL 0x90	/* flash LED2 400mA */
 #define TPS61310_HIGH_MODE_REG_2_VAL 0x88	/* flash LED1/3 400mA */
-#define TPS61310_HIGH_MODE_REG_1_VAL_C8869L 0x98	/* flash LED2 600mA */
-#define TPS61310_HIGH_MODE_REG_2_VAL_C8869L 0x8C	/* flash LED1/3 300mA+300mA=600mA */
 #define TPS61310_HIGH_MODE_REG_3_SFT_DIS_VAL 0x64	/* flash time 170.4ms SFT disable */
 #define TPS61310_HIGH_MODE_REG_3_SFT_EN_VAL 0x66	/* flash time 170.4ms SFT enable */
 #define TPS61310_HIGH_MODE_REG_5_VAL 0x6F	/* enable LED1/2/3 */
@@ -453,17 +451,8 @@ static void flash_tps61310_high_mode(struct i2c_client *led_client)
     flash_tps61310_i2c_write_b(led_client,TPS61310_REG_5,TPS61310_HIGH_MODE_REG_5_VAL);
     flash_tps61310_i2c_write_b(led_client,TPS61310_REG_3,TPS61310_HIGH_MODE_REG_3_SFT_DIS_VAL);
     flash_tps61310_i2c_write_b(led_client,TPS61310_REG_0,TPS61310_HIGH_MODE_REG_0_VAL);
-    //if c8869l set output current as 600 mA else set current as 400mA
-    if(POWER_SEQ_C8869L==get_camera_power_seq_type())
-    {
-    	flash_tps61310_i2c_write_b(led_client,TPS61310_REG_1,TPS61310_HIGH_MODE_REG_1_VAL_C8869L);
-    	flash_tps61310_i2c_write_b(led_client,TPS61310_REG_2,TPS61310_HIGH_MODE_REG_2_VAL_C8869L);
-    }
-    else
-    {
-    	flash_tps61310_i2c_write_b(led_client,TPS61310_REG_1,TPS61310_HIGH_MODE_REG_1_VAL);
-    	flash_tps61310_i2c_write_b(led_client,TPS61310_REG_2,TPS61310_HIGH_MODE_REG_2_VAL);
-    }
+    flash_tps61310_i2c_write_b(led_client,TPS61310_REG_1,TPS61310_HIGH_MODE_REG_1_VAL);
+    flash_tps61310_i2c_write_b(led_client,TPS61310_REG_2,TPS61310_HIGH_MODE_REG_2_VAL);
     flash_tps61310_i2c_write_b(led_client,TPS61310_REG_3,TPS61310_HIGH_MODE_REG_3_SFT_EN_VAL);
 }
 

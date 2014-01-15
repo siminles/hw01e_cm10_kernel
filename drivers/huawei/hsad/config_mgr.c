@@ -1,6 +1,3 @@
-
-
-
 #include <linux/string.h>
 #include <linux/list.h>
 #include <linux/gpio.h>

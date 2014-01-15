@@ -11,10 +11,6 @@
  *
  */
 
-
-
-//#include <linux/i2c.h>
-//#include <linux/i2c/sx150x.h>
 #include <asm/mach-types.h>
 #include <mach/board.h>
 #include <mach/msm_bus_board.h>
@@ -26,14 +22,12 @@
 #include <hsad/config_interface.h>  
 
 #include <mach/msm_serial_hs.h> 
-#ifdef GSBI11_HIGH_SPEED
 #include <mach/msm_iomap.h>
 #include <mach/scm-io.h>
 #define TCSR_ADM_0_A_CRCI_MUX_SEL        (MSM_TCSR_BASE + 0x70)
 #define ADM0_CRCI_GSBI11_RX_SEL (1<<11)
 #define ADM0_CRCI_GSBI11_TX_SEL (1<<12)
 #define ADM0_CRCI_GSBI11_MASK (ADM0_CRCI_GSBI11_RX_SEL|ADM0_CRCI_GSBI11_TX_SEL)
-#endif
 
 //added for using new tz begin
 #define NEW_TZ_DMOV_HSUART_GSBI11_TX_CHAN 9
@@ -109,7 +103,6 @@ static struct msm_gpiomux_config_data
 		.name = "GSBI11_0",
 	},		
 };
-
 
 static struct platform_device msm_bt_power_device = {
 	.name = "bt_power",
@@ -294,12 +287,7 @@ static void __init bt_power_init(void)
 }
 
 static struct platform_device *common_devices[] __initdata = {
-#ifdef GSBI11_LOW_SPEED 
-	&msm8960_device_uart_gsbi11,
-#endif
-#ifdef GSBI11_HIGH_SPEED
 	&msm_device_uart_dm11,
-#endif
 	&msm_bt_power_device, 
 	&msm_bluesleep_device,
 };

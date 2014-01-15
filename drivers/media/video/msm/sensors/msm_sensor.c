@@ -742,16 +742,8 @@ int32_t msm_sensor_expand_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 		return rc;
 	}
 	
-    if(POWER_SEQ_SBM==get_camera_power_seq_type()){
-        rc= power_seq_enable_softbank(dev);
-    } else if(POWER_SEQ_U9202L==get_camera_power_seq_type()){
-        rc= power_seq_enable_u9202l(dev);
-    } else if(POWER_SEQ_DCM==get_camera_power_seq_type()){
+    if(POWER_SEQ_DCM==get_camera_power_seq_type()){
         rc= power_seq_enable_docomo(dev);
-    } else if(POWER_SEQ_VRZ==get_camera_power_seq_type()){
-        rc= power_seq_enable_verizion(dev);
-    } else if(POWER_SEQ_C8869L==get_camera_power_seq_type()){
-        rc= power_seq_enable_c8869l(dev);
     }
     else
         rc= msm_sensor_power_up(s_ctrl);
@@ -789,16 +781,8 @@ int32_t msm_sensor_expand_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 		cam_clk_info, &s_ctrl->cam_clk, ARRAY_SIZE(cam_clk_info), 0);
 	msm_camera_config_gpio_table(data, 0);
 	
-    if(POWER_SEQ_SBM==get_camera_power_seq_type()){
-        power_seq_disable_softbank();
-    } else if(POWER_SEQ_U9202L==get_camera_power_seq_type()){
-        power_seq_disable_u9202l();
-    } else if(POWER_SEQ_DCM==get_camera_power_seq_type()){
+    if(POWER_SEQ_DCM==get_camera_power_seq_type()){
         power_seq_disable_docomo();
-    } else if(POWER_SEQ_VRZ==get_camera_power_seq_type()){
-        power_seq_disable_verizion();
-    } else if(POWER_SEQ_C8869L==get_camera_power_seq_type()){
-        power_seq_disable_c8869l();
     }
     else
         msm_sensor_power_down(s_ctrl);
@@ -823,7 +807,7 @@ int32_t msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 	}
 
 	printk("%s detected SUCCESS!\n",s_ctrl->sensor_i2c_driver->id_table->name);
-	printk("msm_sensor id: 0x%x\n", chipid);
+	CDBG("msm_sensor id: %d\n", chipid);
 	if (chipid != s_ctrl->sensor_id_info->sensor_id) {
 		pr_err("msm_sensor_match_id chip id doesnot match\n");
 		return -ENODEV;

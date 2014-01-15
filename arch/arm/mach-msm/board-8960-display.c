@@ -328,7 +328,7 @@ static int mipi_dsi_liquid_panel_power(int on)
 }
 
 /*use huawei power function*/
-#if 0
+#ifndef CONFIG_HUAWEI_KERNEL
 static int mipi_dsi_cdp_panel_power(int on)
 {
 	static struct regulator *reg_l8, *reg_l23, *reg_l2;
@@ -414,7 +414,6 @@ static int mipi_dsi_cdp_panel_power(int on)
 			pr_err("enable l2 failed, rc=%d\n", rc);
 			return -ENODEV;
 		}
-		msleep(30);
 		gpio_set_value_cansleep(gpio43, 1);
 	} else {
 		rc = regulator_disable(reg_l2);
@@ -512,8 +511,11 @@ static int mipi_dsi_panel_power(int on)
 	if (machine_is_msm8960_liquid())
 		ret = mipi_dsi_liquid_panel_power(on);
 	else
-		//ret = mipi_dsi_cdp_panel_power(on);
+#ifndef CONFIG_HUAWEI_KERNEL
+		ret = mipi_dsi_cdp_panel_power(on);
+#else
         ret = mipi_dsi_huawei_panel_power(on);
+#endif
 
 	return ret;
 }
@@ -859,27 +861,6 @@ static struct platform_device mipi_dsi_toshiba_720p_panel_device = {
 };
 #endif
 
-#ifdef CONFIG_HUAWEI_FB_MSM_MIPI_SAMSUNG_QHD_CMD_PT
-static struct platform_device mipi_dsi_samsung_qhd_panel_device = {
-        .name = "mipi_samsung_qhd",
-        .id = 0,
-};
-#endif
-
-#ifdef CONFIG_HUAWEI_FB_MSM_MIPI_R61408_CMI_WVGA_CMD_PT
-static struct platform_device mipi_dsi_cmi_r61408_wvga_panel_device = {
-	.name = "mipi_r61408_cmi_wvga",
-	.id = 0,
-};
-#endif
-
-#ifdef CONFIG_HUAWEI_FB_MSM_MIPI_HX8369_TIANMA_WVGA_CMD_PT
-static struct platform_device mipi_dsi_tianma_hx8369_wvga_panel_device = {
-	.name = "mipi_hx8369_tianma_wvga",
-	.id = 0,
-};
-#endif
-
 #ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
 static struct resource hdmi_msm_resources[] = {
 	{
@@ -1190,15 +1171,6 @@ void __init msm8960_init_fb(void)
 #endif
 #ifdef CONFIG_HUAWEI_FB_MSM_MIPI_R63306_TOSHIBA_720P_VIDEO_PT
 	platform_device_register(&mipi_dsi_toshiba_720p_panel_device);
-#endif
-#ifdef CONFIG_HUAWEI_FB_MSM_MIPI_SAMSUNG_QHD_CMD_PT
-	platform_device_register(&mipi_dsi_samsung_qhd_panel_device);
-#endif
-#ifdef CONFIG_HUAWEI_FB_MSM_MIPI_R61408_CMI_WVGA_CMD_PT
-    platform_device_register(&mipi_dsi_cmi_r61408_wvga_panel_device);
-#endif
-#ifdef CONFIG_HUAWEI_FB_MSM_MIPI_HX8369_TIANMA_WVGA_CMD_PT
-    platform_device_register(&mipi_dsi_tianma_hx8369_wvga_panel_device);
 #endif
 }
 

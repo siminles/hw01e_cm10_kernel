@@ -822,31 +822,6 @@ static struct msm_gpiomux_config msm8960_sdcc2_configs[] __initdata = {
 };
 #endif
 
-/* pull-up on the interrrupt pin for light sensor */
-#ifdef CONFIG_HUAWEI_FEATURE_INPUT_APDS990x
-static struct gpiomux_setting apds990x_gpio_active_cfg = {
-	.func = GPIOMUX_FUNC_GPIO,
-	.drv = GPIOMUX_DRV_2MA,
-	.pull = GPIOMUX_PULL_UP,
-};
-
-static struct gpiomux_setting apds990x_gpio_suspend_cfg = {
-	.func = GPIOMUX_FUNC_GPIO,
-	.drv = GPIOMUX_DRV_2MA,
-	.pull = GPIOMUX_PULL_UP,
-};
-
-static struct msm_gpiomux_config  msm8960_apds990x_gpio_configs[]  = {
-	{
-		.gpio = 67,
-		.settings = {
-			[GPIOMUX_ACTIVE]    = &apds990x_gpio_active_cfg,
-			[GPIOMUX_SUSPENDED] = &apds990x_gpio_suspend_cfg,
-		},
-	},
-};
-#endif
-
 #ifdef CONFIG_HUAWEI_GPIO_UNITE
 int hw_gpio_init(void)
 {
@@ -1015,12 +990,6 @@ int __init msm8960_init_gpiomux(void)
 #ifdef CONFIG_MMC_MSM_SDC2_SUPPORT
 	msm_gpiomux_install(msm8960_sdcc2_configs,
 		ARRAY_SIZE(msm8960_sdcc2_configs));
-#endif
-
-/* pull-up on the interrrupt pin for light sensor */
-#ifdef CONFIG_HUAWEI_FEATURE_INPUT_APDS990x
-	msm_gpiomux_install(msm8960_apds990x_gpio_configs,
-			ARRAY_SIZE(msm8960_apds990x_gpio_configs));
 #endif
 
 	return 0;

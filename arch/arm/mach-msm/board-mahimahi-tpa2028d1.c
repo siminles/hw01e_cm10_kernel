@@ -15,10 +15,6 @@
  * All Rights Reserved. HUAWEI Proprietary and Confidential.
  *
  */
- 
-
-
-
 /* TODO: content validation in TPA2028_SET_CONFIG */
 
 #include <linux/module.h>
@@ -62,7 +58,6 @@ static int tpa2028d1_num_modes;
 #ifdef TPA2028D1_DEBUG
 static struct kobject *tpa2028d1_kobj;
 #endif
-
 
 static int tpa2028_i2c_write(const char *txData, int length)
 {
@@ -240,18 +235,7 @@ static long tpa2028d1_ioctl(struct file *file,unsigned int cmd, unsigned long ar
 		if (arg) {
 		static char spk_amp_call_on[8]; 
 		memcpy(spk_amp_call_on, spk_amp_on, sizeof(spk_amp_on));
-			if (get_pa_val_by_name("U9201L"))
-			{
-				spk_amp_call_on[0] = 0x01;
-				spk_amp_call_on[1] = 0xc3;
-				spk_amp_call_on[2] = 0x05;
-				spk_amp_call_on[3] = 0x0b;
-				spk_amp_call_on[4] = 0x00;
-				spk_amp_call_on[5] = 0x06;
-				spk_amp_call_on[6] = 0x5e;
-				spk_amp_call_on[7] = 0xc1;
-			}
-			else if (get_pa_val_by_name("U9501L"))
+			if (get_pa_val_by_name("U9501L"))
 			{
 				spk_amp_call_on[0] = 0x01;
 				spk_amp_call_on[1] = 0xc3;
@@ -261,28 +245,6 @@ static long tpa2028d1_ioctl(struct file *file,unsigned int cmd, unsigned long ar
 				spk_amp_call_on[5] = 0x13;
 				spk_amp_call_on[6] = 0x5b;
 				spk_amp_call_on[7] = 0xc0;
-			}
-			else if (get_pa_val_by_name("C8869L"))
-			{
-				spk_amp_call_on[0] = 0x01;
-				spk_amp_call_on[1] = 0xc3;
-				spk_amp_call_on[2] = 0x05;
-				spk_amp_call_on[3] = 0x01;
-				spk_amp_call_on[4] = 0x00;
-				spk_amp_call_on[5] = 0x15;
-				spk_amp_call_on[6] = 0x5c;
-				spk_amp_call_on[7] = 0xc0;
-			}
-			else if (get_pa_val_by_name("U9202L"))
-			{
-				spk_amp_call_on[0] = 0x01;
-				spk_amp_call_on[1] = 0xc3;
-				spk_amp_call_on[2] = 0x05;
-				spk_amp_call_on[3] = 0x0b;
-				spk_amp_call_on[4] = 0x00;
-				spk_amp_call_on[5] = 0x06;
-				spk_amp_call_on[6] = 0x3a;
-				spk_amp_call_on[7] = 0xc2;
 			}
 			memcpy(spk_amp_cfg, spk_amp_call_on, sizeof(spk_amp_call_on));
 		}
@@ -444,50 +406,16 @@ static int tpa2028d1_probe(struct i2c_client *client, const struct i2c_device_id
 	}
 	gpio_free(pdata->gpio_tpa2028_spk_en);
 
-	if (get_pa_val_by_name("U9201L"))
-	    	{
-				spk_amp_on[0] = 0x01;
-				spk_amp_on[1] = 0xc3;
-				spk_amp_on[2] = 0x02;
-				spk_amp_on[3] = 0x10;
-				spk_amp_on[4] = 0x08;
-				spk_amp_on[5] = 0x10;
-				spk_amp_on[6] = 0x3e;
-				spk_amp_on[7] = 0xc0;
-			}
-			else if (get_pa_val_by_name("U9501L"))
-	    	{
-				spk_amp_on[0] = 0x01;
-				spk_amp_on[1] = 0xc3;
-				spk_amp_on[2] = 0x05;
-				spk_amp_on[3] = 0x01;
-				spk_amp_on[4] = 0x00;
-				spk_amp_on[5] = 0x13;
-				spk_amp_on[6] = 0x5b;
-				spk_amp_on[7] = 0xc0;
-	    	}
-	    	else if (get_pa_val_by_name("C8869L"))
-	    	{
-				spk_amp_on[0] = 0x01;
-				spk_amp_on[1] = 0xc3;
-				spk_amp_on[2] = 0x05;
-				spk_amp_on[3] = 0x01;
-				spk_amp_on[4] = 0x00;
-				spk_amp_on[5] = 0x15;
-				spk_amp_on[6] = 0x5c;
-				spk_amp_on[7] = 0xc0;
-	    	}
-		else if (get_pa_val_by_name("U9202L"))
-		{
-				spk_amp_on[0] = 0x01;
-				spk_amp_on[1] = 0xc3;
-				spk_amp_on[2] = 0x05;
-				spk_amp_on[3] = 0x02;
-				spk_amp_on[4] = 0x00;
-				spk_amp_on[5] = 0x12;
-				spk_amp_on[6] = 0x1f;
-				spk_amp_on[7] = 0xc0;
-		}
+	if (get_pa_val_by_name("U9501L")) {
+		spk_amp_on[0] = 0x01;
+		spk_amp_on[1] = 0xc3;
+		spk_amp_on[2] = 0x05;
+		spk_amp_on[3] = 0x01;
+		spk_amp_on[4] = 0x00;
+		spk_amp_on[5] = 0x13;
+		spk_amp_on[6] = 0x5b;
+		spk_amp_on[7] = 0xc0;
+	}
 	    
 	memcpy(spk_amp_cfg, spk_amp_on, sizeof(spk_amp_on));
 

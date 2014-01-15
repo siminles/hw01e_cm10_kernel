@@ -926,11 +926,9 @@ static int mmc_suspend(struct mmc_host *host)
 	mmc_claim_host(host);
 
 #ifdef CONFIG_BCMDHD
-
 /*forbit SDIO sleep when host is wifi.
  * because drivers of all devices will be uninstalled when mmc deep sleep.
  * in that case, wifi will not work normally. */
-
 	if (MMC_SDIO_INDEX == host->index) {
 	    if (!mmc_host_is_spi(host))
 	       mmc_deselect_cards(host);

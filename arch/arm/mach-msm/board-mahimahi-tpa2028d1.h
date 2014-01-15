@@ -15,10 +15,6 @@
  * All Rights Reserved. HUAWEI Proprietary and Confidential.
  *
  */
- 
-
-
-
 #ifndef __ASM_ARM_ARCH_TPA2028D1_H
 #define __ASM_ARM_ARCH_TPA2028D1_H
 
@@ -60,5 +56,4 @@ extern void tpa2028d1_set_speaker_effect(int on);
 MODULE_DESCRIPTION("tpa2028d1 speaker amp driver");
 MODULE_LICENSE("GPL");
 #endif /* __ASM_ARM_ARCH_TPA2028D1_H */
-
 

@@ -27,7 +27,6 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/mutex.h>
-#include <hsad/config_interface.h>
 
 #define BMS_CONTROL		0x224
 #define BMS_S1_DELAY		0x225
@@ -2176,32 +2175,9 @@ static int64_t read_battery_id(struct pm8921_bms_chip *chip)
 #define PALLADIUM_ID_MAX	0x7F5A
 #define DESAY_5200_ID_MIN	0x7F7F
 #define DESAY_5200_ID_MAX	0x802F
-#define BATTERY_NAME_LENGTH 20
-
-struct pm8921_bms_battery_profile
-{
-    char *battery_name;
-    struct pm8921_bms_battery_data *bms_batt_data;
-};
-
-struct pm8921_bms_battery_profile battery_data_array[]=
-{
-    {
-        .battery_name = "SONY_1650", 
-        .bms_batt_data = &palladium_1650_data,
-    },
-    {
-        .battery_name = "SONY_1930", 
-        .bms_batt_data = &palladium_1930_data,
-    },
-};
-
 static int set_battery_data(struct pm8921_bms_chip *chip)
 {
 	int64_t battery_id;
-	int i = 0;
-	char battery_name[BATTERY_NAME_LENGTH];
-	struct pm8921_bms_battery_data *p_bms_data = NULL;
 
 	if (chip->batt_type == BATT_DESAY)
 		goto desay;
@@ -2222,30 +2198,23 @@ static int set_battery_data(struct pm8921_bms_chip *chip)
 	} else {
 		pr_warn("invalid battid, palladium 1500 assumed batt_id %llx\n",
 				battery_id);
+#ifdef CONFIG_HUAWEI_KERNEL
+		goto desay;
+#else
 		goto palladium;
+#endif
 	}
 
 palladium:
-        get_hw_config("pm/battery_name", battery_name, BATTERY_NAME_LENGTH, NULL);
-        for(i=0; i<ARRAY_SIZE(battery_data_array);i++)
-        {
-            if(strncasecmp(battery_name, battery_data_array[i].battery_name,BATTERY_NAME_LENGTH) == 0) {
-                p_bms_data = battery_data_array[i].bms_batt_data;
-                printk("Qualcomm columeter battery_name %s",battery_name);
-                break;
-            }
-        }
-        if(p_bms_data == NULL)
-            goto desay;
-		chip->fcc = p_bms_data->fcc;
-		chip->fcc_temp_lut = p_bms_data->fcc_temp_lut;
-		chip->fcc_sf_lut = p_bms_data->fcc_sf_lut;
-		chip->pc_temp_ocv_lut = p_bms_data->pc_temp_ocv_lut;
-		chip->pc_sf_lut = p_bms_data->pc_sf_lut;
-		chip->rbatt_sf_lut = p_bms_data->rbatt_sf_lut;
+		chip->fcc = palladium_1500_data.fcc;
+		chip->fcc_temp_lut = palladium_1500_data.fcc_temp_lut;
+		chip->fcc_sf_lut = palladium_1500_data.fcc_sf_lut;
+		chip->pc_temp_ocv_lut = palladium_1500_data.pc_temp_ocv_lut;
+		chip->pc_sf_lut = palladium_1500_data.pc_sf_lut;
+		chip->rbatt_sf_lut = palladium_1500_data.rbatt_sf_lut;
 		chip->default_rbatt_mohm
-				= p_bms_data->default_rbatt_mohm;
-		chip->delta_rbatt_mohm = p_bms_data->delta_rbatt_mohm;
+				= palladium_1500_data.default_rbatt_mohm;
+		chip->delta_rbatt_mohm = palladium_1500_data.delta_rbatt_mohm;
 		return 0;
 desay:
 		chip->fcc = desay_5200_data.fcc;

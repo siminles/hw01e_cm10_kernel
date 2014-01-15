@@ -292,14 +292,8 @@ static struct msm_camera_i2c_conf_array imx091_liteon_confs[] = {
 	ARRAY_SIZE(imx091_liteon_snap_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
 	{&imx091_liteon_prev_settings[0],
 	ARRAY_SIZE(imx091_liteon_prev_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
-
-
-	
 	{&imx091_liteon_1080p_settings[0],
 	ARRAY_SIZE(imx091_liteon_1080p_settings), 0, MSM_CAMERA_I2C_BYTE_DATA},
-
-
-	
 };
 
 static struct msm_sensor_output_info_t imx091_liteon_dimensions[] = {
@@ -334,9 +328,6 @@ static struct msm_sensor_output_info_t imx091_liteon_dimensions[] = {
 		.op_pixel_clk = 225600000,
 		.binning_factor = 1,
 	},
-
-
-
 }; 
 
 static struct msm_camera_csid_vc_cfg imx091_liteon_cid_cfg[] = {

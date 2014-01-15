@@ -313,21 +313,6 @@ config HUAWEI_FB_MSM_MIPI_R63306_TOSHIBA_720P_VIDEO_PT
 	select FB_MSM_MIPI_DSI
 	default n
 
-config HUAWEI_FB_MSM_MIPI_SAMSUNG_QHD_CMD_PT
-	bool "samsung mipi qhd cmd panel driver"
-	select FB_MSM_MIPI_DSI
-	default n
-
-config HUAWEI_FB_MSM_MIPI_R61408_CMI_WVGA_CMD_PT
-        bool "cmi r61408 mipi wvga cmd panel driver"
-        select FB_MSM_MIPI_DSI
-        default n
-
-config HUAWEI_FB_MSM_MIPI_HX8369_TIANMA_WVGA_CMD_PT
-        bool "tianma hx8369 mipi wvga cmd panel driver"
-        select FB_MSM_MIPI_DSI
-        default n
-
 config FB_MSM_OVERLAY0_WRITEBACK
 	depends on FB_MSM_OVERLAY
         bool "MDP overlay0 write back mode enable"

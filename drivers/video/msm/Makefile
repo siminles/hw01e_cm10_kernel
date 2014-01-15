@@ -127,9 +127,6 @@ obj-$(CONFIG_FB_MSM_MIPI_TRULY_VIDEO_WVGA_PT) += mipi_truly_video_wvga_pt.o
 obj-$(CONFIG_FB_MSM_MIPI_SIMULATOR_VIDEO) += mipi_simulator_video.o
 obj-$(CONFIG_FB_MSM_MIPI_CHIMEI_WXGA) += mipi_chimei_wxga_pt.o
 obj-$(CONFIG_HUAWEI_FB_MSM_MIPI_R63306_TOSHIBA_720P_VIDEO_PT) += mipi_r63306_toshiba_video_720p.o
-obj-$(CONFIG_HUAWEI_FB_MSM_MIPI_SAMSUNG_QHD_CMD_PT) += mipi_samsung_cmd_qhd.o
-obj-$(CONFIG_HUAWEI_FB_MSM_MIPI_R61408_CMI_WVGA_CMD_PT) += mipi_r61408_cmi_cmd_wvga.o
-obj-$(CONFIG_HUAWEI_FB_MSM_MIPI_HX8369_TIANMA_WVGA_CMD_PT) += mipi_hx8369a_tianma_cmd_wvga.o
 endif
 
 obj-$(CONFIG_FB_MSM_LCDC_PANEL) += lcdc_panel.o

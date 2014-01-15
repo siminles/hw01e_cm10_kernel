@@ -234,6 +234,8 @@ struct platform_device msm_device_tz_log = {
 	.num_resources	= ARRAY_SIZE(tzlog_resources),
 	.resource	= tzlog_resources,
 };
+
+#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
 static struct resource resources_uart_gsbi1[] = {
 	{
 		.start	= MSM8960_GSBI1_UARTDM_IRQ,
@@ -260,6 +262,7 @@ struct platform_device msm8960_device_uart_gsbi1 = {
 	.num_resources	= ARRAY_SIZE(resources_uart_gsbi1),
 	.resource	= resources_uart_gsbi1,
 };
+#endif
 
 static struct resource resources_uart_gsbi2[] = {
 	{
@@ -332,37 +335,7 @@ struct platform_device msm_device_uart_dm6 = {
 };
 
 #ifdef CONFIG_BCM_BT
-#ifdef GSBI11_LOW_SPEED 
-static struct resource resources_uart_gsbi11[] = {
-	{
-		.start	= GSBI11_UARTDM_IRQ,
-		.end	= GSBI11_UARTDM_IRQ,
-		.flags	= IORESOURCE_IRQ,
-	},
-	{
-		.start	= MSM_UART11DM_PHYS,
-		.end	= MSM_UART11DM_PHYS + PAGE_SIZE - 1,
-		.name	= "uartdm_resource",
-		.flags	= IORESOURCE_MEM,
-	},
-	{
-		.start	= MSM_GSBI11_PHYS,
-		.end	= MSM_GSBI11_PHYS + PAGE_SIZE - 1,
-		.name	= "gsbi_resource",
-		.flags	= IORESOURCE_MEM,
-	},
-};
-
-struct platform_device msm8960_device_uart_gsbi11 = {
-	.name	= "msm_serial_hsl",
-	.id	= 1,
-	.num_resources	= ARRAY_SIZE(resources_uart_gsbi11),
-	.resource	= resources_uart_gsbi11,
-};
-#endif
-
 /* GSBI11 configured for UARTDM */
-#ifdef GSBI11_HIGH_SPEED //gsbihighspeed11
 static struct resource msm_uart_dm11_resources[] = {
 	{		
 		.start	= MSM_UART11DM_PHYS,
@@ -407,7 +380,6 @@ struct platform_device msm_device_uart_dm11 =
 			.coherent_dma_mask	= DMA_BIT_MASK(32),
 			},
 	};
-#endif
 #endif /*end of CONFIG_BCM_BT*/
 
 static struct resource resources_uart_gsbi5[] = {
@@ -1684,35 +1656,6 @@ static const struct msm_gpio tsif1_gpios[] = {
 	{ .gpio_cfg = TSIF_1_SYNC, .label =  "tsif_sync", },
 };
 
-static void tsif_init0(struct msm_tsif_platform_data *data)
-{
-#if 0
-	/* Declaration local values. */
-	int val;
-	void __iomem *base;
-
-	/* To access the start address of the physical address \
-	   using the virtual address. */
-	base = ioremap(MSM8960_TCSR_PHYS, MSM8960_TCSR_SIZE);
-	/* err check. */
-	if (!base) {
-		/* err end. */
-		return ;
-	}
-
-	/* configure mux to use correct tsif instance. */
-	/* io read. */
-	val = ioread32(base + TCSR_ADM_0_A_CRCI_MUX_SEL);
-	/* masking. */
-	val &= 0x7FFFFFFF;
-	/* io write. */
-	iowrite32(val, base + TCSR_ADM_0_A_CRCI_MUX_SEL);
-
-	/* To release the virtual address. */
-	iounmap(base);
-#endif
-}
-
 static void tsif_init1(struct msm_tsif_platform_data *data)
 {
 	/* Declaration local values. */
@@ -1771,7 +1714,6 @@ struct msm_tsif_platform_data tsif0_platform_data = {
 	.gpios = tsif0_gpios,
 	.tsif_pclk = "iface_clk",
 	.tsif_ref_clk = "ref_clk",
-	.init = tsif_init0
 };
 struct resource tsif0_resources[] = {
 	[0] = {

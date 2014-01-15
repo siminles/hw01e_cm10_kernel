@@ -1278,15 +1278,6 @@ static int diag_process_apps_pkt(unsigned char *buf, int len)
 	}
 	/* Check for download command */
 	else if ((cpu_is_msm8x60() || chk_apps_master()) && (*buf == 0x3A)) {
-		/* DEBUG for reset by 0x3A */
-		printk(KERN_ERR
-			"DIAGDEBUG ERROR: Recev 0x3A and kernel_restart occured.\n");
-		printk(KERN_ERR
-			"DIAGDEBUG ERROR: diag pkt = <%s>     len = %d.\n", buf, len);
-
-		dump_stack();
-		/* DEBUG for reset by 0x3A */
-
 		/* send response back */
 		driver->apps_rsp_buf[0] = *buf;
 		ENCODE_RSP_AND_SEND(0);
@@ -1535,13 +1526,13 @@ int diagfwd_read_complete(struct diag_request *diag_read_ptr)
 	if (buf == (void *)driver->usb_buf_out) {
 		driver->read_len_legacy = diag_read_ptr->actual;
 		APPEND_DEBUG('s');
-//#ifdef DIAG_DEBUG  OPEN FOR 0x3A RESTART
+#ifdef DIAG_DEBUG
 		printk(KERN_INFO "read data from USB, pkt length %d",
 		    diag_read_ptr->actual);
 		print_hex_dump(KERN_DEBUG, "Read Packet Data from USB: ", 16, 1,
 		       DUMP_PREFIX_ADDRESS, diag_read_ptr->buf,
 		       diag_read_ptr->actual, 1);
-//#endif /* DIAG DEBUG */  OPEN FOR 0x3A RESTART
+#endif /* DIAG DEBUG */
 		if (driver->logging_mode == USB_MODE) {
 			if (status != -ECONNRESET && status != -ESHUTDOWN)
 				queue_work(driver->diag_wq,

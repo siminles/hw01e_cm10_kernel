@@ -327,9 +327,6 @@ static struct msm_sensor_output_info_t imx091_sunny_dimensions[] = {
 		.op_pixel_clk = 225600000,
 		.binning_factor = 1,
 	},
-
-
-	
 }; 
 
 static struct msm_camera_csid_vc_cfg imx091_sunny_cid_cfg[] = {

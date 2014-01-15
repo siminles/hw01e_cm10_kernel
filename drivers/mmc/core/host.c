@@ -433,7 +433,6 @@ static struct attribute_group dev_attr_grp = {
 };
 
 #ifdef CONFIG_BCMDHD
-
 /* normal flow of mmc device:
  * power of system pull up -- mmc rescan cards -- load driver of device
  * flow of wifi(Broadcom):
@@ -479,7 +478,7 @@ void bcm_detect_card(int n)
 	if ( sdio_host ){
 		printk("%s: (%p), call \n", __FUNCTION__, sdio_host);
 		mmc_detect_change(sdio_host, n);
-		}
+	}
 	else
 		printk("%s: wifi host is NULL...\n", __FUNCTION__);
 }
