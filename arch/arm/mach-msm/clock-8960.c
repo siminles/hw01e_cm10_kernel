@@ -5206,8 +5206,7 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		gsbi5_uart_clk.c, "msm_serial_hsl.0"),
 #ifdef CONFIG_BCM_BT
 	CLK_LOOKUP("core_clk",		gsbi6_uart_clk.c, NULL),
-#endif
-#ifdef CONFIG_WCN_BT
+#else
 	CLK_LOOKUP("core_clk",		gsbi6_uart_clk.c, "msm_serial_hs.0"),
 #endif
 	CLK_LOOKUP("core_clk",		gsbi7_uart_clk.c,	NULL),
@@ -5215,9 +5214,8 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		gsbi9_uart_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi10_uart_clk.c,	NULL),
 #ifdef CONFIG_BCM_BT
-	CLK_LOOKUP("core_clk",	gsbi11_uart_clk.c,	"msm_serial_hs.0"),
-#endif
-#ifdef CONFIG_WCN_BT
+	CLK_LOOKUP("core_clk",		gsbi11_uart_clk.c,	"msm_serial_hs.0"),
+#else
 	CLK_LOOKUP("core_clk",		gsbi11_uart_clk.c,	NULL),
 #endif
 	CLK_LOOKUP("core_clk",		gsbi12_uart_clk.c,	NULL),
@@ -5291,8 +5289,7 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #endif
 #ifdef CONFIG_BCM_BT
 	CLK_LOOKUP("iface_clk",		gsbi6_p_clk.c,  NULL),
-#endif
-#ifdef CONFIG_WCN_BT
+#else
 	CLK_LOOKUP("iface_clk",		gsbi6_p_clk.c,  "msm_serial_hs.0"),
 #endif
 	CLK_LOOKUP("iface_clk",		gsbi7_p_clk.c,		NULL),
@@ -5303,8 +5300,7 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("iface_clk",		gsbi10_p_clk.c,		"qup_i2c.10"),
 #ifdef CONFIG_BCM_BT
 	CLK_LOOKUP("iface_clk",		gsbi11_p_clk.c,		"msm_serial_hs.0"),
-#endif
-#ifdef CONFIG_WCN_BT
+#else
 	CLK_LOOKUP("iface_clk",		gsbi11_p_clk.c,		NULL),
 #endif
 	CLK_LOOKUP("iface_clk",		gsbi12_p_clk.c,		"qup_i2c.12"),

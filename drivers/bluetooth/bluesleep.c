@@ -164,8 +164,7 @@ static void bluesleep_wakelock_unlock(void)
 static void hsuart_power(int on)
 {
 #ifdef CONFIG_BCM_BT
-        if(NULL == bsi->uport)
-        {
+        if(NULL == bsi->uport) {
             BT_ERR("bsi->uport is null");
             return;
         }
@@ -196,10 +195,7 @@ static inline int bluesleep_can_sleep(void)
 	return (AP2BT_ACTIVE_STAT != gpio_get_value(bsi->ext_wake) )&&
 		(BT2AP_ACTIVE_STAT != gpio_get_value(bsi->host_wake) )&&
 		(bsi->uport != NULL);
-#endif
-	
-#ifdef CONFIG_WCN_BT
-    /* check if MSM_WAKE_BT_GPIO and BT_WAKE_MSM_GPIO are both deasserted */
+#else
 	return gpio_get_value(bsi->ext_wake) &&
 		gpio_get_value(bsi->host_wake) &&
 		(bsi->uport != NULL);
@@ -214,28 +210,24 @@ void bluesleep_sleep_wakeup(void)
 		mod_timer(&tx_timer, jiffies + (TX_TIMER_INTERVAL * HZ));
 #ifdef CONFIG_BCM_BT
 		gpio_set_value(bsi->ext_wake, AP2BT_ACTIVE_STAT);
-#endif
-#ifdef CONFIG_WCN_BT
+#else
 		gpio_set_value(bsi->ext_wake, 0);
 #endif
 		clear_bit(BT_ASLEEP, &flags);
 		/*Activating UART */
 		hsuart_power(1);
 	}
-#ifdef CONFIG_BCM_BT  //def CONFIG_HUAWEI_KERNEL
-    else
-    {
+#ifdef CONFIG_BCM_BT
+    else {
         /*Tx idle, Rx busy, we must also make host_wake asserted, that is low
          * 1 means bt chip can sleep, in bluesleep.c
         */
         /* Here we depend on the status of MSM gpio, for stability */
-        if(AP2BT_ACTIVE_STAT != gpio_get_value(bsi->ext_wake))
-        {
-            //printk(KERN_ERR "-bluesleep_sleep_wakeup wakeup bt chip\n");
+        if(AP2BT_ACTIVE_STAT != gpio_get_value(bsi->ext_wake)) {
             /*0 means wakup bt chip */
             gpio_set_value(bsi->ext_wake, AP2BT_ACTIVE_STAT);  
             mod_timer(&tx_timer, jiffies + (TX_TIMER_INTERVAL * HZ));
-        } 
+        }
     }
 #endif
 }
@@ -275,16 +267,13 @@ static void bluesleep_sleep_work(struct work_struct *work)
  */
 static void bluesleep_hostwake_task(unsigned long data)
 {
-#ifdef CONFIG_WCN_BT
 	BT_DBG("hostwake line change");
-#endif
 
 	spin_lock(&rw_lock);
 
 #ifdef CONFIG_BCM_BT
 	if (AP2BT_ACTIVE_STAT != gpio_get_value(bsi->host_wake))
-#endif
-#ifdef CONFIG_WCN_BT
+#else
 	if (gpio_get_value(bsi->host_wake))
 #endif
 		bluesleep_rx_busy();
@@ -317,9 +306,7 @@ void bluesleep_outgoing_data(void)
 
 	spin_unlock_irqrestore(&rw_lock, irq_flags);
 }
-#endif
-
-#ifdef CONFIG_WCN_BT
+#else
 static void bluesleep_outgoing_data(void)
 {
 	unsigned long irq_flags;
@@ -412,8 +399,7 @@ static void bluesleep_tx_timer_expire(unsigned long data)
 	unsigned long irq_flags;
 
 #ifdef CONFIG_BCM_BT
-	if(NULL == bsi->uport)
-	{
+	if(NULL == bsi->uport) {
 	    BT_ERR("bsi->uport is null");
 	    return;
 	}
@@ -427,8 +413,7 @@ static void bluesleep_tx_timer_expire(unsigned long data)
 		BT_DBG("Tx has been idle");
 #ifdef CONFIG_BCM_BT
 		gpio_set_value(bsi->ext_wake, !AP2BT_ACTIVE_STAT);
-#endif
-#ifdef CONFIG_WCN_BT
+#else
 		gpio_set_value(bsi->ext_wake, 1);
 #endif
 		bluesleep_tx_idle();
@@ -484,20 +469,17 @@ static int bluesleep_start(void)
 
 	mod_timer(&tx_timer, jiffies + (TX_TIMER_INTERVAL*HZ));
 
-#ifdef CONFIG_WCN_BT
 	/* assert BT_WAKE */
-	gpio_set_value(bsi->ext_wake, 0);
-	retval = request_irq(bsi->host_wake_irq, bluesleep_hostwake_isr,
-				IRQF_DISABLED | IRQF_TRIGGER_FALLING,
-				"bluetooth hostwake", NULL);
-#endif
-
 #ifdef CONFIG_BCM_BT
-	/* assert BT_WAKE */
 	gpio_set_value(bsi->ext_wake, AP2BT_ACTIVE_STAT);
     retval = request_irq(bsi->host_wake_irq, bluesleep_hostwake_isr,
                                 IRQF_DISABLED | IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
                                 "bluetooth hostwake", NULL);
+#else
+	gpio_set_value(bsi->ext_wake, 0);
+	retval = request_irq(bsi->host_wake_irq, bluesleep_hostwake_isr,
+				IRQF_DISABLED | IRQF_TRIGGER_FALLING,
+				"bluetooth hostwake", NULL);
 #endif
 	if (retval  < 0) {
 		BT_ERR("Couldn't acquire BT_HOST_WAKE IRQ");
@@ -536,10 +518,8 @@ static void bluesleep_stop(void)
 
 	/* assert BT_WAKE */
 #ifdef CONFIG_BCM_BT
-	gpio_set_value(bsi->ext_wake, AP2BT_ACTIVE_STAT); //0);
-#endif
-	
-#ifdef CONFIG_WCN_BT
+	gpio_set_value(bsi->ext_wake, AP2BT_ACTIVE_STAT);
+#else
 	gpio_set_value(bsi->ext_wake, 0);
 #endif
 	del_timer(&tx_timer);
@@ -730,8 +710,7 @@ static int __init bluesleep_probe(struct platform_device *pdev)
 	}
 #ifdef CONFIG_BCM_BT
 	gpio_host_wake = get_gpio_num_by_name("BCM_BT2MSM_WAKE");
-	if(gpio_host_wake < 0)
-	{
+	if(gpio_host_wake < 0) {
 	        ret = -EINVAL;
 	        goto free_bsi;
 	}
@@ -757,8 +736,7 @@ static int __init bluesleep_probe(struct platform_device *pdev)
 	}
 #ifdef CONFIG_BCM_BT
 	gpio_bt_wake = get_gpio_num_by_name("BCM_MSM2BT_WAKE");
-	if(gpio_bt_wake < 0)
-	{
+	if(gpio_bt_wake < 0) {
 		ret = -EINVAL;
 		goto free_bt_host_wake;
 	}
@@ -778,17 +756,15 @@ static int __init bluesleep_probe(struct platform_device *pdev)
 
 #ifdef CONFIG_BCM_BT
 	res = platform_get_resource_byname(pdev,IORESOURCE_IRQ,"host_wake");
-	if (!res) 
-	{
+	if (!res) {
 		BT_ERR("couldn't find host_wake\n");
 		ret = -ENODEV;
 		goto free_bt_ext_wake;
 	}
-	res->start = MSM_GPIO_TO_INT(gpio_host_wake); //OMAP_GPIO_IRQ(gpio_host_wake);
+	res->start = MSM_GPIO_TO_INT(gpio_host_wake);
 	res->end = res->start;
 	bsi->host_wake_irq = res->start;
-#endif
-#ifdef CONFIG_WCN_BT
+#else
 	bsi->host_wake_irq = platform_get_irq_byname(pdev, "host_wake");
 #endif
 	if (bsi->host_wake_irq < 0) {
@@ -814,8 +790,7 @@ static int bluesleep_remove(struct platform_device *pdev)
 	/* assert bt wake */
 #ifdef CONFIG_BCM_BT
 	gpio_set_value(bsi->ext_wake, AP2BT_ACTIVE_STAT);
-#endif
-#ifdef CONFIG_WCN_BT
+#else
 	gpio_set_value(bsi->ext_wake, 0);
 #endif
 	if (test_bit(BT_PROTO, &flags)) {
