@@ -248,8 +248,6 @@ long msm_sensor_subdev_ioctl(struct v4l2_subdev *sd,
 			unsigned int cmd, void *arg);
 
 struct msm_sensor_ctrl_t *get_sctrl(struct v4l2_subdev *sd);
-int32_t msm_sensor_setting_delay(struct msm_sensor_ctrl_t *s_ctrl,
-int update_type, int res);
 
 #define VIDIOC_MSM_SENSOR_CFG \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 10, void __user *)

@@ -327,7 +327,7 @@ int power_seq_enable_docomo(struct device *dev)
         if (regulator_enable(cam_8921_l10)) {
 			CDBG("%s: 8921_l10 enable failed\n", __func__);
             goto docom_8921_l10_set_optimum_mode;
-        }        
+        }
     }
     mdelay(1);
     //CAM_ISP_1P2_EN
@@ -350,7 +350,7 @@ int power_seq_enable_docomo(struct device *dev)
 		}        
 	}
     mdelay(1);
-  
+
     //L11
 	if (cam_vana == NULL) {
 		cam_vana = regulator_get(dev, "hw_cam_vana");
@@ -374,15 +374,15 @@ int power_seq_enable_docomo(struct device *dev)
 		if (regulator_enable(cam_vana)) {
 			CDBG("%s: VREG CAM VANA enable failed\n", __func__);
 			goto cam_vana_set_optimum_mode;
-		}        
+		}
 	}
     mdelay(1);
      return 0;
-	
+
 cam_vana_set_optimum_mode:
 	regulator_set_optimum_mode(cam_vana, 0);
 cam_vana_set_voltage:
-	regulator_set_voltage(cam_vana, 0, CAM_VANA_MAXUV);	
+	regulator_set_voltage(cam_vana, 0, CAM_VANA_MAXUV);
 cam_vana_put:
 	regulator_put(cam_vana);
 	cam_vana = NULL; 
@@ -418,13 +418,13 @@ void power_seq_disable_docomo(void)
 		regulator_set_optimum_mode(cam_vana, 0);
 		regulator_disable(cam_vana);
 		regulator_put(cam_vana);
-		cam_vana = NULL;        
+		cam_vana = NULL;
 	}
     mdelay(1);
 	if (cam_vio) {
 		regulator_disable(cam_vio);
 		regulator_put(cam_vio);
-		cam_vio = NULL;        
+		cam_vio = NULL;
 	}
     mdelay(1);
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(CAM_1P2_EN_SBM),0);
@@ -436,7 +436,7 @@ void power_seq_disable_docomo(void)
 		regulator_set_optimum_mode(cam_8921_l10, 0);
 		regulator_disable(cam_8921_l10);
 		regulator_put(cam_8921_l10);
-		cam_8921_l10 = NULL;       
+		cam_8921_l10 = NULL;
 	}
     mdelay(1);
     gpio_set_value_cansleep(PM8921_GPIO_PM_TO_SYS(SMPS_2P85_EN),0);

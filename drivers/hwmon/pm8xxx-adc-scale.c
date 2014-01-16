@@ -753,19 +753,16 @@ int32_t pm8xxx_adc_scale_batt_therm(int32_t adc_code,
 	bat_voltage = pm8xxx_adc_scale_ratiometric_calib(adc_code,
 			adc_properties, chan_properties);
 
-#ifndef CONFIG_HUAWEI_KERNEL
 	return pm8xxx_adc_map_batt_therm(
+#ifndef CONFIG_HUAWEI_KERNEL
 			adcmap_btm_threshold,
 			ARRAY_SIZE(adcmap_btm_threshold),
-			bat_voltage,
-			&adc_chan_result->physical);
 #else
-	return pm8xxx_adc_map_batt_therm(
 			adcmap_btm_threshold_universal,
 			ARRAY_SIZE(adcmap_btm_threshold_universal),
+#endif
 			bat_voltage,
 			&adc_chan_result->physical);
-#endif
 }
 EXPORT_SYMBOL_GPL(pm8xxx_adc_scale_batt_therm);
 
@@ -879,19 +876,16 @@ int32_t pm8xxx_adc_batt_scaler(struct pm8xxx_adc_arb_btm_param *btm_param,
 {
 	int rc;
 
-#ifndef CONFIG_HUAWEI_KERNEL
 	rc = pm8xxx_adc_map_linear(
+#ifndef CONFIG_HUAWEI_KERNEL
 		adcmap_btm_threshold,
 		ARRAY_SIZE(adcmap_btm_threshold),
-		(btm_param->low_thr_temp),
-		&btm_param->low_thr_voltage);
 #else
-	rc = pm8xxx_adc_map_linear(
 		adcmap_btm_threshold_universal,
 		ARRAY_SIZE(adcmap_btm_threshold_universal),
+#endif
 		(btm_param->low_thr_temp),
 		&btm_param->low_thr_voltage);
-#endif
 	if (rc)
 		return rc;
 
@@ -901,19 +895,16 @@ int32_t pm8xxx_adc_batt_scaler(struct pm8xxx_adc_arb_btm_param *btm_param,
 	btm_param->low_thr_voltage +=
 		chan_properties->adc_graph[ADC_CALIB_RATIOMETRIC].adc_gnd;
 
-#ifndef CONFIG_HUAWEI_KERNEL
 	rc = pm8xxx_adc_map_linear(
+#ifndef CONFIG_HUAWEI_KERNEL
 		adcmap_btm_threshold,
 		ARRAY_SIZE(adcmap_btm_threshold),
-		(btm_param->high_thr_temp),
-		&btm_param->high_thr_voltage);
 #else
-	rc = pm8xxx_adc_map_linear(
 		adcmap_btm_threshold_universal,
 		ARRAY_SIZE(adcmap_btm_threshold_universal),
+#endif
 		(btm_param->high_thr_temp),
 		&btm_param->high_thr_voltage);
-#endif
 	if (rc)
 		return rc;
 

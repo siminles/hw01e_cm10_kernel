@@ -298,73 +298,6 @@ int32_t msm_sensor_setting(struct msm_sensor_ctrl_t *s_ctrl,
 	return rc;
 }
 
-int32_t msm_sensor_write_init_settings_delay(struct msm_sensor_ctrl_t *s_ctrl)
-{
-	int32_t rc;
-	rc = msm_sensor_write_all_conf_array_delay(
-		s_ctrl->sensor_i2c_client,
-		s_ctrl->msm_sensor_reg->init_settings,
-		s_ctrl->msm_sensor_reg->init_size);
-	return rc;
-}
-
-int32_t msm_sensor_write_res_settings_delay(struct msm_sensor_ctrl_t *s_ctrl,
-	uint16_t res)
-{
-	int32_t rc;
-	rc = msm_sensor_write_conf_array_delay(
-		s_ctrl->sensor_i2c_client,
-		s_ctrl->msm_sensor_reg->mode_settings, res);
-	if (rc < 0)
-		return rc;
-
-	return rc;
-}
-
-int32_t msm_sensor_setting_delay(struct msm_sensor_ctrl_t *s_ctrl,
-			int update_type, int res)
-{
-	int32_t rc = 0;
-
-	v4l2_subdev_notify(&s_ctrl->sensor_v4l2_subdev,
-		NOTIFY_ISPIF_STREAM, (void *)ISPIF_STREAM(
-		PIX0, ISPIF_OFF_IMMEDIATELY));
-	s_ctrl->func_tbl->sensor_stop_stream(s_ctrl);
-	msleep(30);
-	printk("CHYL enter %s update_type = %d\n",__func__,update_type);
-	if (update_type == MSM_SENSOR_REG_INIT) {
-		s_ctrl->curr_csi_params = NULL;
-		msm_sensor_enable_debugfs(s_ctrl);
-		msm_sensor_write_init_settings_delay(s_ctrl);
-	} else if (update_type == MSM_SENSOR_UPDATE_PERIODIC) {
-		msm_sensor_write_res_settings_delay(s_ctrl, res);
-		if (s_ctrl->curr_csi_params != s_ctrl->csi_params[res]) {
-			s_ctrl->curr_csi_params = s_ctrl->csi_params[res];
-			v4l2_subdev_notify(&s_ctrl->sensor_v4l2_subdev,
-				NOTIFY_CSID_CFG,
-				&s_ctrl->curr_csi_params->csid_params);
-			v4l2_subdev_notify(&s_ctrl->sensor_v4l2_subdev,
-						NOTIFY_CID_CHANGE, NULL);
-			mb();
-			v4l2_subdev_notify(&s_ctrl->sensor_v4l2_subdev,
-				NOTIFY_CSIPHY_CFG,
-				&s_ctrl->curr_csi_params->csiphy_params);
-			mb();
-			msleep(20);
-		}
-
-		v4l2_subdev_notify(&s_ctrl->sensor_v4l2_subdev,
-			NOTIFY_PCLK_CHANGE, &s_ctrl->msm_sensor_reg->
-			output_settings[res].op_pixel_clk);
-		v4l2_subdev_notify(&s_ctrl->sensor_v4l2_subdev,
-			NOTIFY_ISPIF_STREAM, (void *)ISPIF_STREAM(
-			PIX0, ISPIF_ON_FRAME_BOUNDARY));
-		s_ctrl->func_tbl->sensor_start_stream(s_ctrl);
-		msleep(30);
-	}
-	return rc;
-}
-
 int32_t msm_sensor_set_sensor_mode(struct msm_sensor_ctrl_t *s_ctrl,
 	int mode, int res)
 {
@@ -587,31 +520,29 @@ int32_t msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 			}
 
 			rc = s_ctrl->func_tbl->sensor_otp_reading(&cdata);
-
 			if (copy_to_user((void *)argp,
 				&cdata,
 				sizeof(struct sensor_cfg_data)))
 				rc = -EFAULT;
 			break;
 
-            case CFG_SET_WHITEBALANCE_YUV:
+		case CFG_SET_WHITEBALANCE_YUV:
             if (s_ctrl->func_tbl->sensor_set_whitebalance_yuv== NULL) {
                 rc = -EFAULT;
                 break;
             }
             rc = s_ctrl->func_tbl->sensor_set_whitebalance_yuv(s_ctrl,cdata.cfg.whitebalance_yuv);
             CDBG("%s:CFG_SET_WHITEBALANCE_YUV sensor_set_whitebalance_yuv \n", __func__);
-                break;
+            break;
 
-            case CFG_SET_EFFECT_YUV:
+		case CFG_SET_EFFECT_YUV:
 			if (s_ctrl->func_tbl->sensor_set_effect_yuv == NULL) {
 				rc = -EFAULT;
 				break;
 			}
             rc = s_ctrl->func_tbl->sensor_set_effect_yuv(s_ctrl,cdata.cfg.effect_yuv);
-
             CDBG("%s:CFG_SET_EFFECT_YUV sensor_set_effect_yuv \n", __func__);
-                break;
+            break;
 
 		default:
 			rc = -EFAULT;
@@ -730,68 +661,6 @@ int32_t msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 	return 0;
 }
 
-int32_t msm_sensor_expand_power_up(struct msm_sensor_ctrl_t *s_ctrl)
-{
-    int rc = 0;
-	struct msm_camera_sensor_info *data = s_ctrl->sensordata;
-    struct device *dev = &s_ctrl->sensor_i2c_client->client->dev;
-
-    rc = msm_camera_request_gpio_table(data, 1);
-	if (rc < 0) {
-		pr_err("%s: request gpio failed\n", __func__);
-		return rc;
-	}
-	
-    if(POWER_SEQ_DCM==get_camera_power_seq_type()){
-        rc= power_seq_enable_docomo(dev);
-    }
-    else
-        rc= msm_sensor_power_up(s_ctrl);
-
-	rc = msm_camera_config_gpio_table(data, 1);
-	if (rc < 0) {
-		pr_err("%s: config gpio failed\n", __func__);
-		return rc;
-	}
-
-	if (s_ctrl->clk_rate != 0)
-		cam_clk_info->clk_rate = s_ctrl->clk_rate;
-
-	rc = msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
-		cam_clk_info, &s_ctrl->cam_clk, ARRAY_SIZE(cam_clk_info), 1);
-	if (rc < 0) {
-		pr_err("%s: clk enable failed\n", __func__);
-		return rc;
-	}
-
-	usleep_range(1000, 2000);
-	if (data->sensor_platform_info->ext_power_ctrl != NULL)
-		data->sensor_platform_info->ext_power_ctrl(1);
-
-    return rc;
-}
-
-int32_t msm_sensor_expand_power_down(struct msm_sensor_ctrl_t *s_ctrl)
-{
-    struct msm_camera_sensor_info *data = s_ctrl->sensordata;
-
-	if (data->sensor_platform_info->ext_power_ctrl != NULL)
-		data->sensor_platform_info->ext_power_ctrl(0);
-	msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
-		cam_clk_info, &s_ctrl->cam_clk, ARRAY_SIZE(cam_clk_info), 0);
-	msm_camera_config_gpio_table(data, 0);
-	
-    if(POWER_SEQ_DCM==get_camera_power_seq_type()){
-        power_seq_disable_docomo();
-    }
-    else
-        msm_sensor_power_down(s_ctrl);
-
-	msm_camera_request_gpio_table(data, 0);
-	
-    return 0;
-}
-
 int32_t msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	int32_t rc = 0;
@@ -806,7 +675,6 @@ int32_t msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 		return rc;
 	}
 
-	printk("%s detected SUCCESS!\n",s_ctrl->sensor_i2c_driver->id_table->name);
 	CDBG("msm_sensor id: %d\n", chipid);
 	if (chipid != s_ctrl->sensor_id_info->sensor_id) {
 		pr_err("msm_sensor_match_id chip id doesnot match\n");
@@ -1051,4 +919,66 @@ int msm_sensor_enable_debugfs(struct msm_sensor_ctrl_t *s_ctrl)
 		return -ENOMEM;
 
 	return 0;
+}
+
+int32_t msm_sensor_expand_power_up(struct msm_sensor_ctrl_t *s_ctrl)
+{
+    int rc = 0;
+	struct msm_camera_sensor_info *data = s_ctrl->sensordata;
+    struct device *dev = &s_ctrl->sensor_i2c_client->client->dev;
+
+    rc = msm_camera_request_gpio_table(data, 1);
+	if (rc < 0) {
+		pr_err("%s: request gpio failed\n", __func__);
+		return rc;
+	}
+	
+    if(POWER_SEQ_DCM==get_camera_power_seq_type()){
+        rc= power_seq_enable_docomo(dev);
+    }
+    else
+        rc= msm_sensor_power_up(s_ctrl);
+
+	rc = msm_camera_config_gpio_table(data, 1);
+	if (rc < 0) {
+		pr_err("%s: config gpio failed\n", __func__);
+		return rc;
+	}
+
+	if (s_ctrl->clk_rate != 0)
+		cam_clk_info->clk_rate = s_ctrl->clk_rate;
+
+	rc = msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
+		cam_clk_info, &s_ctrl->cam_clk, ARRAY_SIZE(cam_clk_info), 1);
+	if (rc < 0) {
+		pr_err("%s: clk enable failed\n", __func__);
+		return rc;
+	}
+
+	usleep_range(1000, 2000);
+	if (data->sensor_platform_info->ext_power_ctrl != NULL)
+		data->sensor_platform_info->ext_power_ctrl(1);
+
+    return rc;
+}
+
+int32_t msm_sensor_expand_power_down(struct msm_sensor_ctrl_t *s_ctrl)
+{
+    struct msm_camera_sensor_info *data = s_ctrl->sensordata;
+
+	if (data->sensor_platform_info->ext_power_ctrl != NULL)
+		data->sensor_platform_info->ext_power_ctrl(0);
+	msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
+		cam_clk_info, &s_ctrl->cam_clk, ARRAY_SIZE(cam_clk_info), 0);
+	msm_camera_config_gpio_table(data, 0);
+	
+    if(POWER_SEQ_DCM==get_camera_power_seq_type()){
+        power_seq_disable_docomo();
+    }
+    else
+        msm_sensor_power_down(s_ctrl);
+
+	msm_camera_request_gpio_table(data, 0);
+	
+    return 0;
 }
