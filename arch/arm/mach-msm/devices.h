@@ -52,9 +52,6 @@ extern struct platform_device msm_device_uart_dm6;
 #ifdef CONFIG_BCM_BT
 extern struct platform_device msm_device_uart_dm11;
 #endif
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-extern struct platform_device msm8960_device_uart_gsbi1;
-#endif
 #ifdef CONFIG_HUAWEI_KERNEL
 extern struct platform_device msm8960_device_qup_i2c_gsbi2;
 extern struct platform_device msm8960_device_qup_i2c_gsbi5;

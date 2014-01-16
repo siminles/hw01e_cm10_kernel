@@ -10,6 +10,4 @@ obj-$(CONFIG_HUAWEI_FEATURE_INPUT_TOUCHKEY)       += touchkey/
 obj-$(CONFIG_INPUT_FUEL_GAUGE)	+= gauge/
 obj-$(CONFIG_HUAWEI_USBSWITCH) += usbswitch/
 
-obj-$(CONFIG_HUAWEI_FEATURE_FELICA_T6ND5) += ak6921af/
-
 obj-y   += sensor_info.o

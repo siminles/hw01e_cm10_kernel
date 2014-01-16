@@ -15,6 +15,4 @@ source "drivers/huawei/device/touchkey/Kconfig"
 source "drivers/huawei/device/gauge/Kconfig"
 source "drivers/huawei/device/usbswitch/Kconfig"
 
-source "drivers/huawei/device/ak6921af/Kconfig"
-
 endmenu

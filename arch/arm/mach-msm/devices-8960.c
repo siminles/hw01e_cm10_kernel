@@ -235,35 +235,6 @@ struct platform_device msm_device_tz_log = {
 	.resource	= tzlog_resources,
 };
 
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-static struct resource resources_uart_gsbi1[] = {
-	{
-		.start	= MSM8960_GSBI1_UARTDM_IRQ,
-		.end	= MSM8960_GSBI1_UARTDM_IRQ,
-		.flags	= IORESOURCE_IRQ,
-	},
-	{
-		.start	= MSM_UART1DM_PHYS,
-		.end	= MSM_UART1DM_PHYS + PAGE_SIZE - 1,
-		.name	= "uartdm_resource",
-		.flags	= IORESOURCE_MEM,
-	},
-	{
-		.start	= MSM_GSBI1_PHYS,
-		.end	= MSM_GSBI1_PHYS + PAGE_SIZE - 1,
-		.name	= "gsbi_resource",
-		.flags	= IORESOURCE_MEM,
-	},
-};
-
-struct platform_device msm8960_device_uart_gsbi1 = {
-	.name	= "msm_serial_hsl",
-	.id	= 2,
-	.num_resources	= ARRAY_SIZE(resources_uart_gsbi1),
-	.resource	= resources_uart_gsbi1,
-};
-#endif
-
 static struct resource resources_uart_gsbi2[] = {
 	{
 		.start	= MSM8960_GSBI2_UARTDM_IRQ,

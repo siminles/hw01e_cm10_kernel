@@ -126,4 +126,3 @@ obj-y				+= clk/
 
 obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
 obj-y				+= huawei/
-obj-m                           += felica/

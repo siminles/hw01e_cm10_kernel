@@ -723,22 +723,8 @@ static int get_string(struct usb_composite_dev *cdev,
 	 */
 	if (composite->strings) {
 		len = lookup_string(composite->strings, buf, language, id);
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-		if (len > 0) {
-			return len;
-		} else {
-			if(language == 0) {
-				language = 0x0409;
-				len = lookup_string(composite->strings, buf, language, id);
-			}
-			if (len > 0) {
-				return len;
-			}
-		}
-#else
 		if (len > 0)
 			return len;
-#endif
 	}
 	list_for_each_entry(c, &cdev->configs, list) {
 		if (c->strings) {

@@ -4969,6 +4969,8 @@ static struct clk_lookup msm_clocks_8064[] = {
 	CLK_LOOKUP("core_clk",		sdc4_clk.c,		"msm_sdcc.4"),
 #ifdef CONFIG_ISDBTUNER
 	CLK_LOOKUP("ref_clk",		tsif_ref_clk.c,		"msm_tsif.1"),
+#else
+	CLK_LOOKUP("ref_clk",		tsif_ref_clk.c,		NULL),
 #endif
 	CLK_LOOKUP("core_clk",		tssc_clk.c,		NULL),
 	CLK_LOOKUP("alt_core_clk",	usb_hs1_xcvr_clk.c,	"msm_otg"),
@@ -4996,7 +4998,7 @@ static struct clk_lookup msm_clocks_8064[] = {
 	CLK_LOOKUP("iface_clk",		gsbi6_p_clk.c,		NULL),
 	CLK_LOOKUP("iface_clk",		gsbi7_p_clk.c,		NULL),
 #ifdef CONFIG_ISDBTUNER
-    CLK_LOOKUP("iface_clk",     tsif_p_clk.c,      "msm_tsif.1"),
+    CLK_LOOKUP("iface_clk",		tsif_p_clk.c,      "msm_tsif.1"),
 #else
 	CLK_LOOKUP("iface_clk",		tsif_p_clk.c,		NULL),
 #endif
@@ -5195,11 +5197,7 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		gp0_clk.c,		NULL),
 	CLK_LOOKUP("core_clk",		gp1_clk.c,		NULL),
 	CLK_LOOKUP("core_clk",		gp2_clk.c,		NULL),
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-    CLK_LOOKUP("core_clk",		gsbi1_uart_clk.c,	"msm_serial_hsl.2"),
-#else
 	CLK_LOOKUP("core_clk",		gsbi1_uart_clk.c,	NULL),
-#endif
 	CLK_LOOKUP("core_clk",		gsbi2_uart_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi3_uart_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		gsbi4_uart_clk.c,	NULL),
@@ -5219,9 +5217,7 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		gsbi11_uart_clk.c,	NULL),
 #endif
 	CLK_LOOKUP("core_clk",		gsbi12_uart_clk.c,	NULL),
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-    CLK_LOOKUP("core_clk",		gsbi1_qup_clk.c,	"msm_serial_hsl.2"),
-#endif
+	CLK_LOOKUP("core_clk",		gsbi1_qup_clk.c,	"spi_qsd.0"),
 #ifdef CONFIG_HUAWEI_KERNEL
     CLK_LOOKUP("core_clk",		gsbi2_qup_clk.c,	"qup_i2c.2"),
 #else
@@ -5230,7 +5226,7 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		gsbi3_qup_clk.c,	"qup_i2c.3"),
 	CLK_LOOKUP("core_clk",		gsbi4_qup_clk.c,	"qup_i2c.4"),
 #ifdef CONFIG_HUAWEI_KERNEL
-	CLK_LOOKUP("core_clk",	  gsbi5_qup_clk.c,	"qup_i2c.5"),
+	CLK_LOOKUP("core_clk",		gsbi5_qup_clk.c,	"qup_i2c.5"),
 #else
 	CLK_LOOKUP("core_clk",		gsbi5_qup_clk.c,	NULL),
 #endif
@@ -5239,6 +5235,8 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		gsbi8_qup_clk.c,	NULL),
 #ifdef CONFIG_ISDBTUNER
 	CLK_LOOKUP("core_clk",		gsbi9_qup_clk.c,	"qup_i2c.9"),
+#else
+	CLK_LOOKUP("core_clk",		gsbi9_qup_clk.c,	NULL),
 #endif
 	CLK_LOOKUP("core_clk",		gsbi10_qup_clk.c,	"qup_i2c.10"),
 	CLK_LOOKUP("core_clk",		gsbi11_qup_clk.c,	NULL),
@@ -5273,9 +5271,7 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		ce1_core_clk.c,		"qce.0"),
 	CLK_LOOKUP("core_clk",		ce1_core_clk.c,		"qcrypto.0"),
 	CLK_LOOKUP("dma_bam_pclk",	dma_bam_p_clk.c,	NULL),
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-    CLK_LOOKUP("iface_clk",		gsbi1_p_clk.c,      "msm_serial_hsl.2"),
-#endif
+	CLK_LOOKUP("iface_clk",		gsbi1_p_clk.c,		"spi_qsd.0"),
 #ifdef CONFIG_HUAWEI_KERNEL
     CLK_LOOKUP("iface_clk",		gsbi2_p_clk.c,		"qup_i2c.2"),
 #else
@@ -5296,6 +5292,8 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("iface_clk",		gsbi8_p_clk.c,		NULL),
 #ifdef CONFIG_ISDBTUNER
 	CLK_LOOKUP("iface_clk",		gsbi9_p_clk.c,		"qup_i2c.9"),
+#else
+	CLK_LOOKUP("iface_clk",		gsbi9_p_clk.c,		NULL),
 #endif
 	CLK_LOOKUP("iface_clk",		gsbi10_p_clk.c,		"qup_i2c.10"),
 #ifdef CONFIG_BCM_BT
@@ -5305,7 +5303,9 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 #endif
 	CLK_LOOKUP("iface_clk",		gsbi12_p_clk.c,		"qup_i2c.12"),
 #ifdef CONFIG_ISDBTUNER
-	CLK_LOOKUP("iface_clk",         tsif_p_clk.c,           "msm_tsif.1"),
+	CLK_LOOKUP("iface_clk",		tsif_p_clk.c,           "msm_tsif.1"),
+#else
+	CLK_LOOKUP("iface_clk",		tsif_p_clk.c,		NULL),
 #endif
 	CLK_LOOKUP("iface_clk",		usb_fs1_p_clk.c,	NULL),
 	CLK_LOOKUP("iface_clk",		usb_fs2_p_clk.c,	NULL),

@@ -2294,18 +2294,6 @@ static struct platform_device usbswitch_device = {
 };
 #endif
 
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5 
-static struct platform_device felica_t6nd5_device = {
-	.name = "felica_t6nd5",
-};
-#endif
-
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-static struct platform_device ak6921af_device = {
-	.name = "ak6921af",
-};
-#endif
-
 #ifdef CONFIG_ISDBTUNER
 static struct platform_device msm_device_mmtuner = {
     .name = "mmtuner",
@@ -2325,9 +2313,7 @@ static struct platform_device *common_devices[] __initdata = {
 	&msm8960_device_ext_5v_vreg,
 	&msm8960_device_ssbi_pmic,
 	&msm8960_device_ext_otg_sw_vreg,
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-	&msm8960_device_uart_gsbi1,
-#endif
+	&msm8960_device_qup_spi_gsbi1,
 	&msm8960_device_qup_i2c_gsbi3,
 	&msm8960_device_qup_i2c_gsbi4,
 	&msm8960_device_qup_i2c_gsbi10,
@@ -2402,12 +2388,6 @@ static struct platform_device *common_devices[] __initdata = {
 #ifdef CONFIG_HUAWEI_KERNEL
 	&msm8960_device_qup_i2c_gsbi2,
 	&msm8960_device_qup_i2c_gsbi5,
-#endif
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-	&felica_t6nd5_device,
-#endif
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-	&ak6921af_device,
 #endif
 };
 
@@ -2697,14 +2677,6 @@ static struct i2c_board_info msm_usbswitch_boardinfo[] __initdata = {
 };
 #endif
 
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-static struct i2c_board_info msm_ak6921af_boardinfo[] __initdata = {
-    {
-        I2C_BOARD_INFO("ak6921af", 0x57),		
-    },
-};
-#endif
-
 /* Sensors DSPS platform data */
 #ifdef CONFIG_MSM_DSPS
 #define DSPS_PIL_GENERIC_NAME		"dsps"
@@ -2861,14 +2833,6 @@ static struct i2c_registry msm8960_i2c_devices[] __initdata = {
         MSM_8960_GSBI2_QUP_I2C_BUS_ID,
         msm_usbswitch_boardinfo,
         ARRAY_SIZE(msm_usbswitch_boardinfo),
-    },
-#endif
-#ifdef CONFIG_HUAWEI_FEATURE_FELICA_T6ND5
-    {
-        I2C_SURF | I2C_FFA | I2C_FLUID | I2C_RUMI,
-        MSM_8960_GSBI2_QUP_I2C_BUS_ID,
-        msm_ak6921af_boardinfo,
-        ARRAY_SIZE(msm_ak6921af_boardinfo),
     },
 #endif
 	{
