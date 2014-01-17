@@ -270,9 +270,9 @@ struct regulator_consumer_supply U9501L_VE_rpm_S8_supply[] = {
 { \
   .init_data = { \
      .constraints = { \
-	      .min_uV =2050000, \
-	      .max_uV =2050000, \
-	      .input_uV =2050000, \
+	      .min_uV =2100000, \
+	      .max_uV =2100000, \
+	      .input_uV =2100000, \
 	      .apply_uV = 0, \
 	      .always_on =1, \
 	      .valid_modes_mask = REGULATOR_MODE_NORMAL| REGULATOR_MODE_IDLE, \
@@ -283,7 +283,7 @@ struct regulator_consumer_supply U9501L_VE_rpm_S8_supply[] = {
      .supply_regulator = NULL, \
   }, \
   .id = RPM_VREG_ID_PM8921_S8, \
-  .default_uV = 2050000, \
+  .default_uV = 2100000, \
   .peak_uA = 100000, \
   .pull_down_enable = 1, \
   .avg_uA = 0, \

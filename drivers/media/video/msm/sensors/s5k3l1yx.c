@@ -538,7 +538,6 @@ static struct msm_sensor_output_info_t s5k3l1yx_dimensions[] = {
 
 static struct msm_camera_csid_vc_cfg s5k3l1yx_cid_cfg[] = {
 	{0, CSI_RAW10, CSI_DECODE_10BIT},
-	{1, CSI_EMBED_DATA, CSI_DECODE_8BIT},
 };
 
 static struct msm_camera_csi2_params s5k3l1yx_csi_params = {
@@ -653,7 +652,6 @@ static struct msm_sensor_fn_t s5k3l1yx_func_tbl = {
 	.sensor_config = msm_sensor_config,
 	.sensor_power_up = msm_sensor_power_up,
 	.sensor_power_down = msm_sensor_power_down,
-	.sensor_adjust_frame_lines = msm_sensor_adjust_frame_lines,
 };
 
 static struct msm_sensor_reg_t s5k3l1yx_regs = {

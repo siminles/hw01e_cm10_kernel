@@ -48,7 +48,7 @@
 #include <mach/msm_dcvs.h>
 
 #ifdef CONFIG_MSM_MPM
-#include <mach/mpm.h>
+#include "mpm.h"
 #endif
 #ifdef CONFIG_MSM_DSPS
 #include <mach/msm_dsps.h>
@@ -563,58 +563,6 @@ static struct msm_bus_vectors vidc_vdec_1080p_vectors[] = {
 		.ib  = 10000000,
 	},
 };
-static struct msm_bus_vectors vidc_venc_1080p_turbo_vectors[] = {
-	{
-		.src = MSM_BUS_MASTER_HD_CODEC_PORT0,
-		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = 222298112,
-		.ib  = 3522000000U,
-	},
-	{
-		.src = MSM_BUS_MASTER_HD_CODEC_PORT1,
-		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = 330301440,
-		.ib  = 3522000000U,
-	},
-	{
-		.src = MSM_BUS_MASTER_AMPSS_M0,
-		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = 2500000,
-		.ib  = 700000000,
-	},
-	{
-		.src = MSM_BUS_MASTER_AMPSS_M0,
-		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = 2500000,
-		.ib  = 10000000,
-	},
-};
-static struct msm_bus_vectors vidc_vdec_1080p_turbo_vectors[] = {
-	{
-		.src = MSM_BUS_MASTER_HD_CODEC_PORT0,
-		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = 222298112,
-		.ib  = 3522000000U,
-	},
-	{
-		.src = MSM_BUS_MASTER_HD_CODEC_PORT1,
-		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = 330301440,
-		.ib  = 3522000000U,
-	},
-	{
-		.src = MSM_BUS_MASTER_AMPSS_M0,
-		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = 2500000,
-		.ib  = 700000000,
-	},
-	{
-		.src = MSM_BUS_MASTER_AMPSS_M0,
-		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = 2500000,
-		.ib  = 10000000,
-	},
-};
 
 static struct msm_bus_paths vidc_bus_client_config[] = {
 	{
@@ -644,14 +592,6 @@ static struct msm_bus_paths vidc_bus_client_config[] = {
 	{
 		ARRAY_SIZE(vidc_vdec_1080p_vectors),
 		vidc_vdec_1080p_vectors,
-	},
-	{
-		ARRAY_SIZE(vidc_venc_1080p_turbo_vectors),
-		vidc_vdec_1080p_turbo_vectors,
-	},
-	{
-		ARRAY_SIZE(vidc_vdec_1080p_turbo_vectors),
-		vidc_vdec_1080p_turbo_vectors,
 	},
 };
 
@@ -702,14 +642,12 @@ struct msm_vidc_platform_data vidc_platform_data = {
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
 	.memtype = ION_CP_MM_HEAP_ID,
 	.enable_ion = 1,
-	.cp_enabled = 1,
 #else
 	.memtype = MEMTYPE_EBI1,
 	.enable_ion = 0,
 #endif
 	.disable_dmx = 0,
 	.disable_fullhd = 0,
-	.cont_mode_dpb_count = 18,
 };
 
 struct platform_device msm_device_vidc = {
@@ -728,6 +666,7 @@ struct platform_device msm_device_vidc = {
 #define MSM_SDC2_BASE         0x12140000
 #define MSM_SDC2_DML_BASE     (MSM_SDC2_BASE + 0x800)
 #define MSM_SDC2_BAM_BASE     (MSM_SDC2_BASE + 0x2000)
+#define MSM_SDC2_BASE         0x12140000
 #define MSM_SDC3_BASE         0x12180000
 #define MSM_SDC3_DML_BASE     (MSM_SDC3_BASE + 0x800)
 #define MSM_SDC3_BAM_BASE     (MSM_SDC3_BASE + 0x2000)
@@ -1018,8 +957,6 @@ static struct pil_q6v4_pdata msm_8960_q6_mss_fw_data = {
 	.aclk_reg = SFAB_MSS_Q6_FW_ACLK_CTL,
 	.jtag_clk_reg = MSS_Q6FW_JTAG_CLK_CTL,
 	.xo_id = MSM_XO_CXO,
-	.xo1_id = MSM_XO_TCXO_A0,
-	.xo2_id = MSM_XO_TCXO_A1,
 	.name = "modem_fw",
 	.depends = "q6",
 	.pas_id = PAS_MODEM_FW,
@@ -1089,11 +1026,6 @@ struct platform_device msm_8960_riva = {
 
 struct platform_device msm_pil_tzapps = {
 	.name = "pil_tzapps",
-	.id = -1,
-};
-
-struct platform_device msm_pil_vidc = {
-	.name = "pil_vidc",
 	.id = -1,
 };
 
@@ -1393,21 +1325,6 @@ static struct resource msm_csiphy1_resources[] = {
 	},
 };
 
-static struct resource msm_csiphy2_resources[] = {
-	{
-		.name	= "csiphy",
-		.start	= 0x04801400,
-		.end	= 0x04801400 + SZ_1K - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-	{
-		.name	= "csiphy",
-		.start	= MSM8960_CSIPHY_2_2LN_IRQ,
-		.end	= MSM8960_CSIPHY_2_2LN_IRQ,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
 struct platform_device msm8960_device_csiphy0 = {
 	.name           = "msm_csiphy",
 	.id             = 0,
@@ -1420,13 +1337,6 @@ struct platform_device msm8960_device_csiphy1 = {
 	.id             = 1,
 	.resource       = msm_csiphy1_resources,
 	.num_resources  = ARRAY_SIZE(msm_csiphy1_resources),
-};
-
-struct platform_device msm8960_device_csiphy2 = {
-	.name           = "msm_csiphy",
-	.id             = 2,
-	.resource       = msm_csiphy2_resources,
-	.num_resources  = ARRAY_SIZE(msm_csiphy2_resources),
 };
 
 static struct resource msm_csid0_resources[] = {
@@ -1459,21 +1369,6 @@ static struct resource msm_csid1_resources[] = {
 	},
 };
 
-static struct resource msm_csid2_resources[] = {
-	{
-		.name	= "csid",
-		.start	= 0x04801800,
-		.end	= 0x04801800 + SZ_1K - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-	{
-		.name	= "csid",
-		.start	= CSI_2_IRQ,
-		.end	= CSI_2_IRQ,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
 struct platform_device msm8960_device_csid0 = {
 	.name           = "msm_csid",
 	.id             = 0,
@@ -1486,13 +1381,6 @@ struct platform_device msm8960_device_csid1 = {
 	.id             = 1,
 	.resource       = msm_csid1_resources,
 	.num_resources  = ARRAY_SIZE(msm_csid1_resources),
-};
-
-struct platform_device msm8960_device_csid2 = {
-	.name           = "msm_csid",
-	.id             = 2,
-	.resource       = msm_csid2_resources,
-	.num_resources  = ARRAY_SIZE(msm_csid2_resources),
 };
 
 struct resource msm_ispif_resources[] = {
@@ -2687,7 +2575,7 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.init_level = 0,
 	.num_levels = 5,
 	.set_grp_async = NULL,
-	.idle_timeout = HZ/12,
+	.idle_timeout = HZ/20,
 	.nap_allowed = true,
 	.clk_map = KGSL_CLK_CORE | KGSL_CLK_IFACE | KGSL_CLK_MEM_IFACE,
 #ifdef CONFIG_MSM_BUS_SCALING

@@ -159,10 +159,10 @@ static struct msm_i2c_platform_data msm_gsbi1_qup_i2c_pdata = {
 
 
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
-#define MSM_FB_SIZE		0x261000
+#define MSM_FB_SIZE		0x260000
 #define MSM7x25A_MSM_FB_SIZE	0xE1000
 #else
-#define MSM_FB_SIZE		0x196000
+#define MSM_FB_SIZE		0x195000
 #define MSM7x25A_MSM_FB_SIZE	0x96000
 
 #endif
@@ -1368,7 +1368,7 @@ static void __init msm7x27a_init_ebi2(void)
 #define ATMEL_TS_I2C_NAME "maXTouch"
 
 static struct regulator_bulk_data regs_atmel[] = {
-	{ .supply = "ldo12",  .min_uV = 2700000, .max_uV = 3300000 },
+	{ .supply = "ldo2",  .min_uV = 2850000, .max_uV = 2850000 },
 	{ .supply = "smps3", .min_uV = 1800000, .max_uV = 1800000 },
 };
 

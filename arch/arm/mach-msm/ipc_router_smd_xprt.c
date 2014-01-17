@@ -19,7 +19,6 @@
 #include <linux/types.h>
 
 #include <mach/msm_smd.h>
-#include <mach/peripheral-loader.h>
 
 #include "ipc_router.h"
 #include "smd_private.h"
@@ -41,7 +40,7 @@ if (msm_ipc_router_smd_xprt_debug_mask) \
 
 struct msm_ipc_router_smd_xprt {
 	struct msm_ipc_router_xprt xprt;
-	void *pil;
+
 	smd_channel_t *channel;
 };
 
@@ -161,14 +160,8 @@ static int msm_ipc_router_smd_remote_write(void *data,
 
 static int msm_ipc_router_smd_remote_close(void)
 {
-	int rc;
 	smsm_change_state(SMSM_APPS_STATE, SMSM_RPCINIT, 0);
-	rc = smd_close(smd_remote_xprt.channel);
-	if (smd_remote_xprt.pil) {
-		pil_put(smd_remote_xprt.pil);
-		smd_remote_xprt.pil = NULL;
-	}
-	return rc;
+	return smd_close(smd_remote_xprt.channel);
 }
 
 static void smd_xprt_read_data(struct work_struct *work)
@@ -356,19 +349,9 @@ static int msm_ipc_router_smd_remote_probe(struct platform_device *pdev)
 
 	init_waitqueue_head(&write_avail_wait_q);
 
-	smd_remote_xprt.pil = pil_get("modem");
-	if (IS_ERR(smd_remote_xprt.pil)) {
-		pr_err("%s: modem load failed\n", __func__);
-		smd_remote_xprt.pil = NULL;
-		destroy_workqueue(smd_xprt_workqueue);
-		return -ENODEV;
-	}
-
 	rc = smd_open("RPCRPY_CNTL", &smd_remote_xprt.channel, NULL,
 		      msm_ipc_router_smd_remote_notify);
 	if (rc < 0) {
-		pil_put(smd_remote_xprt.pil);
-		smd_remote_xprt.pil = NULL;
 		destroy_workqueue(smd_xprt_workqueue);
 		return rc;
 	}

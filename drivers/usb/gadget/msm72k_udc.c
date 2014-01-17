@@ -2,7 +2,7 @@
  * Driver for HighSpeed USB Client Controller in MSM7K
  *
  * Copyright (C) 2008 Google, Inc.
- * Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
  * Author: Mike Lockwood <lockwood@android.com>
  *         Brian Swetland <swetland@google.com>
  *
@@ -1109,6 +1109,7 @@ static void handle_endpoint(struct usb_info *ui, unsigned bit)
 	struct msm_endpoint *ept = ui->ept + bit;
 	struct msm_request *req;
 	unsigned long flags;
+	int req_dequeue = 1;
 	unsigned info;
 
 	/*
@@ -1128,12 +1129,23 @@ static void handle_endpoint(struct usb_info *ui, unsigned bit)
 			break;
 		}
 
+dequeue:
 		/* clean speculative fetches on req->item->info */
 		dma_coherent_post_ops();
 		info = req->item->info;
 		/* if the transaction is still in-flight, stop here */
-		if (info & INFO_ACTIVE)
-			break;
+		if (info & INFO_ACTIVE) {
+			if (req_dequeue) {
+				req_dequeue = 0;
+				ui->dTD_update_fail_count++;
+				ept->dTD_update_fail_count++;
+				udelay(10);
+				goto dequeue;
+			} else {
+				break;
+			}
+		}
+		req_dequeue = 0;
 
 		del_timer(&ept->prime_timer);
 		/* advance ept queue to the next request */
@@ -2281,14 +2293,13 @@ static int msm72k_pullup_internal(struct usb_gadget *_gadget, int is_active)
 static int msm72k_pullup(struct usb_gadget *_gadget, int is_active)
 {
 	struct usb_info *ui = container_of(_gadget, struct usb_info, gadget);
-	struct msm_otg *otg = to_msm_otg(ui->xceiv);
 	unsigned long flags;
+
 
 	atomic_set(&ui->softconnect, is_active);
 
 	spin_lock_irqsave(&ui->lock, flags);
-	if (ui->usb_state == USB_STATE_NOTATTACHED || ui->driver == NULL ||
-		atomic_read(&otg->chg_type) == USB_CHG_TYPE__WALLCHARGER) {
+	if (ui->usb_state == USB_STATE_NOTATTACHED || ui->driver == NULL) {
 		spin_unlock_irqrestore(&ui->lock, flags);
 		return 0;
 	}

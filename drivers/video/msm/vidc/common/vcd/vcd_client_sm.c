@@ -96,8 +96,8 @@ static u32 vcd_encode_start_in_open(struct vcd_clnt_ctxt *cctxt)
 		 cctxt->in_buf_pool.validated != cctxt->in_buf_pool.count) ||
 	    cctxt->out_buf_pool.validated !=
 	    cctxt->out_buf_pool.count) {
-		VCD_MSG_HIGH("%s: Buffer pool is not completely setup yet",
-			__func__);
+		VCD_MSG_ERROR("Buffer pool is not completely setup yet");
+		return VCD_ERR_BAD_STATE;
 	}
 
 	rc = vcd_sched_add_client(cctxt);
@@ -342,7 +342,6 @@ static u32 vcd_flush_in_flushing
 static u32 vcd_flush_in_eos(struct vcd_clnt_ctxt *cctxt,
 	u32 mode)
 {
-	u32 rc = VCD_S_SUCCESS;
 	VCD_MSG_LOW("vcd_flush_in_eos:");
 
 	if (mode > VCD_FLUSH_ALL || !mode) {
@@ -352,18 +351,10 @@ static u32 vcd_flush_in_eos(struct vcd_clnt_ctxt *cctxt,
 	}
 
 	VCD_MSG_MED("Flush mode requested %d", mode);
-	if (!(cctxt->status.frame_submitted) &&
-		(!cctxt->decoding)) {
-		rc = vcd_flush_buffers(cctxt, mode);
-		if (!VCD_FAILED(rc)) {
-			VCD_MSG_HIGH("All buffers are flushed");
-			cctxt->status.mask |= (mode & VCD_FLUSH_ALL);
-			vcd_send_flush_done(cctxt, VCD_S_SUCCESS);
-		}
-	} else
-		cctxt->status.mask |= (mode & VCD_FLUSH_ALL);
 
-	return rc;
+	cctxt->status.mask |= (mode & VCD_FLUSH_ALL);
+
+	return VCD_S_SUCCESS;
 }
 
 static u32 vcd_flush_in_invalid(struct vcd_clnt_ctxt *cctxt,
@@ -548,6 +539,10 @@ static u32 vcd_set_property_cmn
 		  cctxt->bframe = iperiod->b_frames;
 		  break;
 	   }
+	case VCD_REQ_PERF_LEVEL:
+		rc = vcd_req_perf_level(cctxt,
+			(struct vcd_property_perf_level *)prop_val);
+		break;
 	case VCD_I_VOP_TIMING_CONSTANT_DELTA:
 	   {
 		   struct vcd_property_vop_timing_constant_delta *delta =
@@ -562,10 +557,6 @@ static u32 vcd_set_property_cmn
 		   }
 		   break;
 	   }
-	case VCD_REQ_PERF_LEVEL:
-		rc = vcd_req_perf_level(cctxt,
-			(struct vcd_property_perf_level *)prop_val);
-		break;
 	default:
 		{
 			break;

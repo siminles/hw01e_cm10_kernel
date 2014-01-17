@@ -52,7 +52,7 @@
 #define SRCH_MASK                  (1 << SRCH200KHZ_OFFSET)
 
 /* Standard buffer size */
-#define STD_BUF_SIZE               (128)
+#define STD_BUF_SIZE               (64)
 /* Search direction */
 #define SRCH_DIR_UP                 (0)
 #define SRCH_DIR_DOWN               (1)
@@ -472,8 +472,7 @@ enum tavarua_evt_t {
 	TAVARUA_EVT_NEW_SRCH_LIST,
 	TAVARUA_EVT_NEW_AF_LIST,
 	TAVARUA_EVT_TXRDSDAT,
-	TAVARUA_EVT_TXRDSDONE,
-	TAVARUA_EVT_RADIO_DISABLED
+	TAVARUA_EVT_TXRDSDONE
 };
 
 enum tavarua_region_t {

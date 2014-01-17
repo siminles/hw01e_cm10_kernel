@@ -115,12 +115,12 @@ void mmc_request_done(struct mmc_host *host, struct mmc_request *mrq)
 	}
 
 	if (err && cmd->retries && !mmc_card_removed(host->card)) {
-		/*
-		 * Request starter must handle retries - see
-		 * mmc_wait_for_req().
-		 */
-		if (mrq->done)
-			mrq->done(mrq);
+		pr_debug("%s: req failed (CMD%u): %d, retrying...\n",
+			mmc_hostname(host), cmd->opcode, err);
+
+		cmd->retries--;
+		cmd->error = 0;
+		host->ops->request(host, mrq);
 	} else {
 		led_trigger_event(host->led, LED_OFF);
 
@@ -259,21 +259,7 @@ void mmc_wait_for_req(struct mmc_host *host, struct mmc_request *mrq)
 
 	mmc_start_request(host, mrq);
 
-	while (1) {
-		struct mmc_command *cmd;
-
-		wait_for_completion_io(&complete);
-
-		cmd = mrq->cmd;
-		if (!cmd->error || !cmd->retries)
-			break;
-
-		pr_debug("%s: req failed (CMD%u): %d, retrying...\n",
-			 mmc_hostname(host), cmd->opcode, cmd->error);
-		cmd->retries--;
-		cmd->error = 0;
-		host->ops->request(host, mrq);
-	}
+	wait_for_completion_io(&complete);
 }
 
 EXPORT_SYMBOL(mmc_wait_for_req);
@@ -1724,36 +1710,18 @@ int _mmc_detect_card_removed(struct mmc_host *host)
 int mmc_detect_card_removed(struct mmc_host *host)
 {
 	struct mmc_card *card = host->card;
-	int ret;
 
 	WARN_ON(!host->claimed);
-
-	if (!card)
-		return 1;
-
-	ret = mmc_card_removed(card);
 	/*
 	 * The card will be considered unchanged unless we have been asked to
 	 * detect a change or host requires polling to provide card detection.
 	 */
-	if (!host->detect_change && !(host->caps & MMC_CAP_NEEDS_POLL) &&
-	    !(host->caps2 & MMC_CAP2_DETECT_ON_ERR))
-		return ret;
+	if (card && !host->detect_change && !(host->caps & MMC_CAP_NEEDS_POLL))
+		return mmc_card_removed(card);
 
 	host->detect_change = 0;
-	if (!ret) {
-		ret = _mmc_detect_card_removed(host);
-		if (ret && (host->caps2 & MMC_CAP2_DETECT_ON_ERR)) {
-			/*
-			 * Schedule a detect work as soon as possible to let a
-			 * rescan handle the card removal.
-			 */
-			cancel_delayed_work(&host->detect);
-			mmc_detect_change(host, 0);
-		}
-	}
 
-	return ret;
+	return _mmc_detect_card_removed(host);
 }
 EXPORT_SYMBOL(mmc_detect_card_removed);
 

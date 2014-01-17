@@ -2144,6 +2144,7 @@ CONFIG_RADIO_ADAPTERS=y
 # CONFIG_RADIO_SAA7706H is not set
 # CONFIG_RADIO_TEF6862 is not set
 # CONFIG_RADIO_WL1273 is not set
+CONFIG_MMC_MSM_SDIO_SUPPORT=y
 
 #
 # Texas Instruments WL128x FM driver (ST based)

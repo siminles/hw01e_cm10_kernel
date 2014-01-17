@@ -638,6 +638,7 @@ static int register_memory(void)
 		msm_ion_client_create(UINT_MAX, "audio_acdb_client");
 	if (IS_ERR_OR_NULL(acdb_data.ion_client)) {
 		pr_err("%s: Could not register ION client!!!\n", __func__);
+		result = PTR_ERR(acdb_data.ion_client);
 		goto err;
 	}
 
@@ -645,6 +646,7 @@ static int register_memory(void)
 		atomic_read(&acdb_data.map_handle));
 	if (IS_ERR_OR_NULL(acdb_data.ion_handle)) {
 		pr_err("%s: Could not import map handle!!!\n", __func__);
+		result = PTR_ERR(acdb_data.ion_client);
 		goto err_ion_client;
 	}
 
@@ -659,6 +661,7 @@ static int register_memory(void)
 		acdb_data.ion_handle, 0);
 	if (IS_ERR_OR_NULL(&kvaddr)) {
 		pr_err("%s: Could not get kernel virt addr!!!\n", __func__);
+		result = -EINVAL;
 		goto err_ion_handle;
 	}
 	mutex_unlock(&acdb_data.acdb_mutex);

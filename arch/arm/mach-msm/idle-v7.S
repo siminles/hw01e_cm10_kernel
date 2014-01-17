@@ -217,11 +217,12 @@ msm_pm_pa_to_va:
 	biceq	r3, r3, #0x400
 	mcreq	p15, 7, r3, c15, c0, 2
 #endif
-#ifdef CONFIG_MSM_JTAG
 	stmfd   sp!, {lr}
+	bl      v7_flush_kern_cache_all
+#ifdef CONFIG_MSM_JTAG
 	bl      msm_jtag_restore_state
-	ldmfd   sp!, {lr}
 #endif
+	ldmfd   sp!, {lr}
 	mov     r0, #1
 	bx      lr
 	nop

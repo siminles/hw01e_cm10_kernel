@@ -1989,8 +1989,8 @@ static int voice_setup_vocproc(struct voice_data *v)
 	if (v->st_enable)
 		voice_send_set_pp_enable_cmd(v, MODULE_ID_VOICE_MODULE_ST,
 					v->st_enable);
-		
-	voice_send_set_pp_enable_cmd(v, MODULE_ID_VOICE_MODULE_FENS,
+	if (v->fens_enable)
+		voice_send_set_pp_enable_cmd(v, MODULE_ID_VOICE_MODULE_FENS,
 					v->fens_enable);
 
 	if (is_voip_session(v->session_id))
@@ -3701,7 +3701,6 @@ static int32_t qdsp_cvp_callback(struct apr_client_data *data, void *priv)
 			case VSS_IVOCPROC_CMD_DEREGISTER_CALIBRATION_DATA:
 			case VSS_ICOMMON_CMD_MAP_MEMORY:
 			case VSS_ICOMMON_CMD_UNMAP_MEMORY:
-			case VSS_IVOCPROC_CMD_SET_MUTE:
 				v->cvp_state = CMD_STATUS_SUCCESS;
 				wake_up(&v->cvp_wait);
 				break;

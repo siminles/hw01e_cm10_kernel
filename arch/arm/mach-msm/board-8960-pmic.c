@@ -649,17 +649,6 @@ static struct pm8xxx_ccadc_platform_data pm8xxx_ccadc_pdata = {
 	.r_sense		= 10,
 };
 
-/**
- * PM8XXX_PWM_DTEST_CHANNEL_NONE shall be used when no LPG
- * channel should be in DTEST mode.
- */
-
-#define PM8XXX_PWM_DTEST_CHANNEL_NONE   (-1)
-
-static struct pm8xxx_pwm_platform_data pm8xxx_pwm_pdata = {
-	.dtest_channel	= PM8XXX_PWM_DTEST_CHANNEL_NONE,
-};
-
 static struct pm8xxx_vibrator_platform_data pm8xxx_vib_pdata = {
 	.initial_vibrate_ms = 500,
 	.max_timeout_ms = 15000,
@@ -691,7 +680,6 @@ static struct pm8921_platform_data pm8921_platform_data __devinitdata = {
 	.adc_pdata		= &pm8xxx_adc_pdata,
 	.leds_pdata		= &pm8xxx_leds_pdata,
 	.ccadc_pdata		= &pm8xxx_ccadc_pdata,
-	.pwm_pdata		= &pm8xxx_pwm_pdata,
 	.vibrator_pdata = &pm8xxx_vib_pdata,
 };
 

@@ -80,7 +80,6 @@
 #define MXT_PROCI_PALM_T41		41
 #define MXT_PROCI_TOUCHSUPPRESSION_T42	42
 #define MXT_PROCI_STYLUS_T47		47
-#define MXT_PROCI_SHIELDLESS_T56	56
 #define MXT_PROCG_NOISESUPPRESSION_T48	48
 #define MXT_SPT_COMMSCONFIG_T18		18
 #define MXT_SPT_GPIOPWM_T19		19
@@ -207,11 +206,11 @@
 #define MXT_BOOT_VALUE		0xa5
 #define MXT_BACKUP_VALUE	0x55
 #define MXT_BACKUP_TIME		25	/* msec */
-#define MXT224_RESET_TIME	65	/* msec */
-#define MXT224E_RESET_TIME	22	/* msec */
-#define MXT1386_RESET_TIME	250	/* msec */
+#define MXT224_RESET_TIME		65	/* msec */
+#define MXT224E_RESET_TIME		22	/* msec */
+#define MXT1386_RESET_TIME		250	/* msec */
 #define MXT_RESET_TIME		250	/* msec */
-#define MXT_RESET_NOCHGREAD	400	/* msec */
+#define MXT_RESET_NOCHGREAD		400	/* msec */
 
 #define MXT_FWRESET_TIME	175	/* msec */
 
@@ -293,7 +292,6 @@ struct mxt_data {
 	struct i2c_client *client;
 	struct input_dev *input_dev;
 	const struct mxt_platform_data *pdata;
-	const struct mxt_config_info *config_info;
 	struct mxt_object *object_table;
 	struct mxt_info info;
 	struct mxt_finger finger[MXT_MAX_FINGER];
@@ -308,14 +306,6 @@ struct mxt_data {
 	u8 t7_data[T7_DATA_SIZE];
 	u16 t7_start_addr;
 	u8 t9_ctrl;
-	u32 keyarray_old;
-	u32 keyarray_new;
-	u8 t9_max_reportid;
-	u8 t9_min_reportid;
-	u8 t15_max_reportid;
-	u8 t15_min_reportid;
-	u8 curr_cfg_version;
-	int cfg_version_idx;
 };
 
 static bool mxt_object_readable(unsigned int type)
@@ -338,7 +328,6 @@ static bool mxt_object_readable(unsigned int type)
 	case MXT_PROCI_PALM_T41:
 	case MXT_PROCI_TOUCHSUPPRESSION_T42:
 	case MXT_PROCI_STYLUS_T47:
-	case MXT_PROCI_SHIELDLESS_T56:
 	case MXT_PROCG_NOISESUPPRESSION_T48:
 	case MXT_SPT_COMMSCONFIG_T18:
 	case MXT_SPT_GPIOPWM_T19:
@@ -371,7 +360,6 @@ static bool mxt_object_writable(unsigned int type)
 	case MXT_PROCI_PALM_T41:
 	case MXT_PROCI_TOUCHSUPPRESSION_T42:
 	case MXT_PROCI_STYLUS_T47:
-	case MXT_PROCI_SHIELDLESS_T56:
 	case MXT_PROCG_NOISESUPPRESSION_T48:
 	case MXT_SPT_COMMSCONFIG_T18:
 	case MXT_SPT_GPIOPWM_T19:
@@ -682,48 +670,16 @@ static void mxt_input_touchevent(struct mxt_data *data,
 	mxt_input_report(data, id);
 }
 
-static void mxt_handle_key_array(struct mxt_data *data,
-				struct mxt_message *message)
-{
-	u32 keys_changed;
-	int i;
-
-	if (!data->pdata->key_codes) {
-		dev_err(&data->client->dev, "keyarray is not supported\n");
-		return;
-	}
-
-	data->keyarray_new = message->message[1] |
-				(message->message[2] << 8) |
-				(message->message[3] << 16) |
-				(message->message[4] << 24);
-
-	keys_changed = data->keyarray_old ^ data->keyarray_new;
-
-	if (!keys_changed) {
-		dev_dbg(&data->client->dev, "no keys changed\n");
-		return;
-	}
-
-	for (i = 0; i < MXT_KEYARRAY_MAX_KEYS; i++) {
-		if (!(keys_changed & (1 << i)))
-			continue;
-
-		input_report_key(data->input_dev, data->pdata->key_codes[i],
-					(data->keyarray_new & (1 << i)));
-		input_sync(data->input_dev);
-	}
-
-	data->keyarray_old = data->keyarray_new;
-}
-
 static irqreturn_t mxt_interrupt(int irq, void *dev_id)
 {
 	struct mxt_data *data = dev_id;
 	struct mxt_message message;
+	struct mxt_object *object;
 	struct device *dev = &data->client->dev;
 	int id;
 	u8 reportid;
+	u8 max_reportid;
+	u8 min_reportid;
 
 	do {
 		if (mxt_read_message(data, &message)) {
@@ -732,20 +688,16 @@ static irqreturn_t mxt_interrupt(int irq, void *dev_id)
 		}
 		reportid = message.reportid;
 
-		if (!reportid) {
-			dev_dbg(dev, "Report id 0 is reserved\n");
-			continue;
-		}
+		/* whether reportid is thing of MXT_TOUCH_MULTI_T9 */
+		object = mxt_get_object(data, MXT_TOUCH_MULTI_T9);
+		if (!object)
+			goto end;
+		max_reportid = object->max_reportid;
+		min_reportid = max_reportid - object->num_report_ids + 1;
+		id = reportid - min_reportid;
 
-		/* check whether report id is part of T9 or T15 */
-		id = reportid - data->t9_min_reportid;
-
-		if (reportid >= data->t9_min_reportid &&
-					reportid <= data->t9_max_reportid)
+		if (reportid >= min_reportid && reportid <= max_reportid)
 			mxt_input_touchevent(data, &message, id);
-		else if (reportid >= data->t15_min_reportid &&
-					reportid <= data->t15_max_reportid)
-			mxt_handle_key_array(data, &message);
 		else
 			mxt_dump_message(dev, &message);
 	} while (reportid != 0xff);
@@ -756,13 +708,13 @@ end:
 
 static int mxt_check_reg_init(struct mxt_data *data)
 {
-	const struct mxt_config_info *config_info = data->config_info;
+	const struct mxt_platform_data *pdata = data->pdata;
 	struct mxt_object *object;
 	struct device *dev = &data->client->dev;
 	int index = 0;
 	int i, j, config_offset;
 
-	if (!config_info) {
+	if (!pdata->config) {
 		dev_dbg(dev, "No cfg data defined, skipping reg init\n");
 		return 0;
 	}
@@ -775,12 +727,12 @@ static int mxt_check_reg_init(struct mxt_data *data)
 
 		for (j = 0; j < object->size + 1; j++) {
 			config_offset = index + j;
-			if (config_offset > config_info->config_length) {
+			if (config_offset > pdata->config_length) {
 				dev_err(dev, "Not enough config data!\n");
 				return -EINVAL;
 			}
 			mxt_write_object(data, object->type, j,
-					 config_info->config[config_offset]);
+					 pdata->config[config_offset]);
 		}
 		index += object->size + 1;
 	}
@@ -852,7 +804,6 @@ static int mxt_get_object_table(struct mxt_data *data)
 	u16 reg;
 	u8 reportid = 0;
 	u8 buf[MXT_OBJECT_SIZE];
-	bool found_t38 = false;
 
 	for (i = 0; i < data->info.object_num; i++) {
 		struct mxt_object *object = data->object_table + i;
@@ -873,94 +824,11 @@ static int mxt_get_object_table(struct mxt_data *data)
 					(object->instances + 1);
 			object->max_reportid = reportid;
 		}
-
-		/* Calculate index for config major version in config array.
-		 * Major version is the first byte in object T38.
-		 */
-		if (object->type == MXT_SPT_USERDATA_T38)
-			found_t38 = true;
-		if (!found_t38 && mxt_object_writable(object->type))
-			data->cfg_version_idx += object->size + 1;
 	}
 
 	return 0;
 }
 
-static int mxt_search_config_array(struct mxt_data *data, bool version_match)
-{
-
-	const struct mxt_platform_data *pdata = data->pdata;
-	const struct mxt_config_info *cfg_info;
-	struct mxt_info *info = &data->info;
-	int i;
-	u8 cfg_version;
-
-	for (i = 0; i < pdata->config_array_size; i++) {
-
-		cfg_info = &pdata->config_array[i];
-
-		if (!cfg_info->config || !cfg_info->config_length)
-			continue;
-
-		if (info->family_id == cfg_info->family_id &&
-			info->variant_id == cfg_info->variant_id &&
-			info->version == cfg_info->version &&
-			info->build == cfg_info->build) {
-
-			cfg_version = cfg_info->config[data->cfg_version_idx];
-			if (data->curr_cfg_version == cfg_version ||
-				!version_match) {
-				data->config_info = cfg_info;
-				return 0;
-			}
-		}
-	}
-
-	dev_info(&data->client->dev,
-		"Config not found: F: %d, V: %d, FW: %d.%d.%d, CFG: %d\n",
-		info->family_id, info->variant_id,
-		info->version >> 4, info->version & 0xF, info->build,
-		data->curr_cfg_version);
-	return -EINVAL;
-}
-
-static int mxt_get_config(struct mxt_data *data)
-{
-	const struct mxt_platform_data *pdata = data->pdata;
-	struct device *dev = &data->client->dev;
-	struct mxt_object *object;
-	int error;
-
-	if (!pdata->config_array || !pdata->config_array_size) {
-		dev_dbg(dev, "No cfg data provided by platform data\n");
-		return 0;
-	}
-
-	/* Get current config version */
-	object = mxt_get_object(data, MXT_SPT_USERDATA_T38);
-	if (!object) {
-		dev_err(dev, "Unable to obtain USERDATA object\n");
-		return -EINVAL;
-	}
-
-	error = mxt_read_reg(data->client, object->start_address,
-				&data->curr_cfg_version);
-	if (error) {
-		dev_err(dev, "Unable to read config version\n");
-		return error;
-	}
-
-	/* It is possible that the config data on the controller is not
-	 * versioned and the version number returns 0. In this case,
-	 * find a match without the config version checking.
-	 */
-	error = mxt_search_config_array(data,
-				data->curr_cfg_version != 0 ? true : false);
-	if (error)
-		return error;
-
-	return 0;
-}
 static void mxt_reset_delay(struct mxt_data *data)
 {
 	struct mxt_info *info = &data->info;
@@ -989,8 +857,6 @@ static int mxt_initialize(struct mxt_data *data)
 	u8 val;
 	u8 command_register;
 	struct mxt_object *t7_object;
-	struct mxt_object *t9_object;
-	struct mxt_object *t15_object;
 
 	error = mxt_get_info(data);
 	if (error)
@@ -1008,11 +874,6 @@ static int mxt_initialize(struct mxt_data *data)
 	error = mxt_get_object_table(data);
 	if (error)
 		goto free_object_table;
-
-	/* Get config data from platform data */
-	error = mxt_get_config(data);
-	if (error)
-		dev_dbg(&client->dev, "Config info not found.\n");
 
 	/* Check register init values */
 	error = mxt_check_reg_init(data);
@@ -1040,28 +901,6 @@ static int mxt_initialize(struct mxt_data *data)
 	if (error < 0) {
 		dev_err(&client->dev, "Failed to save current touch object\n");
 		goto free_object_table;
-	}
-
-	/* Store T9, T15's min and max report ids */
-	t9_object = mxt_get_object(data, MXT_TOUCH_MULTI_T9);
-	if (!t9_object) {
-		dev_err(&client->dev, "Failed to get T9 object\n");
-		error = -EINVAL;
-		goto free_object_table;
-	}
-	data->t9_max_reportid = t9_object->max_reportid;
-	data->t9_min_reportid = t9_object->max_reportid -
-					t9_object->num_report_ids + 1;
-
-	if (data->pdata->key_codes) {
-		t15_object = mxt_get_object(data, MXT_TOUCH_KEYARRAY_T15);
-		if (!t15_object)
-			dev_dbg(&client->dev, "T15 object is not available\n");
-		else {
-			data->t15_max_reportid = t15_object->max_reportid;
-			data->t15_min_reportid = t15_object->max_reportid -
-						t15_object->num_report_ids + 1;
-		}
 	}
 
 	/* Backup to memory */
@@ -1723,7 +1562,7 @@ static int __devinit mxt_probe(struct i2c_client *client,
 	const struct mxt_platform_data *pdata = client->dev.platform_data;
 	struct mxt_data *data;
 	struct input_dev *input_dev;
-	int error, i;
+	int error;
 
 	if (!pdata)
 		return -EINVAL;
@@ -1768,15 +1607,6 @@ static int __devinit mxt_probe(struct i2c_client *client,
 			     0, data->pdata->y_size, 0, 0);
 	input_set_abs_params(input_dev, ABS_MT_PRESSURE,
 			     0, 255, 0, 0);
-
-	/* set key array supported keys */
-	if (pdata->key_codes) {
-		for (i = 0; i < MXT_KEYARRAY_MAX_KEYS; i++) {
-			if (pdata->key_codes[i])
-				input_set_capability(input_dev, EV_KEY,
-							pdata->key_codes[i]);
-		}
-	}
 
 	input_set_drvdata(input_dev, data);
 	i2c_set_clientdata(client, data);
@@ -1919,12 +1749,6 @@ static int __devexit mxt_remove(struct i2c_client *client)
 		data->pdata->init_hw(false);
 	else
 		mxt_regulator_configure(data, false);
-
-	if (gpio_is_valid(data->pdata->reset_gpio))
-		gpio_free(data->pdata->reset_gpio);
-
-	if (gpio_is_valid(data->pdata->irq_gpio))
-		gpio_free(data->pdata->irq_gpio);
 
 	kfree(data->object_table);
 	kfree(data);

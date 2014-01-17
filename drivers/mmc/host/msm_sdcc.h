@@ -298,7 +298,6 @@ struct msmsdcc_curr_req {
 	int			wait_for_auto_prog_done;
 	int			got_auto_prog_done;
 	int			user_pages;
-	u32			req_tout_ms;
 };
 
 struct msmsdcc_sps_ep_conn_data {
@@ -321,15 +320,6 @@ struct msmsdcc_sps_data {
 	unsigned int			xfer_req_cnt;
 	bool				pipe_reset_pending;
 	struct tasklet_struct		tlet;
-};
-
-struct msmsdcc_msm_bus_vote {
-	uint32_t client_handle;
-	uint32_t curr_vote;
-	int min_bw_vote;
-	int max_bw_vote;
-	bool is_max_bw_needed;
-	struct delayed_work vote_work;
 };
 
 struct msmsdcc_host {
@@ -409,10 +399,6 @@ struct msmsdcc_host {
 	bool sdcc_irq_disabled;
 	bool sdcc_suspended;
 	bool sdio_wakeupirq_disabled;
-	bool pending_resume;
-	struct msmsdcc_msm_bus_vote msm_bus_vote;
-	struct device_attribute	max_bus_bw;
-	struct device_attribute	polling;
 };
 
 int msmsdcc_set_pwrsave(struct mmc_host *mmc, int pwrsave);

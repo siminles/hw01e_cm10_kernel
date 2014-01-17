@@ -31,7 +31,6 @@
 #else
 #include "board-8930.h"
 #endif
-#include "board-storage-common-a.h"
 
 /* MSM8960 has 5 SDCC controllers */
 enum sdcc_controllers {
@@ -215,9 +214,6 @@ static struct msm_mmc_pin_data mmc_slot_pin_data[MAX_SDCC_CONTROLLER] = {
 	},
 };
 
-#define MSM_MPM_PIN_SDC1_DAT1	17
-#define MSM_MPM_PIN_SDC3_DAT1	21
-
 static unsigned int sdc1_sup_clk_rates[] = {
 	400000, 24000000, 48000000
 };
@@ -239,9 +235,7 @@ static struct mmc_platform_data msm8960_sdc1_data = {
 	.pclk_src_dfab	= 1,
 	.nonremovable	= 1,
 	.vreg_data	= &mmc_slot_vreg_data[SDCC1],
-	.pin_data	= &mmc_slot_pin_data[SDCC1],
-	.mpm_sdiowakeup_int = MSM_MPM_PIN_SDC1_DAT1,
-	.msm_bus_voting_data = &sps_to_ddr_bus_voting_data,
+	.pin_data	= &mmc_slot_pin_data[SDCC1]
 };
 #endif
 
@@ -273,8 +267,6 @@ static struct mmc_platform_data msm8960_sdc3_data = {
 	.uhs_caps	= (MMC_CAP_UHS_SDR12 | MMC_CAP_UHS_SDR25 |
 			MMC_CAP_UHS_SDR50 | MMC_CAP_UHS_DDR50 |
 			MMC_CAP_MAX_CURRENT_600),
-	.mpm_sdiowakeup_int = MSM_MPM_PIN_SDC3_DAT1,
-	.msm_bus_voting_data = &sps_to_ddr_bus_voting_data,
 };
 #endif
 

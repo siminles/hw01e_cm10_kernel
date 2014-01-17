@@ -87,7 +87,7 @@
 #include "pm.h"
 #include <mach/cpuidle.h>
 #include "rpm_resources.h"
-#include <mach/mpm.h>
+#include "mpm.h"
 #include "acpuclock.h"
 #include "rpm_log.h"
 #include "smd_private.h"
@@ -1500,20 +1500,9 @@ static void mxt_init_vkeys_8930(void)
 	return;
 }
 
-static struct mxt_config_info mxt_config_array[] = {
-	{
-		.config			= mxt_config_data_8930,
-		.config_length		= ARRAY_SIZE(mxt_config_data_8930),
-		.family_id		= 0x81,
-		.variant_id		= 0x01,
-		.version		= 0x10,
-		.build			= 0xAA,
-	},
-};
-
 static struct mxt_platform_data mxt_platform_data_8930 = {
-	.config_array		= mxt_config_array,
-	.config_array_size	= ARRAY_SIZE(mxt_config_array),
+	.config			= mxt_config_data_8930,
+	.config_length		= ARRAY_SIZE(mxt_config_data_8930),
 	.x_size			= 1067,
 	.y_size			= 566,
 	.irqflags		= IRQF_TRIGGER_FALLING,
@@ -1775,7 +1764,6 @@ static struct platform_device *common_devices[] __initdata = {
 	&msm_8960_q6_mss_sw,
 	&msm_8960_riva,
 	&msm_pil_tzapps,
-	&msm_pil_vidc,
 	&msm8960_device_qup_spi_gsbi1,
 	&msm8960_device_qup_i2c_gsbi3,
 	&msm8960_device_qup_i2c_gsbi4,

@@ -673,8 +673,7 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.init_level = 0,
 	.num_levels = 3,
 	.set_grp_async = set_grp_xbar_async,
-	.idle_timeout = HZ,
-	.strtstp_sleepwake = true,
+	.idle_timeout = HZ/5,
 	.nap_allowed = false,
 	.clk_map = KGSL_CLK_CORE | KGSL_CLK_IFACE | KGSL_CLK_MEM,
 };
@@ -691,7 +690,7 @@ struct platform_device msm_kgsl_3d0 = {
 
 void __init msm7x25a_kgsl_3d0_init(void)
 {
-	if (cpu_is_msm7x25a() || cpu_is_msm7x25aa() || cpu_is_msm7x25ab()) {
+	if (cpu_is_msm7x25a() || cpu_is_msm7x25aa()) {
 		kgsl_3d0_pdata.num_levels = 2;
 		kgsl_3d0_pdata.pwrlevel[0].gpu_freq = 133330000;
 		kgsl_3d0_pdata.pwrlevel[0].bus_freq = 160000000;
@@ -797,7 +796,7 @@ postcore_initcall(msm7627a_init_gpio);
 int __init msm7x2x_misc_init(void)
 {
 	msm_clock_init(&msm7x27a_clock_init_data);
-	if (cpu_is_msm7x27aa() || cpu_is_msm7x25ab())
+	if (cpu_is_msm7x27aa())
 		acpuclk_init(&acpuclk_7x27aa_soc_data);
 	else
 		acpuclk_init(&acpuclk_7x27a_soc_data);

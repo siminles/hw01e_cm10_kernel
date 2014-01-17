@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,7 +13,6 @@
 #include <mach/msm_subsystem_map.h>
 #include <linux/memory_alloc.h>
 #include <linux/iommu.h>
-#include <linux/vmalloc.h>
 #include <asm/sizes.h>
 #include <asm/page.h>
 #include <linux/init.h>
@@ -21,8 +20,8 @@
 #include <mach/iommu_domains.h>
 #include <mach/socinfo.h>
 
-/* dummy 64K for overmapping */
-char iommu_dummy[2*SZ_64K-4];
+/* dummy 4k for overmapping */
+char iommu_dummy[2*PAGE_SIZE-4];
 
 struct msm_iommu_domain {
 	/* iommu domain to map in */
@@ -47,191 +46,154 @@ struct {
 	/* Camera */
 	{
 		.name = "vpe_src",
-		.domain = CAMERA_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Camera */
 	{
 		.name = "vpe_dst",
-		.domain = CAMERA_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Camera */
 	{
 		.name = "vfe_imgwr",
-		.domain = CAMERA_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Camera */
 	{
 		.name = "vfe_misc",
-		.domain = CAMERA_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Camera */
 	{
-		.name = "ijpeg_src",
-		.domain = CAMERA_DOMAIN,
+		.name =	"ijpeg_src",
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Camera */
 	{
-		.name = "ijpeg_dst",
-		.domain = CAMERA_DOMAIN,
+		.name =	"ijpeg_dst",
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Camera */
 	{
 		.name = "jpegd_src",
-		.domain = CAMERA_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Camera */
 	{
 		.name = "jpegd_dst",
-		.domain = CAMERA_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
+	},
+	/* Display */
+	{
+		.name = "mdp_vg1",
+		.domain = GLOBAL_DOMAIN,
+	},
+	/* Display */
+	{
+		.name = "mdp_vg2",
+		.domain = GLOBAL_DOMAIN,
+	},
+	/* Display */
+	{
+		.name = "mdp_rgb1",
+		.domain = GLOBAL_DOMAIN,
+	},
+	/* Display */
+	{
+		.name = "mdp_rgb2",
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Rotator */
 	{
 		.name = "rot_src",
-		.domain = ROTATOR_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Rotator */
 	{
 		.name = "rot_dst",
-		.domain = ROTATOR_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Video */
 	{
 		.name = "vcodec_a_mm1",
-		.domain = VIDEO_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Video */
 	{
 		.name = "vcodec_b_mm2",
-		.domain = VIDEO_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 	/* Video */
 	{
 		.name = "vcodec_a_stream",
-		.domain = VIDEO_DOMAIN,
+		.domain = GLOBAL_DOMAIN,
 	},
 };
 
-static struct mem_pool video_pools[] =  {
-	/*
-	 * Video hardware has the following requirements:
-	 * 1. All video addresses used by the video hardware must be at a higher
-	 *    address than video firmware address.
-	 * 2. Video hardware can only access a range of 256MB from the base of
-	 *    the video firmware.
-	*/
+static struct mem_pool global_pools[] =  {
 	[VIDEO_FIRMWARE_POOL] =
 	/* Low addresses, intended for video firmware */
 		{
 			.paddr	= SZ_128K,
 			.size	= SZ_16M - SZ_128K,
 		},
-	[VIDEO_MAIN_POOL] =
-	/* Main video pool */
+	[LOW_256MB_POOL] =
+	/*
+	 * Video can only access first 256MB of memory
+	 * dedicated pool for such allocations
+	 */
 		{
 			.paddr	= SZ_16M,
 			.size	= SZ_256M - SZ_16M,
 		},
-	[GEN_POOL] =
+	[HIGH_POOL] =
 	/* Remaining address space up to 2G */
 		{
 			.paddr	= SZ_256M,
 			.size	= SZ_2G - SZ_256M,
-		},
+		}
 };
 
-static struct mem_pool camera_pools[] =  {
-	[GEN_POOL] =
-	/* One address space for camera */
-		{
-			.paddr	= SZ_128K,
-			.size	= SZ_2G - SZ_128K,
-		},
-};
-
-static struct mem_pool display_pools[] =  {
-	[GEN_POOL] =
-	/* One address space for display */
-		{
-			.paddr	= SZ_128K,
-			.size	= SZ_2G - SZ_128K,
-		},
-};
-
-static struct mem_pool rotator_pools[] =  {
-	[GEN_POOL] =
-	/* One address space for rotator */
-		{
-			.paddr	= SZ_128K,
-			.size	= SZ_2G - SZ_128K,
-		},
-};
 
 static struct msm_iommu_domain msm_iommu_domains[] = {
-		[VIDEO_DOMAIN] = {
-			.iova_pools = video_pools,
-			.npools = ARRAY_SIZE(video_pools),
-		},
-		[CAMERA_DOMAIN] = {
-			.iova_pools = camera_pools,
-			.npools = ARRAY_SIZE(camera_pools),
-		},
-		[DISPLAY_DOMAIN] = {
-			.iova_pools = display_pools,
-			.npools = ARRAY_SIZE(display_pools),
-		},
-		[ROTATOR_DOMAIN] = {
-			.iova_pools = rotator_pools,
-			.npools = ARRAY_SIZE(rotator_pools),
-		},
+	[GLOBAL_DOMAIN] = {
+		.iova_pools = global_pools,
+		.npools = ARRAY_SIZE(global_pools),
+	}
 };
 
 int msm_iommu_map_extra(struct iommu_domain *domain,
 				unsigned long start_iova,
 				unsigned long size,
-				unsigned long page_size,
 				int cached)
 {
-	int i, ret_value = 0;
-	unsigned long order = get_order(page_size);
-	unsigned long aligned_size = ALIGN(size, page_size);
-	unsigned long nrpages = aligned_size >> (PAGE_SHIFT + order);
-	unsigned long phy_addr = ALIGN(virt_to_phys(iommu_dummy), page_size);
-	unsigned long temp_iova = start_iova;
+	int i, ret;
+	unsigned long temp_iova;
 
-	for (i = 0; i < nrpages; i++) {
-		int ret = iommu_map(domain, temp_iova, phy_addr, order, cached);
+	for (i = size, temp_iova = start_iova; i > 0; i -= SZ_4K,
+						temp_iova += SZ_4K) {
+		ret = iommu_map(domain, temp_iova,
+				PFN_ALIGN(virt_to_phys(iommu_dummy)),
+				get_order(SZ_4K),
+				0);
+
 		if (ret) {
-			pr_err("%s: could not map %lx in domain %p, error: %d\n",
-				__func__, start_iova, domain, ret);
-			ret_value = -EAGAIN;
+			pr_err("%s: could not map %lx to dummy page in domain"
+				" %p\n",
+				__func__, temp_iova, domain);
 			goto out;
 		}
-		temp_iova += page_size;
 	}
-	return ret_value;
+
+	return 0;
+
 out:
-	for (; i > 0; --i) {
-		temp_iova -= page_size;
-		iommu_unmap(domain, start_iova, order);
-	}
-	return ret_value;
-}
 
-void msm_iommu_unmap_extra(struct iommu_domain *domain,
-				unsigned long start_iova,
-				unsigned long size,
-				unsigned long page_size)
-{
-	int i;
-	unsigned long order = get_order(page_size);
-	unsigned long aligned_size = ALIGN(size, page_size);
-	unsigned long nrpages =  aligned_size >> (PAGE_SHIFT + order);
-	unsigned long temp_iova = start_iova;
+	for ( ; i < size; i += SZ_4K, temp_iova -= SZ_4K)
+		iommu_unmap(domain, temp_iova, get_order(SZ_4K));
 
-	for (i = 0; i < nrpages; ++i) {
-		iommu_unmap(domain, temp_iova, order);
-		temp_iova += page_size;
-	}
+	return -EINVAL;
+
 }
 
 
@@ -243,22 +205,9 @@ struct iommu_domain *msm_get_iommu_domain(int domain_num)
 		return NULL;
 }
 
-static unsigned long subsystem_to_domain_tbl[] = {
-	VIDEO_DOMAIN,
-	VIDEO_DOMAIN,
-	CAMERA_DOMAIN,
-	DISPLAY_DOMAIN,
-	ROTATOR_DOMAIN,
-	0xFFFFFFFF
-};
-
 unsigned long msm_subsystem_get_domain_no(int subsys_id)
 {
-	if (subsys_id > INVALID_SUBSYS_ID && subsys_id <= MAX_SUBSYSTEM_ID &&
-	    subsys_id < ARRAY_SIZE(subsystem_to_domain_tbl))
-		return subsystem_to_domain_tbl[subsys_id];
-	else
-		return subsystem_to_domain_tbl[MAX_SUBSYSTEM_ID];
+	return GLOBAL_DOMAIN;
 }
 
 unsigned long msm_subsystem_get_partition_no(int subsys_id)
@@ -267,11 +216,11 @@ unsigned long msm_subsystem_get_partition_no(int subsys_id)
 	case MSM_SUBSYSTEM_VIDEO_FWARE:
 		return VIDEO_FIRMWARE_POOL;
 	case MSM_SUBSYSTEM_VIDEO:
-		return VIDEO_MAIN_POOL;
+		return LOW_256MB_POOL;
 	case MSM_SUBSYSTEM_CAMERA:
 	case MSM_SUBSYSTEM_DISPLAY:
 	case MSM_SUBSYSTEM_ROTATOR:
-		return GEN_POOL;
+		return HIGH_POOL;
 	default:
 		return 0xFFFFFFFF;
 	}
@@ -332,6 +281,9 @@ void msm_free_iova_address(unsigned long iova,
 
 int msm_use_iommu()
 {
+	/*
+	 * For now, just detect if the iommu is attached.
+	 */
 	return iommu_found();
 }
 
@@ -348,29 +300,25 @@ static int __init msm_subsystem_iommu_init(void)
 			struct mem_pool *pool = &msm_iommu_domains[i].
 							iova_pools[j];
 			mutex_init(&pool->pool_mutex);
-			if (pool->size) {
-				pool->gpool = gen_pool_create(PAGE_SHIFT, -1);
+			pool->gpool = gen_pool_create(PAGE_SHIFT, -1);
 
-				if (!pool->gpool) {
-					pr_err("%s: could not allocate pool\n",
-						__func__);
-					pr_err("%s: domain %d iova space %d\n",
-						__func__, i, j);
-					continue;
-				}
+			if (!pool->gpool) {
+				pr_err("%s: domain %d: could not allocate iova"
+					" pool. iommu programming will not work"
+					" with iova space %d\n", __func__,
+					i, j);
+				continue;
+			}
 
-				if (gen_pool_add(pool->gpool, pool->paddr,
-						pool->size, -1)) {
-					pr_err("%s: could not add memory\n",
-						__func__);
-					pr_err("%s: domain %d pool %d\n",
-						__func__, i, j);
-					gen_pool_destroy(pool->gpool);
-					pool->gpool = NULL;
-					continue;
-				}
-			} else {
+			if (gen_pool_add(pool->gpool, pool->paddr, pool->size,
+						-1)) {
+				pr_err("%s: domain %d: could not add memory to"
+					" iova pool. iommu programming will not"
+					" work with iova space %d\n", __func__,
+					i, j);
+				gen_pool_destroy(pool->gpool);
 				pool->gpool = NULL;
+				continue;
 			}
 		}
 	}

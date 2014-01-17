@@ -110,6 +110,7 @@ const char edid_blk1[0x100] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xDF};
 #endif /* DEBUG_EDID */
 
+#ifdef CONFIG_FB_MSM_HDMI_MHL
 #define DMA_E_BASE 0xB0000
 void mdp_vid_quant_set(void)
 {
@@ -126,6 +127,15 @@ void mdp_vid_quant_set(void)
 		MDP_OUTP(MDP_BASE + DMA_E_BASE + 0x78, 0x00FF0000);
 	}
 }
+#else
+void mdp_vid_quant_set(void)
+{
+	/*
+	 * Support for quantization to be added
+	 * only when MHL support is included.
+	 */
+}
+#endif
 
 const char *video_format_2string(uint32 format)
 {
@@ -453,14 +463,6 @@ static ssize_t hdmi_msm_wta_cec(struct device *dev,
 		mutex_lock(&hdmi_msm_state_mutex);
 		hdmi_msm_state->cec_enabled = true;
 		hdmi_msm_state->cec_logical_addr = 4;
-
-		/* flush CEC queue */
-		hdmi_msm_state->cec_queue_wr = hdmi_msm_state->cec_queue_start;
-		hdmi_msm_state->cec_queue_rd = hdmi_msm_state->cec_queue_start;
-		hdmi_msm_state->cec_queue_full = false;
-		memset(hdmi_msm_state->cec_queue_rd, 0,
-			sizeof(struct hdmi_msm_cec_msg)*CEC_QUEUE_SIZE);
-
 		mutex_unlock(&hdmi_msm_state_mutex);
 		hdmi_msm_cec_init();
 		hdmi_msm_cec_write_logical_addr(
@@ -553,7 +555,7 @@ static ssize_t hdmi_msm_wta_cec_frame(struct device *dev,
 			if (hdmi_msm_state->fsm_reset_done)
 				retry++;
 			mutex_unlock(&hdmi_msm_state_mutex);
-			msleep(20);
+			msleep(360);
 		} else
 			break;
 	}
@@ -1703,7 +1705,6 @@ void hdmi_common_init_panel_info(struct msm_panel_info *pinfo)
 	pinfo->xres = timing->active_h;
 	pinfo->yres = timing->active_v;
 	pinfo->clk_rate = timing->pixel_freq*1000;
-	pinfo->frame_rate = 60;
 
 	pinfo->lcdc.h_back_porch = timing->back_porch_h;
 	pinfo->lcdc.h_front_porch = timing->front_porch_h;

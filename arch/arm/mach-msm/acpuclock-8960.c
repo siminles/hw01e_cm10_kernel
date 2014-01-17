@@ -36,7 +36,6 @@
 #include <mach/rpm-regulator.h>
 
 #include "acpuclock.h"
-#include "pm.h"
 
 /*
  * Source IDs.
@@ -347,11 +346,10 @@ static struct scalable scalable_8627[] = {
 		},
 };
 
+static struct scalable *scalable;
 static struct l2_level *l2_freq_tbl;
 static struct acpu_level *acpu_freq_tbl;
 static int l2_freq_tbl_size;
-static struct scalable *scalable;
-#define SCALABLE_TO_CPU(sc) ((sc) - scalable)
 
 /* Instantaneous bandwidth requests in MB/s. */
 #define BW_MBPS(_bw) \
@@ -480,15 +478,15 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_slow[] = {
 	{ 1, {   918000, HFPLL, 1, 0, 0x22 }, L2(7),  1100000 },
 	{ 0, {   972000, HFPLL, 1, 0, 0x24 }, L2(7),  1125000 },
 	{ 1, {  1026000, HFPLL, 1, 0, 0x26 }, L2(7),  1125000 },
-	{ 0, {  1080000, HFPLL, 1, 0, 0x28 }, L2(19), 1175000 },
-	{ 1, {  1134000, HFPLL, 1, 0, 0x2A }, L2(19), 1175000 },
-	{ 0, {  1188000, HFPLL, 1, 0, 0x2C }, L2(19), 1200000 },
-	{ 1, {  1242000, HFPLL, 1, 0, 0x2E }, L2(19), 1200000 },
-	{ 0, {  1296000, HFPLL, 1, 0, 0x30 }, L2(19), 1225000 },
-	{ 1, {  1350000, HFPLL, 1, 0, 0x32 }, L2(19), 1225000 },
-	{ 0, {  1404000, HFPLL, 1, 0, 0x34 }, L2(19), 1237500 },
-	{ 1, {  1458000, HFPLL, 1, 0, 0x36 }, L2(19), 1237500 },
-	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(19), 1250000 },
+	{ 0, {  1080000, HFPLL, 1, 0, 0x28 }, L2(16), 1175000 },
+	{ 1, {  1134000, HFPLL, 1, 0, 0x2A }, L2(16), 1175000 },
+	{ 0, {  1188000, HFPLL, 1, 0, 0x2C }, L2(16), 1200000 },
+	{ 1, {  1242000, HFPLL, 1, 0, 0x2E }, L2(16), 1200000 },
+	{ 0, {  1296000, HFPLL, 1, 0, 0x30 }, L2(16), 1225000 },
+	{ 1, {  1350000, HFPLL, 1, 0, 0x32 }, L2(16), 1225000 },
+	{ 0, {  1404000, HFPLL, 1, 0, 0x34 }, L2(16), 1237500 },
+	{ 1, {  1458000, HFPLL, 1, 0, 0x36 }, L2(16), 1237500 },
+	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(16), 1250000 },
 	{ 0, { 0 } }
 };
 
@@ -507,15 +505,15 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_nom[] = {
 	{ 1, {   918000, HFPLL, 1, 0, 0x22 }, L2(7),  1050000 },
 	{ 0, {   972000, HFPLL, 1, 0, 0x24 }, L2(7),  1075000 },
 	{ 1, {  1026000, HFPLL, 1, 0, 0x26 }, L2(7),  1075000 },
-	{ 0, {  1080000, HFPLL, 1, 0, 0x28 }, L2(19), 1125000 },
-	{ 1, {  1134000, HFPLL, 1, 0, 0x2A }, L2(19), 1125000 },
-	{ 0, {  1188000, HFPLL, 1, 0, 0x2C }, L2(19), 1150000 },
-	{ 1, {  1242000, HFPLL, 1, 0, 0x2E }, L2(19), 1150000 },
-	{ 0, {  1296000, HFPLL, 1, 0, 0x30 }, L2(19), 1175000 },
-	{ 1, {  1350000, HFPLL, 1, 0, 0x32 }, L2(19), 1175000 },
-	{ 0, {  1404000, HFPLL, 1, 0, 0x34 }, L2(19), 1187500 },
-	{ 1, {  1458000, HFPLL, 1, 0, 0x36 }, L2(19), 1187500 },
-	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(19), 1200000 },
+	{ 0, {  1080000, HFPLL, 1, 0, 0x28 }, L2(16), 1125000 },
+	{ 1, {  1134000, HFPLL, 1, 0, 0x2A }, L2(16), 1125000 },
+	{ 0, {  1188000, HFPLL, 1, 0, 0x2C }, L2(16), 1150000 },
+	{ 1, {  1242000, HFPLL, 1, 0, 0x2E }, L2(16), 1150000 },
+	{ 0, {  1296000, HFPLL, 1, 0, 0x30 }, L2(16), 1175000 },
+	{ 1, {  1350000, HFPLL, 1, 0, 0x32 }, L2(16), 1175000 },
+	{ 0, {  1404000, HFPLL, 1, 0, 0x34 }, L2(16), 1187500 },
+	{ 1, {  1458000, HFPLL, 1, 0, 0x36 }, L2(16), 1187500 },
+	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(16), 1200000 },
 	{ 0, { 0 } }
 };
 
@@ -535,15 +533,15 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_fast[] = {
 	{ 1, {   918000, HFPLL, 1, 0, 0x22 }, L2(7),  1000000 },
 	{ 0, {   972000, HFPLL, 1, 0, 0x24 }, L2(7),  1025000 },
 	{ 1, {  1026000, HFPLL, 1, 0, 0x26 }, L2(7),  1025000 },
-	{ 0, {  1080000, HFPLL, 1, 0, 0x28 }, L2(19), 1075000 },
-	{ 1, {  1134000, HFPLL, 1, 0, 0x2A }, L2(19), 1075000 },
-	{ 0, {  1188000, HFPLL, 1, 0, 0x2C }, L2(19), 1100000 },
-	{ 1, {  1242000, HFPLL, 1, 0, 0x2E }, L2(19), 1100000 },
-	{ 0, {  1296000, HFPLL, 1, 0, 0x30 }, L2(19), 1125000 },
-	{ 1, {  1350000, HFPLL, 1, 0, 0x32 }, L2(19), 1125000 },
-	{ 0, {  1404000, HFPLL, 1, 0, 0x34 }, L2(19), 1137500 },
-	{ 1, {  1458000, HFPLL, 1, 0, 0x36 }, L2(19), 1137500 },
-	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(19), 1150000 },
+	{ 0, {  1080000, HFPLL, 1, 0, 0x28 }, L2(16), 1075000 },
+	{ 1, {  1134000, HFPLL, 1, 0, 0x2A }, L2(16), 1075000 },
+	{ 0, {  1188000, HFPLL, 1, 0, 0x2C }, L2(16), 1100000 },
+	{ 1, {  1242000, HFPLL, 1, 0, 0x2E }, L2(16), 1100000 },
+	{ 0, {  1296000, HFPLL, 1, 0, 0x30 }, L2(16), 1125000 },
+	{ 1, {  1350000, HFPLL, 1, 0, 0x32 }, L2(16), 1125000 },
+	{ 0, {  1404000, HFPLL, 1, 0, 0x34 }, L2(16), 1137500 },
+	{ 1, {  1458000, HFPLL, 1, 0, 0x36 }, L2(16), 1137500 },
+	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(16), 1150000 },
 	{ 0, { 0 } }
 };
 #endif
@@ -747,7 +745,7 @@ static void hfpll_enable(struct scalable *sc)
 
 	if (cpu_is_msm8960() || cpu_is_msm8930() || cpu_is_msm8627()) {
 		rc = rpm_vreg_set_voltage(sc->vreg[VREG_HFPLL_A].rpm_vreg_id,
-				sc->vreg[VREG_HFPLL_A].rpm_vreg_voter, 2050000,
+				sc->vreg[VREG_HFPLL_A].rpm_vreg_voter, 2100000,
 				sc->vreg[VREG_HFPLL_A].max_vdd, 0);
 		if (rc)
 			pr_err("%s regulator enable failed (%d)\n",
@@ -876,37 +874,28 @@ static void set_speed(struct scalable *sc, struct core_speed *tgt_s,
 		set_pri_clk_src(sc, tgt_s->pri_src_sel);
 	} else if (strt_s->src == HFPLL && tgt_s->src != HFPLL) {
 		/*
-		 * If responding to CPU_DEAD we must be running on another CPU.
-		 * Therefore, we can't access the downed CPU's clock MUX CP15
-		 * registers from here and can't change clock sources. If the
-		 * CPU is collapsed, however, it is still safe to turn off the
-		 * PLL without switching the MUX away from it.
+		 * If responding to CPU_DEAD we must be running on another
+		 * CPU.  Therefore, we can't access the downed CPU's CP15
+		 * clock MUX registers from here and can't change clock sources.
+		 * Just turn off the PLL- since the CPU is down already, halting
+		 * its clock should be safe.
 		 */
 		if (reason != SETRATE_HOTPLUG || sc == &scalable[L2]) {
 			set_sec_clk_src(sc, tgt_s->sec_src_sel);
 			set_pri_clk_src(sc, tgt_s->pri_src_sel);
-			hfpll_disable(sc);
-		} else if (reason == SETRATE_HOTPLUG
-			   && msm_pm_verify_cpu_pc(SCALABLE_TO_CPU(sc))) {
-			hfpll_disable(sc);
 		}
+		hfpll_disable(sc);
 	} else if (strt_s->src != HFPLL && tgt_s->src == HFPLL) {
+		hfpll_set_rate(sc, tgt_s);
+		hfpll_enable(sc);
 		/*
 		 * If responding to CPU_UP_PREPARE, we can't change CP15
 		 * registers for the CPU that's coming up since we're not
 		 * running on that CPU.  That's okay though, since the MUX
 		 * source was not changed on the way down, either.
 		 */
-		if (reason != SETRATE_HOTPLUG || sc == &scalable[L2]) {
-			hfpll_set_rate(sc, tgt_s);
-			hfpll_enable(sc);
+		if (reason != SETRATE_HOTPLUG || sc == &scalable[L2])
 			set_pri_clk_src(sc, tgt_s->pri_src_sel);
-		} else if (reason == SETRATE_HOTPLUG
-			   && msm_pm_verify_cpu_pc(SCALABLE_TO_CPU(sc))) {
-			/* PLL was disabled during hot-unplug. Re-enable it. */
-			hfpll_set_rate(sc, tgt_s);
-			hfpll_enable(sc);
-		}
 	} else {
 		if (reason != SETRATE_HOTPLUG || sc == &scalable[L2])
 			set_sec_clk_src(sc, tgt_s->sec_src_sel);
@@ -1045,19 +1034,18 @@ static unsigned int calculate_vdd_dig(struct acpu_level *tgt)
 	return max(tgt->l2_level->vdd_dig, pll_vdd_dig);
 }
 
-#ifdef CONFIG_HUAWEI_KERNEL
-#define BOOST_UV 0
-#else
-#define BOOST_UV 25000
-#endif
-
-static unsigned boost_uv;
-static bool enable_boost;
-module_param_named(boost, enable_boost, bool, S_IRUGO | S_IWUSR);
-
 static unsigned int calculate_vdd_core(struct acpu_level *tgt)
 {
-	return tgt->vdd_core + (enable_boost ? boost_uv : 0);
+	unsigned int pll_vdd_core;
+
+	if (tgt->speed.src != HFPLL)
+		pll_vdd_core = 0;
+	else if (tgt->speed.pll_l_val > HFPLL_LOW_VDD_PLL_L_MAX)
+		pll_vdd_core = HFPLL_NOMINAL_VDD;
+	else
+		pll_vdd_core = HFPLL_LOW_VDD;
+
+	return max(tgt->vdd_core, pll_vdd_core);
 }
 
 /* Set the CPU's clock rate and adjust the L2 rate, if appropriate. */
@@ -1302,15 +1290,13 @@ static int __cpuinit acpuclock_cpu_callback(struct notifier_block *nfb,
 	case CPU_DYING:
 	case CPU_DYING_FROZEN:
 		/*
-		 * On Krait v1, the primary and secondary muxes must be set
-		 * to QSB before L2 power collapse and restored after.
+		 * The primary and secondary muxes must be set to QSB before L2
+		 * power collapse and restored after.
 		 */
-		if (cpu_is_krait_v1()) {
-			prev_sec_src[cpu] = get_sec_clk_src(&scalable[cpu]);
-			prev_pri_src[cpu] = get_pri_clk_src(&scalable[cpu]);
-			set_sec_clk_src(&scalable[cpu], SEC_SRC_SEL_QSB);
-			set_pri_clk_src(&scalable[cpu], PRI_SRC_SEL_SEC_SRC);
-		}
+		prev_sec_src[cpu] = get_sec_clk_src(&scalable[cpu]);
+		prev_pri_src[cpu] = get_pri_clk_src(&scalable[cpu]);
+		set_sec_clk_src(&scalable[cpu], SEC_SRC_SEL_QSB);
+		set_pri_clk_src(&scalable[cpu], PRI_SRC_SEL_SEC_SRC);
 		break;
 	case CPU_DEAD:
 	case CPU_DEAD_FROZEN:
@@ -1328,10 +1314,8 @@ static int __cpuinit acpuclock_cpu_callback(struct notifier_block *nfb,
 		break;
 	case CPU_STARTING:
 	case CPU_STARTING_FROZEN:
-		if (cpu_is_krait_v1()) {
-			set_sec_clk_src(&scalable[cpu], prev_sec_src[cpu]);
-			set_pri_clk_src(&scalable[cpu], prev_pri_src[cpu]);
-		}
+		set_sec_clk_src(&scalable[cpu], prev_sec_src[cpu]);
+		set_pri_clk_src(&scalable[cpu], prev_pri_src[cpu]);
 		break;
 	default:
 		break;
@@ -1413,15 +1397,11 @@ static struct acpu_level * __init select_freq_plan(void)
 			pr_info("ACPU PVS: Nominal\n");
 			v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
 			v2 = acpu_freq_tbl_8960_kraitv2_nom;
-			boost_uv = BOOST_UV;
-			enable_boost = true;
 			break;
 		case 0x3:
 			pr_info("ACPU PVS: Fast\n");
 			v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
 			v2 = acpu_freq_tbl_8960_kraitv2_fast;
-			boost_uv = BOOST_UV;
-			enable_boost = true;
 			break;
 		default:
 			pr_warn("ACPU PVS: Unknown. Defaulting to slow.\n");

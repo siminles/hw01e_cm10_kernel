@@ -23,7 +23,6 @@
 #include <mach/gpiomux.h>
 #include "devices.h"
 #include "board-8064.h"
-#include "board-storage-common-a.h"
 
 
 /* APQ8064 has 4 SDCC controllers */
@@ -197,9 +196,6 @@ static struct msm_mmc_pin_data mmc_slot_pin_data[MAX_SDCC_CONTROLLER] = {
 	},
 };
 
-#define MSM_MPM_PIN_SDC1_DAT1       17
-#define MSM_MPM_PIN_SDC3_DAT1       21
-
 #ifdef CONFIG_MMC_MSM_SDC1_SUPPORT
 static unsigned int sdc1_sup_clk_rates[] = {
 	400000, 24000000, 48000000, 96000000
@@ -216,8 +212,6 @@ static struct mmc_platform_data sdc1_data = {
 	.sup_clk_cnt	= ARRAY_SIZE(sdc1_sup_clk_rates),
 	.pin_data	= &mmc_slot_pin_data[SDCC1],
 	.vreg_data	= &mmc_slot_vreg_data[SDCC1],
-	.mpm_sdiowakeup_int = MSM_MPM_PIN_SDC1_DAT1,
-	.msm_bus_voting_data = &sps_to_ddr_bus_voting_data,
 };
 static struct mmc_platform_data *apq8064_sdc1_pdata = &sdc1_data;
 #else
@@ -236,8 +230,6 @@ static struct mmc_platform_data sdc3_data = {
 	.sup_clk_cnt	= ARRAY_SIZE(sdc3_sup_clk_rates),
 	.pin_data	= &mmc_slot_pin_data[SDCC3],
 	.vreg_data	= &mmc_slot_vreg_data[SDCC3],
-	.mpm_sdiowakeup_int = MSM_MPM_PIN_SDC3_DAT1,
-	.msm_bus_voting_data = &sps_to_ddr_bus_voting_data,
 };
 static struct mmc_platform_data *apq8064_sdc3_pdata = &sdc3_data;
 #else

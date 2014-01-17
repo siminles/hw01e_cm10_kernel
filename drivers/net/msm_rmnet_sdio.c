@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -78,7 +78,6 @@ struct rmnet_private {
 #endif
 	struct sk_buff *skb;
 	spinlock_t lock;
-	spinlock_t tx_queue_lock;
 	struct tasklet_struct tsklt;
 	u32 operation_mode; /* IOCTL specified mode (protocol, QoS header) */
 	uint8_t device_up;
@@ -362,7 +361,6 @@ xmit_out:
 static void sdio_write_done(void *dev, struct sk_buff *skb)
 {
 	struct rmnet_private *p = netdev_priv(dev);
-	unsigned long flags;
 
 	if (skb)
 		dev_kfree_skb_any(skb);
@@ -370,14 +368,12 @@ static void sdio_write_done(void *dev, struct sk_buff *skb)
 	if (!p->in_reset) {
 		DBG1("%s: write complete skb=%p\n",	__func__, skb);
 
-		spin_lock_irqsave(&p->tx_queue_lock, flags);
 		if (netif_queue_stopped(dev) &&
 				msm_sdio_dmux_is_ch_low(p->ch_id)) {
 			DBG0("%s: Low WM hit, waking queue=%p\n",
 					__func__, skb);
 			netif_wake_queue(dev);
 		}
-		spin_unlock_irqrestore(&p->tx_queue_lock, flags);
 	} else {
 		DBG1("%s: write in reset skb=%p\n",	__func__, skb);
 	}
@@ -458,7 +454,6 @@ static int rmnet_change_mtu(struct net_device *dev, int new_mtu)
 static int rmnet_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct rmnet_private *p = netdev_priv(dev);
-	unsigned long flags;
 
 	if (netif_queue_stopped(dev)) {
 		pr_err("[%s]fatal: rmnet_xmit called when "
@@ -468,12 +463,10 @@ static int rmnet_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	_rmnet_xmit(skb, dev);
 
-	spin_lock_irqsave(&p->tx_queue_lock, flags);
 	if (msm_sdio_dmux_is_ch_full(p->ch_id)) {
 		netif_stop_queue(dev);
 		DBG0("%s: High WM hit, stopping queue=%p\n",	__func__, skb);
 	}
-	spin_unlock_irqrestore(&p->tx_queue_lock, flags);
 
 	return 0;
 }
@@ -674,7 +667,6 @@ static int __init rmnet_init(void)
 		p->operation_mode = RMNET_MODE_LLP_ETH;
 		p->ch_id = n;
 		spin_lock_init(&p->lock);
-		spin_lock_init(&p->tx_queue_lock);
 #ifdef CONFIG_MSM_RMNET_DEBUG
 		p->timeout_us = timeout_us;
 		p->wakeups_xmit = p->wakeups_rcv = 0;

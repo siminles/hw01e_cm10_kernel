@@ -25,7 +25,7 @@
 
 #include <mach/msm_iomap.h>
 #include <mach/gpiomux.h>
-#include <mach/mpm.h>
+#include "mpm.h"
 
 /* Bits of interest in the GPIO_IN_OUT register.
  */

@@ -10,12 +10,10 @@
  * GNU General Public License for more details.
  *
  */
-#include <linux/ion.h>
 #include <mach/msm_memtypes.h>
 #include "vcd_ddl.h"
 #include "vcd_ddl_shared_mem.h"
 #include "vcd_res_tracker_api.h"
-
 
 struct ddl_context *ddl_get_context(void)
 {
@@ -257,16 +255,6 @@ u32 ddl_decoder_dpb_init(struct ddl_client_context *ddl)
 				memset(frame[i].vcd_frm.virtual + luma_size,
 					 0x80808080,
 					frame[i].vcd_frm.alloc_len - luma_size);
-				if (frame[i].vcd_frm.ion_flag == CACHED) {
-					msm_ion_do_cache_op(
-					ddl_context->video_ion_client,
-					frame[i].vcd_frm.buff_ion_handle,
-					(unsigned long *)frame[i].
-					vcd_frm.virtual,
-					(unsigned long)frame[i].
-					vcd_frm.alloc_len,
-					ION_IOC_CLEAN_INV_CACHES);
-				}
 			} else {
 				DDL_MSG_ERROR("luma size error");
 				return VCD_ERR_FAIL;
@@ -354,7 +342,7 @@ u32 ddl_decoder_dpb_init(struct ddl_client_context *ddl)
 void ddl_release_context_buffers(struct ddl_context *ddl_context)
 {
 	ddl_pmem_free(&ddl_context->metadata_shared_input);
-	ddl_fw_release(&ddl_context->dram_base_a);
+	ddl_fw_release();
 }
 
 void ddl_release_client_internal_buffers(struct ddl_client_context *ddl)
@@ -380,8 +368,6 @@ void ddl_release_client_internal_buffers(struct ddl_client_context *ddl)
 		encoder->dynamic_prop_change = 0;
 		ddl_free_enc_hw_buffers(ddl);
 	}
-	ddl_pmem_free(&ddl->shared_mem[0]);
-	ddl_pmem_free(&ddl->shared_mem[1]);
 }
 
 u32 ddl_codec_type_transact(struct ddl_client_context *ddl,
@@ -644,7 +630,6 @@ u32 ddl_allocate_dec_hw_buffers(struct ddl_client_context *ddl)
 	u32 status = VCD_S_SUCCESS, dpb = 0;
 	u32 width = 0, height = 0;
 	u8 *ptr;
-	struct ddl_context *ddl_context = ddl->ddl_context;
 
 	dec_bufs = &ddl->codec_data.decoder.hw_bufs;
 	ddl_calc_dec_hw_buffers_size(ddl->codec_data.decoder.
@@ -654,105 +639,92 @@ u32 ddl_allocate_dec_hw_buffers(struct ddl_client_context *ddl)
 		ptr = ddl_pmem_alloc(&dec_bufs->context, buf_size.sz_context,
 			DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
-		else
-			msm_ion_do_cache_op(ddl_context->video_ion_client,
-					dec_bufs->context.alloc_handle,
-					dec_bufs->context.virtual_base_addr,
-					dec_bufs->context.buffer_size,
-					ION_IOC_CLEAN_INV_CACHES);
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_nb_ip > 0) {
 		dec_bufs->h264_nb_ip.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->h264_nb_ip, buf_size.sz_nb_ip,
 			DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_vert_nb_mv > 0) {
 		dec_bufs->h264_vert_nb_mv.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->h264_vert_nb_mv,
 			buf_size.sz_vert_nb_mv, DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_nb_dcac > 0) {
 		dec_bufs->nb_dcac.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->nb_dcac, buf_size.sz_nb_dcac,
 			DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_upnb_mv > 0) {
 		dec_bufs->upnb_mv.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->upnb_mv, buf_size.sz_upnb_mv,
 			DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_sub_anchor_mv > 0) {
 		dec_bufs->sub_anchor_mv.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->sub_anchor_mv,
 			buf_size.sz_sub_anchor_mv, DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_overlap_xform > 0) {
 		dec_bufs->overlay_xform.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->overlay_xform,
 			buf_size.sz_overlap_xform, DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_bit_plane3 > 0) {
 		dec_bufs->bit_plane3.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->bit_plane3,
 			buf_size.sz_bit_plane3, DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_bit_plane2 > 0) {
 		dec_bufs->bit_plane2.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->bit_plane2,
 			buf_size.sz_bit_plane2, DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_bit_plane1 > 0) {
 		dec_bufs->bit_plane1.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->bit_plane1,
 			buf_size.sz_bit_plane1, DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_stx_parser > 0) {
 		dec_bufs->stx_parser.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->stx_parser,
 			buf_size.sz_stx_parser, DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 	}
 	if (buf_size.sz_desc > 0) {
 		dec_bufs->desc.mem_type = DDL_MM_MEM;
 		ptr = ddl_pmem_alloc(&dec_bufs->desc, buf_size.sz_desc,
 			DDL_KILO_BYTE(2));
 		if (!ptr)
-			goto fail_free_exit;
+			status = VCD_ERR_ALLOC_FAIL;
 		else {
 			if (!res_trk_check_for_sec_session())
 				memset(dec_bufs->desc.align_virtual_addr,
 					0, buf_size.sz_desc);
-			msm_ion_do_cache_op(ddl_context->video_ion_client,
-						dec_bufs->desc.alloc_handle,
-						dec_bufs->desc.alloc_handle,
-						dec_bufs->desc.buffer_size,
-						ION_IOC_CLEAN_INV_CACHES);
 		}
 	}
-	return status;
-fail_free_exit:
-	status = VCD_ERR_ALLOC_FAIL;
-	ddl_free_dec_hw_buffers(ddl);
+	if (status)
+		ddl_free_dec_hw_buffers(ddl);
 	return status;
 }
 
@@ -851,7 +823,6 @@ u32 ddl_allocate_enc_hw_buffers(struct ddl_client_context *ddl)
 	struct ddl_enc_buffer_size buf_size;
 	void *ptr;
 	u32 status = VCD_S_SUCCESS;
-	struct ddl_context *ddl_context = ddl->ddl_context;
 
 	enc_bufs = &ddl->codec_data.encoder.hw_bufs;
 	enc_bufs->dpb_count = DDL_ENC_MIN_DPB_BUFFERS;
@@ -880,69 +851,60 @@ u32 ddl_allocate_enc_hw_buffers(struct ddl_client_context *ddl)
 			ptr = ddl_pmem_alloc(&enc_bufs->mv, buf_size.sz_mv,
 				DDL_KILO_BYTE(2));
 			if (!ptr)
-				goto fail_enc_free_exit;
+				status = VCD_ERR_ALLOC_FAIL;
 		}
 		if (buf_size.sz_col_zero > 0) {
 			enc_bufs->col_zero.mem_type = DDL_MM_MEM;
 			ptr = ddl_pmem_alloc(&enc_bufs->col_zero,
 				buf_size.sz_col_zero, DDL_KILO_BYTE(2));
-			if (!ptr)
-				goto fail_enc_free_exit;
+		if (!ptr)
+			status = VCD_ERR_ALLOC_FAIL;
 		}
 		if (buf_size.sz_md > 0) {
 			enc_bufs->md.mem_type = DDL_MM_MEM;
 			ptr = ddl_pmem_alloc(&enc_bufs->md, buf_size.sz_md,
 				DDL_KILO_BYTE(2));
 			if (!ptr)
-				goto fail_enc_free_exit;
+				status = VCD_ERR_ALLOC_FAIL;
 		}
 		if (buf_size.sz_pred > 0) {
 			enc_bufs->pred.mem_type = DDL_MM_MEM;
 			ptr = ddl_pmem_alloc(&enc_bufs->pred,
 				buf_size.sz_pred, DDL_KILO_BYTE(2));
 			if (!ptr)
-				goto fail_enc_free_exit;
+				status = VCD_ERR_ALLOC_FAIL;
 		}
 		if (buf_size.sz_nbor_info > 0) {
 			enc_bufs->nbor_info.mem_type = DDL_MM_MEM;
 			ptr = ddl_pmem_alloc(&enc_bufs->nbor_info,
 				buf_size.sz_nbor_info, DDL_KILO_BYTE(2));
 			if (!ptr)
-				goto fail_enc_free_exit;
+				status = VCD_ERR_ALLOC_FAIL;
 		}
 		if (buf_size.sz_acdc_coef > 0) {
 			enc_bufs->acdc_coef.mem_type = DDL_MM_MEM;
 			ptr = ddl_pmem_alloc(&enc_bufs->acdc_coef,
 				buf_size.sz_acdc_coef, DDL_KILO_BYTE(2));
 			if (!ptr)
-				goto fail_enc_free_exit;
+				status = VCD_ERR_ALLOC_FAIL;
 		}
 		if (buf_size.sz_mb_info > 0) {
 			enc_bufs->mb_info.mem_type = DDL_MM_MEM;
 			ptr = ddl_pmem_alloc(&enc_bufs->mb_info,
 				buf_size.sz_mb_info, DDL_KILO_BYTE(2));
 			if (!ptr)
-				goto fail_enc_free_exit;
+				status = VCD_ERR_ALLOC_FAIL;
 		}
 		if (buf_size.sz_context > 0) {
 			enc_bufs->context.mem_type = DDL_MM_MEM;
 			ptr = ddl_pmem_alloc(&enc_bufs->context,
 				buf_size.sz_context, DDL_KILO_BYTE(2));
 			if (!ptr)
-				goto fail_enc_free_exit;
-			else
-				msm_ion_do_cache_op(
-					ddl_context->video_ion_client,
-					enc_bufs->context.alloc_handle,
-					enc_bufs->context.virtual_base_addr,
-					enc_bufs->context.buffer_size,
-					ION_IOC_CLEAN_INV_CACHES);
+				status = VCD_ERR_ALLOC_FAIL;
 		}
+		if (status)
+			ddl_free_enc_hw_buffers(ddl);
 	}
-	return status;
-fail_enc_free_exit:
-	status = VCD_ERR_ALLOC_FAIL;
-	ddl_free_enc_hw_buffers(ddl);
 	return status;
 }
 
@@ -979,9 +941,8 @@ u32 ddl_check_reconfig(struct ddl_client_context *ddl)
 	if (decoder->cont_mode) {
 		if ((decoder->actual_output_buf_req.sz <=
 			 decoder->client_output_buf_req.sz) &&
-			(decoder->actual_output_buf_req.actual_count +
-                        GRAPHICS_UNUSED_BUFFERS <=
-                        decoder->client_output_buf_req.actual_count)) {
+			(decoder->actual_output_buf_req.actual_count <=
+			 decoder->client_output_buf_req.actual_count)) {
 			need_reconfig = false;
 			if (decoder->min_dpb_num >
 				decoder->min_output_buf_req.min_count) {
@@ -1009,8 +970,7 @@ u32 ddl_check_reconfig(struct ddl_client_context *ddl)
 			(decoder->frame_size.scan_lines ==
 			decoder->client_frame_size.scan_lines) &&
 			(decoder->frame_size.stride ==
-			decoder->client_frame_size.stride) &&
-			decoder->progressive_only)
+			decoder->client_frame_size.stride))
 				need_reconfig = false;
 	}
 	return need_reconfig;
@@ -1058,15 +1018,4 @@ void ddl_fill_dec_desc_buffer(struct ddl_client_context *ddl)
 		memcpy(dec_desc_buf->align_virtual_addr,
 			   ip_bitstream->desc_buf,
 			   ip_bitstream->desc_size);
-}
-
-void ddl_set_vidc_timeout(struct ddl_client_context *ddl)
-{
-	u32 vidc_time_out = 0;
-	if (ddl->codec_data.decoder.idr_only_decoding)
-		vidc_time_out = 2 * DDL_VIDC_1080P_200MHZ_TIMEOUT_VALUE;
-	DDL_MSG_HIGH("%s Video core time out value = 0x%x",
-		 __func__, vidc_time_out);
-	vidc_sm_set_video_core_timeout_value(
-		&ddl->shared_mem[ddl->command_channel], vidc_time_out);
 }

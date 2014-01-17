@@ -95,7 +95,6 @@ struct rr_header {
 /* internals */
 
 #define IPC_ROUTER_MAX_REMOTE_SERVERS		100
-#define MAX_WAKELOCK_NAME_SZ 32
 
 struct rr_packet {
 	struct list_head list;
@@ -117,7 +116,6 @@ struct msm_ipc_port {
 
 	struct list_head port_rx_q;
 	struct mutex port_rx_q_lock;
-	char rx_wakelock_name[MAX_WAKELOCK_NAME_SZ];
 	struct wake_lock port_rx_wake_lock;
 	wait_queue_head_t port_rx_wait_q;
 
