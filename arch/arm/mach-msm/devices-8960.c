@@ -642,6 +642,7 @@ struct msm_vidc_platform_data vidc_platform_data = {
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
 	.memtype = ION_CP_MM_HEAP_ID,
 	.enable_ion = 1,
+	.cp_enabled = 1,
 #else
 	.memtype = MEMTYPE_EBI1,
 	.enable_ion = 0,
@@ -1026,6 +1027,11 @@ struct platform_device msm_8960_riva = {
 
 struct platform_device msm_pil_tzapps = {
 	.name = "pil_tzapps",
+	.id = -1,
+};
+
+struct platform_device msm_pil_vidc = {
+	.name = "pil_vidc",
 	.id = -1,
 };
 
