@@ -305,7 +305,7 @@ static u8 mipi_toshiba_720p_get_chip_ver(struct msm_fb_data_type *mfd)
 
 static void mipi_toshiba_720p_enter_dstb(struct msm_fb_data_type *mfd)
 {
-	mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, toshiba_720p_enter_dstb_cmd,
+	mipi_dsi_cmds_tx(&toshiba_tx_buf, toshiba_720p_enter_dstb_cmd,
 			ARRAY_SIZE(toshiba_720p_enter_dstb_cmd));
 }
 extern struct platform_device msm_mipi_dsi1_device;
@@ -402,7 +402,7 @@ int set_cabc(struct lcd_tuning_dev *ltc, enum tft_cabc cabc)
                 return 0;
             }
             mipi_set_tx_power_mode(0);
-            mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, resa_r63308_cabc_UI_SET,
+            mipi_dsi_cmds_tx(&toshiba_tx_buf, resa_r63308_cabc_UI_SET,
             ARRAY_SIZE(resa_r63308_cabc_UI_SET));
             mutex_unlock(&mfd->dma->ov_mutex);
             break ;
@@ -417,7 +417,7 @@ int set_cabc(struct lcd_tuning_dev *ltc, enum tft_cabc cabc)
                 return 0;
             }
             mipi_set_tx_power_mode(0);
-            mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, resa_r63308_cabc_VIDEO_SET,
+            mipi_dsi_cmds_tx(&toshiba_tx_buf, resa_r63308_cabc_VIDEO_SET,
             ARRAY_SIZE(resa_r63308_cabc_VIDEO_SET));
             mutex_unlock(&mfd->dma->ov_mutex);
             break;
@@ -455,7 +455,7 @@ static int mipi_toshiba_720p_lcd_on(struct platform_device *pdev)
 	r63308_cabc_UI_USEPARAMETER[2] = r63306_cabc_user_parameter[2];
 //donot touch backlight END//
     mipi_set_tx_power_mode(0);
-				mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, resa_r63308_cabc_UI_SET,
+				mipi_dsi_cmds_tx(&toshiba_tx_buf, resa_r63308_cabc_UI_SET,
                 ARRAY_SIZE(resa_r63308_cabc_UI_SET));
  /* END: Added by w00182148, 2012/03/20 for cabc */
         return 0;
@@ -482,12 +482,12 @@ static int mipi_toshiba_720p_lcd_on(struct platform_device *pdev)
     }
     if(chip_id == CHIP_VER_R63308)
     {
-    	mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, toshiba_720p_r63308_display_on_cmds,
+    	mipi_dsi_cmds_tx(&toshiba_tx_buf, toshiba_720p_r63308_display_on_cmds,
     			ARRAY_SIZE(toshiba_720p_r63308_display_on_cmds));
     }
     else
     {
-    	mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, toshiba_720p_r63306_display_on_cmds,
+    	mipi_dsi_cmds_tx(&toshiba_tx_buf, toshiba_720p_r63306_display_on_cmds,
     			ARRAY_SIZE(toshiba_720p_r63306_display_on_cmds));
     }
 
@@ -499,7 +499,7 @@ static int mipi_toshiba_720p_lcd_on(struct platform_device *pdev)
 		r63308_cabc_UI_USEPARAMETER[2] = r63306_cabc_user_parameter[2];
         //donot touch backlight end//
 
-		mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, resa_r63308_cabc_UI_SET,
+		mipi_dsi_cmds_tx(&toshiba_tx_buf, resa_r63308_cabc_UI_SET,
                 ARRAY_SIZE(resa_r63308_cabc_UI_SET));
 
 	/* END:   Added by w00182148, 2012/03/20 for cabc */
@@ -527,7 +527,7 @@ static int mipi_toshiba_720p_lcd_off(struct platform_device *pdev)
 	memset(fbi->screen_base, 0x0, fbi->fix.smem_len);
 	pr_debug("mipi_toshiba_lcd_off enter\n");
         mipi_set_tx_power_mode(0);
-	mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, toshiba_720p_display_off_cmds,
+	mipi_dsi_cmds_tx(&toshiba_tx_buf, toshiba_720p_display_off_cmds,
 			ARRAY_SIZE(toshiba_720p_display_off_cmds));
 
 	/* disable vsp and vsn */
@@ -561,7 +561,7 @@ int R63306_set_dynamic_gamma(struct lcd_tuning_dev *ltd, enum lcd_gamma gamma)
         //mdp4_dsi_blt_dmap_busy_wait(mfd);
         //mipi_dsi_mdp_busy_wait(mfd);
          mipi_set_tx_power_mode(0);
-        mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, toshiba_720p_r63308_dynamic_gamma_25,
+        mipi_dsi_cmds_tx(&toshiba_tx_buf, toshiba_720p_r63308_dynamic_gamma_25,
         ARRAY_SIZE(toshiba_720p_r63308_dynamic_gamma_25));
         printk("########mipi_toshiba_dynamic_gamma 2.5 setting \n");
         mutex_unlock(&mfd->dma->ov_mutex);
@@ -578,7 +578,7 @@ int R63306_set_dynamic_gamma(struct lcd_tuning_dev *ltd, enum lcd_gamma gamma)
         //mdp4_dsi_blt_dmap_busy_wait(mfd);
         //mipi_dsi_mdp_busy_wait(mfd);
          mipi_set_tx_power_mode(0);
-        mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, toshiba_720p_r63308_dynamic_gamma_22,
+        mipi_dsi_cmds_tx(&toshiba_tx_buf, toshiba_720p_r63308_dynamic_gamma_22,
         ARRAY_SIZE(toshiba_720p_r63308_dynamic_gamma_22));
         mutex_unlock(&mfd->dma->ov_mutex);
         printk("########mipi_toshiba_dynamic_gamma 2.2 setting \n");
@@ -710,13 +710,13 @@ static void mipi_toshiba_720p_set_backlight(struct msm_fb_data_type *mfd)
 		mutex_unlock(&mfd->dma->ov_mutex);
 		return;
     }
-    mdp4_dsi_cmd_dma_busy_wait(mfd);
-    mdp4_dsi_blt_dmap_busy_wait(mfd);
-    mipi_dsi_mdp_busy_wait(mfd);
+    //mdp4_dsi_cmd_dma_busy_wait(mfd);
+    //mdp4_dsi_blt_dmap_busy_wait(mfd);
+    //mipi_dsi_mdp_busy_wait(mfd);
     r63306_cabc_user_parameter[1] = backlight_value[mfd->bl_level] >> 4;
     r63306_cabc_user_parameter[2] = backlight_value[mfd->bl_level] & 0x0f;
     mipi_set_tx_power_mode(0);
-    mipi_dsi_cmds_tx(mfd, &toshiba_tx_buf, toshiba_720p_backlight_cmds,
+    mipi_dsi_cmds_tx(&toshiba_tx_buf, toshiba_720p_backlight_cmds,
 			ARRAY_SIZE(toshiba_720p_backlight_cmds));
     mutex_unlock(&mfd->dma->ov_mutex);
 #endif

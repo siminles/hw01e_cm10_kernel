@@ -61,6 +61,7 @@ struct msmfb_writeback_data_list {
 	struct list_head registered_entry;
 	struct list_head active_entry;
 	void *addr;
+	struct ion_handle *ihdl;
 	struct file *pmem_file;
 	struct msmfb_data buf_info;
 	struct msmfb_img img;
@@ -146,6 +147,7 @@ struct msm_fb_data_type {
 	__u32 var_xres;
 	__u32 var_yres;
 	__u32 var_pixclock;
+	__u32 var_frame_rate;
 
 #ifdef MSM_FB_ENABLE_DBGFS
 	struct dentry *sub_dir;
@@ -181,6 +183,7 @@ struct msm_fb_data_type {
 	u32 use_ov0_blt, ov0_blt_state;
 	u32 use_ov1_blt, ov1_blt_state;
 	u32 writeback_state;
+	bool writeback_active_cnt;
 	int cont_splash_done;
 };
 
@@ -208,5 +211,12 @@ void msm_fb_config_backlight(struct msm_fb_data_type *mfd);
 
 void fill_black_screen(void);
 void unfill_black_screen(void);
+int msm_fb_check_frame_rate(struct msm_fb_data_type *mfd,
+				struct fb_info *info);
+
+#ifdef CONFIG_FB_MSM_LOGO
+#define INIT_IMAGE_FILE "/initlogo.rle"
+int load_565rle_image(char *filename, bool bf_supported);
+#endif
 
 #endif /* MSM_FB_H */
