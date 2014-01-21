@@ -574,6 +574,7 @@ static struct msm_sensor_fn_t imx091_liteon_func_tbl = {
 	.sensor_config = msm_sensor_config,
 	.sensor_power_up = imx091_liteon_sensor_power_up,
 	.sensor_power_down = imx091_liteon_sensor_power_down,
+	.sensor_csi_setting = msm_sensor_setting1,
 	.sensor_otp_reading = imx091_liteon_otp_data_update,
 };
 

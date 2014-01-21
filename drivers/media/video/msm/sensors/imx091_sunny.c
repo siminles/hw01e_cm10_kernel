@@ -758,6 +758,7 @@ static struct msm_sensor_fn_t imx091_sunny_func_tbl = {
 	.sensor_power_up = imx091_sunny_sensor_power_up,
 	.sensor_power_down = imx091_sunny_sensor_power_down,
 	.sensor_otp_reading = imx091_sunny_otp_data_update,
+	.sensor_csi_setting = msm_sensor_setting1,
 };
 
 static struct msm_sensor_reg_t imx091_sunny_regs = {

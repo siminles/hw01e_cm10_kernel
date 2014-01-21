@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -749,12 +749,12 @@ done:
 
 u32 send_voice_apr(u32 mode, void *buf, u32 opcode)
 {
-	s32				result;
-	u32				count = 0;
-	u32				bytes_returned = 0;
-	u32				payload_size;
-	u16				dest_port;
-	struct apr_hdr			voice_params;
+	s32	result;
+	u32	count = 0;
+	u32	bytes_returned = 0;
+	u32	payload_size;
+	u32	dest_port;
+	struct	apr_hdr	voice_params;
 	pr_debug("%s\n", __func__);
 
 	if (copy_from_user(&count, (void *)buf, sizeof(count))) {

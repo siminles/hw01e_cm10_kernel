@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -148,7 +148,7 @@ int32_t msm_sensor_set_fps(struct msm_sensor_ctrl_t *s_ctrl,
 		total_lines_per_frame = (uint16_t)
 			((s_ctrl->curr_frame_length_lines) *
 			s_ctrl->fps_divider/Q10);
-
+		total_lines_per_frame += (total_lines_per_frame & 0x1);
 		rc = msm_camera_i2c_write(s_ctrl->sensor_i2c_client,
 			s_ctrl->sensor_output_reg_addr->frame_length_lines,
 			total_lines_per_frame, MSM_CAMERA_I2C_WORD_DATA);
@@ -240,6 +240,10 @@ int32_t msm_sensor_setting1(struct msm_sensor_ctrl_t *s_ctrl,
 			msleep(30);
 			csi_config = 1;
 		}
+		v4l2_subdev_notify(&s_ctrl->sensor_v4l2_subdev,
+			NOTIFY_PCLK_CHANGE,
+			&s_ctrl->sensordata->pdata->ioclk.vfe_clk_rate);
+
 		s_ctrl->func_tbl->sensor_start_stream(s_ctrl);
 		msleep(50);
 	}
@@ -301,8 +305,14 @@ int32_t msm_sensor_set_sensor_mode(struct msm_sensor_ctrl_t *s_ctrl,
 			s_ctrl->msm_sensor_reg->
 			output_settings[res].line_length_pclk;
 
-		if (s_ctrl->func_tbl->sensor_setting
-			(s_ctrl, MSM_SENSOR_UPDATE_PERIODIC, res) < 0)
+		if (s_ctrl->sensordata->pdata->is_csic ||
+			!s_ctrl->sensordata->csi_if)
+			rc = s_ctrl->func_tbl->sensor_csi_setting(s_ctrl,
+				MSM_SENSOR_UPDATE_PERIODIC, res);
+		else
+			rc = s_ctrl->func_tbl->sensor_setting(s_ctrl,
+				MSM_SENSOR_UPDATE_PERIODIC, res);
+		if (rc < 0)
 			return rc;
 		s_ctrl->curr_res = res;
 	}
@@ -322,8 +332,13 @@ int32_t msm_sensor_mode_init(struct msm_sensor_ctrl_t *s_ctrl,
 		s_ctrl->curr_res = MSM_SENSOR_INVALID_RES;
 		s_ctrl->cam_mode = mode;
 
-		rc = s_ctrl->func_tbl->sensor_setting(s_ctrl,
-			MSM_SENSOR_REG_INIT, 0);
+		if (s_ctrl->sensordata->pdata->is_csic ||
+			!s_ctrl->sensordata->csi_if)
+			rc = s_ctrl->func_tbl->sensor_csi_setting(s_ctrl,
+				MSM_SENSOR_REG_INIT, 0);
+		else
+			rc = s_ctrl->func_tbl->sensor_setting(s_ctrl,
+				MSM_SENSOR_REG_INIT, 0);
 	}
 	return rc;
 }
@@ -599,6 +614,9 @@ int32_t msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	struct msm_camera_sensor_info *data = s_ctrl->sensordata;
 	CDBG("%s\n", __func__);
+
+	s_ctrl->func_tbl->sensor_stop_stream(s_ctrl);
+	msleep(20);
 	if (data->sensor_platform_info->ext_power_ctrl != NULL)
 		data->sensor_platform_info->ext_power_ctrl(0);
 	msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
@@ -616,7 +634,6 @@ int32_t msm_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 	kfree(s_ctrl->reg_ptr);
 	return 0;
 }
-
 
 int32_t msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 {
@@ -652,7 +669,8 @@ int32_t msm_sensor_i2c_probe(struct i2c_client *client,
 	struct msm_sensor_ctrl_t *s_ctrl;
 	CDBG("%s_i2c_probe called\n", client->name);
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-		CDBG("i2c_check_functionality failed\n");
+		pr_err("%s %s i2c_check_functionality failed\n",
+			__func__, client->name);
 		rc = -EFAULT;
 		return rc;
 	}
@@ -664,21 +682,28 @@ int32_t msm_sensor_i2c_probe(struct i2c_client *client,
 			s_ctrl->sensor_i2c_client->client->addr =
 				s_ctrl->sensor_i2c_addr;
 	} else {
+		pr_err("%s %s sensor_i2c_client NULL\n",
+			__func__, client->name);
 		rc = -EFAULT;
 		return rc;
 	}
 
 	s_ctrl->sensordata = client->dev.platform_data;
 	if (s_ctrl->sensordata == NULL) {
-		pr_err("%s: NULL sensor data\n", __func__);
+		pr_err("%s %s NULL sensor data\n", __func__, client->name);
 		return -EFAULT;
 	}
 
 	rc = s_ctrl->func_tbl->sensor_power_up(s_ctrl);
-	if (rc < 0)
-		goto probe_fail;
+	if (rc < 0) {
+		pr_err("%s %s power up failed\n", __func__, client->name);
+		return rc;
+	}
 
-	rc = msm_sensor_match_id(s_ctrl);
+	if (s_ctrl->func_tbl->sensor_match_id)
+		rc = s_ctrl->func_tbl->sensor_match_id(s_ctrl);
+	else
+		rc = msm_sensor_match_id(s_ctrl);
 	if (rc < 0)
 		goto probe_fail;
 
@@ -709,7 +734,7 @@ int32_t msm_sensor_i2c_probe(struct i2c_client *client,
 	msm_sensor_register(&s_ctrl->sensor_v4l2_subdev);
 	goto power_down;
 probe_fail:
-	CDBG("%s_i2c_probe failed\n", client->name);
+	pr_err("%s %s_i2c_probe failed\n", __func__, client->name);
 power_down:
 	if (rc > 0)
 		rc = 0;

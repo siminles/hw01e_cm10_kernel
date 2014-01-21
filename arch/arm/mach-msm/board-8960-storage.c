@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,12 +17,12 @@
 #include <linux/bootmem.h>
 #include <asm/mach-types.h>
 #include <asm/mach/mmc.h>
-#include <mach/msm_bus_board.h>
 #include <mach/board.h>
 #include <mach/gpio.h>
 #include <mach/gpiomux.h>
 #include "devices.h"
 #include "board-8960.h"
+#include "board-storage-common-a.h"
 
 #ifdef CONFIG_HUAWEI_KERNEL
 #include <hsad/config_interface.h>
@@ -313,6 +313,7 @@ static struct mmc_platform_data msm8960_sdc1_data = {
 	.nonremovable	= 1,
 	.vreg_data	= &mmc_slot_vreg_data[SDCC1],
 	.pin_data	= &mmc_slot_pin_data[SDCC1],
+	.msm_bus_voting_data = &sps_to_ddr_bus_voting_data,
 };
 #endif
 
@@ -336,6 +337,7 @@ static struct mmc_platform_data msm8960_sdc3_data = {
 #endif
 	.xpc_cap	= 1,
 	.uhs_caps	= 0,
+	.msm_bus_voting_data = &sps_to_ddr_bus_voting_data,
 };
 #endif
 

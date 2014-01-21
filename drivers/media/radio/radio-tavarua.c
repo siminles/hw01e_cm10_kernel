@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2009-2012, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1204,7 +1204,7 @@ static int optimized_search_algorithm(struct tavarua_device *radio,
 	unsigned char adie_type_bahma;
 	int retval = 0;
 	unsigned int rdsMask = 0;
-	unsigned char value;
+	unsigned char value = 0;
 
 	adie_type_bahma = is_bahama();
 
@@ -3155,7 +3155,7 @@ static int tavarua_vidioc_s_ctrl(struct file *file, void *priv,
 			 * queue the READY event from the host side
 			 * in case of FM off
 			 */
-			tavarua_q_event(radio, TAVARUA_EVT_RADIO_READY);
+			tavarua_q_event(radio, TAVARUA_EVT_RADIO_DISABLED);
 
 			FMDBG("%s, Disable All Interrupts\n", __func__);
 			/* disable irq */

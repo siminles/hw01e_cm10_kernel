@@ -1137,6 +1137,7 @@ static struct msm_sensor_fn_t mt9m114_truly_func_tbl = {
 	.sensor_power_down = mt9m114_truly_sensor_power_down,
 	.sensor_set_whitebalance_yuv = mt9m114_truly_sensor_set_whitebalance,
     .sensor_set_effect_yuv =  mt9m114_truly_sensor_set_effect,
+    .sensor_csi_setting = msm_sensor_setting1,
 };
 
 static struct msm_sensor_reg_t mt9m114_truly_regs = {
