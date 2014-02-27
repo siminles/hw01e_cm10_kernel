@@ -814,7 +814,7 @@ static int pm_chg_iterm_get(struct pm8921_chg_chip *chip, int *chg_current)
 	return 0;
 }
 
-#define WEAK_CHARGER
+//#define WEAK_CHARGER
 #ifndef WEAK_CHARGER
 struct usb_ma_limit_entry {
 	int usb_ma;
@@ -823,9 +823,9 @@ struct usb_ma_limit_entry {
 
 static struct usb_ma_limit_entry usb_ma_table[] = {
 	{100, 0},
-	{500, 1},
-	{700, 2},
-	{850, 3},
+	{200, 1},
+	{500, 2},
+	{700, 3},
 	{900, 4},
 	{1100, 5},
 	{1300, 6},
