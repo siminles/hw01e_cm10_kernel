@@ -210,19 +210,13 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	read_lock(&tasklist_lock);
 	for_each_process(tsk) {
 		struct task_struct *p;
-		struct signal_struct *sig;
 		int oom_adj;
 
 		p = find_lock_task_mm(tsk);
 		if (!p)
 			continue;
 
-		sig = p->signal;
-		if (!sig) {
-			task_unlock(p);
-			continue;
-		}
-		oom_adj = sig->oom_adj;
+		oom_adj = p->signal->oom_adj;
 		if (oom_adj < min_adj) {
 			task_unlock(p);
 			continue;
@@ -316,7 +310,6 @@ static void lowmem_vm_shrinker(int largest, int rss_threshold)
 	read_lock(&tasklist_lock);
 	for_each_process(tsk) {
 		struct task_struct *p;
-		struct signal_struct *sig;
 		int oom_adj;
 
 		task_lock(p);
@@ -324,12 +317,7 @@ static void lowmem_vm_shrinker(int largest, int rss_threshold)
 		if (!p)
 			continue;
 
-		sig = p->signal;
-		if (!sig) {
-			task_unlock(p);
-			continue;
-		}
-		oom_adj = sig->oom_adj;
+		oom_adj = p->signal->oom_adj;
 		vmsize = get_mm_hiwater_vm(mm);
 		rssize = get_mm_rss(mm) * PAGE_SIZE;
 		task_unlock(p);
