@@ -212,9 +212,6 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		struct task_struct *p;
 		int oom_adj;
 
-		if (tsk->flags & PF_KTHREAD)
-			continue;
-
 		p = find_lock_task_mm(tsk);
 		if (!p)
 			continue;
@@ -316,10 +313,6 @@ static void lowmem_vm_shrinker(int largest, int rss_threshold)
 		int oom_adj;
 
 		task_lock(p);
-
-		if (tsk->flags & PF_KTHREAD)
-			continue;
-
 		p = find_lock_task_mm(tsk);
 		if (!p)
 			continue;
