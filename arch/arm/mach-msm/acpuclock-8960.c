@@ -1034,11 +1034,9 @@ static unsigned int calculate_vdd_dig(struct acpu_level *tgt)
 
 	return max(tgt->l2_level->vdd_dig, pll_vdd_dig);
 }
-#ifdef CONFIG_HUAWEI_KERNEL
-#define BOOST_UV 0
-#else
+
 #define BOOST_UV 25000
-#endif
+
 
 static unsigned boost_uv;
 static bool enable_boost;
