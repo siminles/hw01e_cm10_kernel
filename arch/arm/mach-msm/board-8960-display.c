@@ -577,8 +577,8 @@ static struct msm_bus_vectors mdp_720p_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_MDP_PORT0,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab = 334080000 * 2, /*.ab = 230400000 * 2,*/
-		.ib = 417600000 * 2, /*.ib = 288000000 * 2,*/
+		.ab = 230400000 * 2, /*.ab = 230400000 * 2,*/
+		.ib = 288000000 * 2, /*.ib = 288000000 * 2,*/
 	},
 };
 

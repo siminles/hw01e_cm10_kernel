@@ -141,7 +141,7 @@ static struct scalable scalable_8960[] = {
 			.hfpll_base      = MSM_HFPLL_BASE + 0x200,
 			.aux_clk_sel     = MSM_ACC0_BASE  + 0x014,
 			.l2cpmr_iaddr    = L2CPUCPMR_IADDR,
-			.vreg[VREG_CORE] = { "krait0",     1300000 },
+			.vreg[VREG_CORE] = { "krait0",     1150000 },
 			.vreg[VREG_MEM]  = { "krait0_mem", 1150000,
 					     RPM_VREG_VOTER1,
 					     RPM_VREG_ID_PM8921_L24 },
@@ -159,7 +159,7 @@ static struct scalable scalable_8960[] = {
 			.hfpll_base      = MSM_HFPLL_BASE + 0x300,
 			.aux_clk_sel     = MSM_ACC1_BASE  + 0x014,
 			.l2cpmr_iaddr    = L2CPUCPMR_IADDR,
-			.vreg[VREG_CORE] = { "krait1",     1300000 },
+			.vreg[VREG_CORE] = { "krait1",     1150000 },
 			.vreg[VREG_MEM]  = { "krait0_mem", 1150000,
 					     RPM_VREG_VOTER2,
 					     RPM_VREG_ID_PM8921_L24 },
@@ -518,7 +518,7 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_nom[] = {
 	{ 0, { 0 } }
 };
 
-#ifndef CONFIG_HUAWEI_KERNEL
+
 static struct acpu_level acpu_freq_tbl_8960_kraitv2_fast[] = {
 	{ 0, { STBY_KHZ, QSB,   0, 0, 0x00 }, L2(0),   850000 },
 	{ 1, {   384000, PLL_8, 0, 2, 0x00 }, L2(1),   850000 },
@@ -545,7 +545,7 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_fast[] = {
 	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(19), 1150000 },
 	{ 0, { 0 } }
 };
-#endif
+
 
 /* TODO: Update vdd_dig and vdd_mem when voltage data is available. */
 #undef L2
@@ -1366,22 +1366,22 @@ static struct acpu_level * __init select_freq_plan(void)
 			case 0x7: 
 				pr_info("ACPU PVS: Slow\n"); 
 				v1 = acpu_freq_tbl_8960_kraitv1_slow; 
-				v2 = acpu_freq_tbl_8960_kraitv2_slow; 
+				v2 = acpu_freq_tbl_8960_kraitv2_slow;
 				break; 
 			case 0x1: 
 				pr_info("ACPU PVS: Nominal\n"); 
-				v1 = acpu_freq_tbl_8960_kraitv1_slow; 
-				v2 = acpu_freq_tbl_8960_kraitv2_slow; 
+				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
+				v2 = acpu_freq_tbl_8960_kraitv2_nom;
 				break;
 			case 0x3: 
 				pr_info("ACPU PVS: Fast\n"); 
-				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast; 
-				v2 = acpu_freq_tbl_8960_kraitv2_nom; 
+				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
+				v2 = acpu_freq_tbl_8960_kraitv2_fast;
 				break; 
 			default: 
 				pr_warn("ACPU PVS: Unknown. Defaulting to slow.\n"); 
-				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast; 
-				v2 = acpu_freq_tbl_8960_kraitv2_nom; 
+				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
+				v2 = acpu_freq_tbl_8960_kraitv2_nom;
 				break; 
 		}
 #else
