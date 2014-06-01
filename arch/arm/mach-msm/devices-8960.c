@@ -1936,8 +1936,8 @@ static struct msm_bus_vectors rotator_ui_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_ROTATOR,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = (1024 * 600 * 4 * 2 * 60),
-		.ib  = (1024 * 600 * 4 * 2 * 60 * 1.5),
+		.ab  = (1280 * 720 * 4 * 2 * 60),
+		.ib  = (1280 * 720 * 4 * 2 * 60 * 1.5),
 	},
 };
 
