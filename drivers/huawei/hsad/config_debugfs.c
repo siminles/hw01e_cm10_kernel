@@ -328,7 +328,7 @@ void convert_gpio_config_to_string(struct gpiomux_setting* cfg,struct gpio_confi
 		case 13: {config_str->func = "FUN_D";break;}
 		case 14: {config_str->func = "FUN_E";break;}
 		case 15: {config_str->func = "FUN_F";break;}
-		case NOSET: {config_str->func = "noset";break;}
+		//case NOSET: {config_str->func = "noset";break;}
 		default:config_str->func = "error";
 	}
 
@@ -342,7 +342,7 @@ void convert_gpio_config_to_string(struct gpiomux_setting* cfg,struct gpio_confi
 		case 5:{config_str->drv = "12ma";break;}
 		case 6:{config_str->drv = "14ma";break;}
 		case 7:{config_str->drv = "16ma";break;}
-		case NOSET:{config_str->drv = "noset";break;}
+		//case NOSET:{config_str->drv = "noset";break;}
 		default:config_str->drv = "error";
 	}
 
@@ -352,7 +352,7 @@ void convert_gpio_config_to_string(struct gpiomux_setting* cfg,struct gpio_confi
 		case 1:{config_str->pull = "pulldown";break;}
 		case 2:{config_str->pull = "keeper";break;}
 		case 3:{config_str->pull = "pullup";break;}
-		case NOSET:{config_str->pull = "noset";break;}
+		//case NOSET:{config_str->pull = "noset";break;}
 		default:config_str->pull = "error";
 	}
 
@@ -361,7 +361,7 @@ void convert_gpio_config_to_string(struct gpiomux_setting* cfg,struct gpio_confi
 		case 0:{config_str->dir = "in";break;}
 		case 1:{config_str->dir = "out H";break;}
 		case 2:{config_str->dir = "out L";break;}
-		case NOSET:{config_str->dir = "noset";break;}
+		//case NOSET:{config_str->dir = "noset";break;}
 		default:config_str->dir = "error";
 	}
 }
