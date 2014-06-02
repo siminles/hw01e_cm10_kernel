@@ -1900,7 +1900,7 @@ static struct regulator_consumer_supply U9501L_VC_saw_S5_supply[] = {
   .constraints = { \
 	   .name ="8921_s5", \
 	   .min_uV =850000, \
-	   .max_uV =1150000, \
+	   .max_uV =1300000, \
 	   .valid_ops_mask = REGULATOR_CHANGE_VOLTAGE, \
   }, \
   .num_consumer_supplies = ARRAY_SIZE(U9501L_VC_saw_S5_supply), \
@@ -1922,7 +1922,7 @@ static struct regulator_consumer_supply U9501L_VC_saw_S6_supply[] = {
   .constraints = { \
 	   .name ="8921_s6", \
 	   .min_uV =850000, \
-	   .max_uV =1150000, \
+	   .max_uV =1300000, \
 	   .valid_ops_mask = REGULATOR_CHANGE_VOLTAGE, \
   }, \
   .num_consumer_supplies = ARRAY_SIZE(U9501L_VC_saw_S6_supply), \
