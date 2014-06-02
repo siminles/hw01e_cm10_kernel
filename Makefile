@@ -351,13 +351,13 @@ CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-CFLAGS_MODULE   = -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr \
-		-ffast-math -fsingle-precision-constant -mtune=cortex-a9 \
-		-march=armv7-a -mfpu=neon -ftree-vectorize -funswitch-loops
+CFLAGS_MODULE   = -DMODULE -O2 -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr \
+		-ffast-math -fsingle-precision-constant -mtune=cortex-a15 \
+		-march=armv7-a -mfpu=neon -ftree-vectorize -funswitch-loops -mvectorize-with-neon-double
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	= -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr \
-		-ffast-math -fsingle-precision-constant -mtune=cortex-a9 \
+CFLAGS_KERNEL	= -fgcse-lm -O2 -fgcse-sm -fsched-spec-load -fforce-addr \
+		-ffast-math -fsingle-precision-constant -mtune=cortex-a15 \
 		-march=armv7-a -mfpu=neon -ftree-vectorize -funswitch-loops
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
@@ -376,7 +376,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks
+		   -fno-delete-null-pointer-checks \
+		-Wno-maybe-uninitialized
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
