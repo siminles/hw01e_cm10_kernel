@@ -3740,7 +3740,7 @@ static struct rcg_clk mdp_clk = {
 	.c = {
 		.dbg_name = "mdp_clk",
 		.ops = &clk_ops_rcg_8960,
-		VDD_DIG_FMAX_MAP2(LOW, 96000000, NOMINAL, 200000000),
+		VDD_DIG_FMAX_MAP2(LOW, 128000000, NOMINAL, 266667000),
 		CLK_INIT(mdp_clk.c),
 		.depends = &mdp_axi_clk.c,
 	},
@@ -4113,7 +4113,7 @@ static struct rcg_clk vcodec_clk = {
 	.c = {
 		.dbg_name = "vcodec_clk",
 		.ops = &clk_ops_rcg_8960,
-		VDD_DIG_FMAX_MAP3(LOW,  100000000, NOMINAL, 200000000,
+		VDD_DIG_FMAX_MAP3(LOW,  133330000, NOMINAL, 200000000,
 				  HIGH, 228571000),
 		CLK_INIT(vcodec_clk.c),
 		.depends = &vcodec_axi_clk.c,
@@ -4198,7 +4198,7 @@ static struct clk_freq_tbl clk_tbl_vfe[] = {
 };
 
 static unsigned long fmax_vfe_8960_v2[MAX_VDD_LEVELS] __initdata = {
-	[VDD_DIG_LOW]     = 110000000,
+	[VDD_DIG_LOW]     = 128000000,
 	[VDD_DIG_NOMINAL] = 266667000,
 	[VDD_DIG_HIGH]    = 320000000
 };
@@ -4231,7 +4231,7 @@ static struct rcg_clk vfe_clk = {
 	.c = {
 		.dbg_name = "vfe_clk",
 		.ops = &clk_ops_rcg_8960,
-		VDD_DIG_FMAX_MAP2(LOW, 110000000, NOMINAL, 266667000),
+		VDD_DIG_FMAX_MAP2(LOW, 128000000, NOMINAL, 266667000),
 		CLK_INIT(vfe_clk.c),
 		.depends = &vfe_axi_clk.c,
 	},
