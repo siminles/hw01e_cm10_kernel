@@ -1433,7 +1433,7 @@ static struct acpu_level * __init select_freq_plan(void)
 			case 0x3: 
 				pr_info("ACPU PVS: Fast\n"); 
 				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
-				v2 = acpu_freq_tbl_8960_kraitv2_fast;
+				v2 = acpu_freq_tbl_8960_kraitv2_nom;
 				break; 
 			default: 
 				pr_warn("ACPU PVS: Unknown. Defaulting to slow.\n"); 
