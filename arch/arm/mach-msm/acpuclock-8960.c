@@ -1387,12 +1387,21 @@ static const int krait_needs_vmin(void)
 	};
 }
 
+#ifdef CONFIG_CPU_VOLTAGE_TABLE
 static void kraitv2_apply_vmin(struct acpu_level *tbl)
 {
 	for (; tbl->speed.khz != 0; tbl++)
 		if (tbl->vdd_core < MIN_VDD_SC)
 			tbl->vdd_core = MIN_VDD_SC;
 }
+#else
+static void kraitv2_apply_vmin(struct acpu_level *tbl)
+{
+	for (; tbl->speed.khz != 0; tbl++)
+		if (tbl->vdd_core < 1150000)
+			tbl->vdd_core = 1150000;
+}
+#endif
 
 static struct acpu_level * __init select_freq_plan(void)
 {
