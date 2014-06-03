@@ -1945,16 +1945,16 @@ static struct msm_bus_vectors rotator_vga_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_ROTATOR,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = (640 * 480 * 2 * 2 * 60),
-		.ib  = (640 * 480 * 2 * 2 * 60 * 1.5),
+		.ab  = (640 * 480 * 2 * 2 * 30),
+		.ib  = (640 * 480 * 2 * 2 * 30 * 1.5),
 	},
 };
 static struct msm_bus_vectors rotator_720p_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_ROTATOR,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = (1280 * 736 * 2 * 2 * 60),
-		.ib  = (1280 * 736 * 2 * 2 * 60 * 1.5),
+		.ab  = (1280 * 736 * 2 * 2 * 30),
+		.ib  = (1280 * 736 * 2 * 2 * 30 * 1.5),
 	},
 };
 
@@ -1962,8 +1962,8 @@ static struct msm_bus_vectors rotator_1080p_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_ROTATOR,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = (1920 * 1088 * 2 * 2 * 60),
-		.ib  = (1920 * 1088 * 2 * 2 * 60 * 1.5),
+		.ab  = (1920 * 1088 * 2 * 2 * 30),
+		.ib  = (1920 * 1088 * 2 * 2 * 30 * 1.5),
 	},
 };
 
@@ -2520,7 +2520,7 @@ static struct msm_bus_vectors grp3d_low_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(1500),
+		.ib = KGSL_CONVERT_TO_MBPS(1000),
 	},
 };
 
@@ -2529,7 +2529,7 @@ static struct msm_bus_vectors grp3d_nominal_low_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(2656),
+		.ib = KGSL_CONVERT_TO_MBPS(2048),
 	},
 };
 
@@ -2538,7 +2538,7 @@ static struct msm_bus_vectors grp3d_nominal_high_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(3968),
+		.ib = KGSL_CONVERT_TO_MBPS(2656),
 	},
 };
 
@@ -2594,7 +2594,7 @@ static struct msm_bus_vectors grp2d0_nominal_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_2D_CORE0,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(1500),
+		.ib = KGSL_CONVERT_TO_MBPS(1000),
 	},
 };
 
@@ -2603,7 +2603,7 @@ static struct msm_bus_vectors grp2d0_max_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_2D_CORE0,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(2656),
+		.ib = KGSL_CONVERT_TO_MBPS(2048),
 	},
 };
 
@@ -2642,7 +2642,7 @@ static struct msm_bus_vectors grp2d1_nominal_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_2D_CORE1,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(1500),
+		.ib = KGSL_CONVERT_TO_MBPS(1000),
 	},
 };
 
@@ -2651,7 +2651,7 @@ static struct msm_bus_vectors grp2d1_max_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_2D_CORE1,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
-		.ib = KGSL_CONVERT_TO_MBPS(2656),
+		.ib = KGSL_CONVERT_TO_MBPS(2048),
 	},
 };
 
