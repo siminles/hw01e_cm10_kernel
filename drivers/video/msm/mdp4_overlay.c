@@ -1683,10 +1683,9 @@ void mdp4_overlay_borderfill_stage_up(struct mdp4_overlay_pipe *pipe)
 	bspipe = ctrl->stage[mixer][MDP4_MIXER_STAGE_BASE];
 
 	if (bspipe == NULL) {
-                pr_err("%s: no base layer at mixer=%d\n",
-                                __func__, mixer);
-                return;
-        }
+		pr_err("%s: no base layer at mixer=%d\n", __func__, mixer);
+		return;
+	}
 
 	/*
 	 * bspipe is clone here
@@ -1695,10 +1694,9 @@ void mdp4_overlay_borderfill_stage_up(struct mdp4_overlay_pipe *pipe)
 	bspipe = mdp4_overlay_ndx2pipe(bspipe->pipe_ndx);
 
 	if (bspipe == NULL) {
-               pr_err("%s: no base layer at mixer=%d\n",
-                               __func__, mixer);
+		pr_err("%s: no base layer at mixer=%d\n", __func__, mixer);
 		return;
-       }
+	}
 
 
 	/* save original base layer */
