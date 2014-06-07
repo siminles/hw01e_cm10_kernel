@@ -474,8 +474,6 @@ _kgsl_sharedmem_vmalloc(struct kgsl_memdesc *memdesc,
 		goto done;
 	}
 
-	kmemleak_not_leak(memdesc->sg);
-
 	sg_init_table(memdesc->sg, sglen);
 
 	for (i = 0; i < memdesc->sglen; i++) {
