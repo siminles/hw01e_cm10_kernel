@@ -54,8 +54,8 @@ int mipi_video_restore_default_fps(void);
 int mipi_video_set_low_fps(int frame_rate);
 #define LOW     0
 #define HIGH    1
-static int frame_rate = LOW;
-static int start_flag = 0;
+static int frame_rate = HIGH;
+static int start_flag = 1;
 
 static struct workqueue_struct *mdp_dynamic_frame_rate_wq;
 static struct delayed_work mdp_dynamic_frame_rate_worker;
