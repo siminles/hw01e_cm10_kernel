@@ -5,7 +5,7 @@
 
 # set toolchain
 export ARCH=arm
-export CROSS_COMPILE=/media/cm/10/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
+export CROSS_COMPILE=arm-linux-gnueabi-
 
 # make zImage
 mkdir -p ./out/done/modules/
