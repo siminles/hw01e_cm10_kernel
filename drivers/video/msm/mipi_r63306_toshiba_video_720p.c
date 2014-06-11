@@ -397,10 +397,10 @@ int set_cabc(struct lcd_tuning_dev *ltc, enum tft_cabc cabc)
             r63308_cabc_UI_USEPARAMETER[2] = r63306_cabc_user_parameter[2];
             //donot touch backlight end//
             mutex_lock(&mfd->dma->ov_mutex);
-            if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
-                mutex_unlock(&mfd->dma->ov_mutex);
-                return 0;
-            }
+            //if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
+            //    mutex_unlock(&mfd->dma->ov_mutex);
+            //    return 0;
+            //}
             mipi_set_tx_power_mode(0);
             mipi_dsi_cmds_tx(&toshiba_tx_buf, resa_r63308_cabc_UI_SET,
             ARRAY_SIZE(resa_r63308_cabc_UI_SET));
@@ -412,10 +412,10 @@ int set_cabc(struct lcd_tuning_dev *ltc, enum tft_cabc cabc)
             r63308_cabc_VIDEO_USEPARAMETER[2] = r63306_cabc_user_parameter[2];
             //donot touch backlight end//
             mutex_lock(&mfd->dma->ov_mutex);
-            if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
-                mutex_unlock(&mfd->dma->ov_mutex);
-                return 0;
-            }
+            //if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
+            //    mutex_unlock(&mfd->dma->ov_mutex);
+            //    return 0;
+            //}
             mipi_set_tx_power_mode(0);
             mipi_dsi_cmds_tx(&toshiba_tx_buf, resa_r63308_cabc_VIDEO_SET,
             ARRAY_SIZE(resa_r63308_cabc_VIDEO_SET));
@@ -552,11 +552,11 @@ int R63306_set_dynamic_gamma(struct lcd_tuning_dev *ltd, enum lcd_gamma gamma)
     {
         case GAMMA25:
         mutex_lock(&mfd->dma->ov_mutex);
-        if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
-            mutex_unlock(&mfd->dma->ov_mutex);
-            printk("########error : writing lcd reg failed \n");
-            return 1;
-        }
+        //if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
+        //    mutex_unlock(&mfd->dma->ov_mutex);
+        //    printk("########error : writing lcd reg failed \n");
+        //    return 1;
+        //}
         //mdp4_dsi_cmd_dma_busy_wait(mfd);
         //mdp4_dsi_blt_dmap_busy_wait(mfd);
         //mipi_dsi_mdp_busy_wait(mfd);
@@ -569,11 +569,11 @@ int R63306_set_dynamic_gamma(struct lcd_tuning_dev *ltd, enum lcd_gamma gamma)
         case GAMMA22:
 
         mutex_lock(&mfd->dma->ov_mutex);
-        if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
-            mutex_unlock(&mfd->dma->ov_mutex);
-            printk("########error : writing lcd reg failed \n");
-            return 1;
-        }
+        //if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
+        //    mutex_unlock(&mfd->dma->ov_mutex);
+        //    printk("########error : writing lcd reg failed \n");
+        //    return 1;
+        //}
         //mdp4_dsi_cmd_dma_busy_wait(mfd);
         //mdp4_dsi_blt_dmap_busy_wait(mfd);
         //mipi_dsi_mdp_busy_wait(mfd);
@@ -706,10 +706,10 @@ static void mipi_toshiba_720p_set_backlight(struct msm_fb_data_type *mfd)
 /* set lcd backlight from r63306 ledpwmout */	
 #else
     mutex_lock(&mfd->dma->ov_mutex);
-    if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
-		mutex_unlock(&mfd->dma->ov_mutex);
-		return;
-    }
+    //if (mdp4_overlay_dsi_state_get() == ST_DSI_SUSPEND) {
+	//	mutex_unlock(&mfd->dma->ov_mutex);
+	//	return;
+    //}
     //mdp4_dsi_cmd_dma_busy_wait(mfd);
     //mdp4_dsi_blt_dmap_busy_wait(mfd);
     //mipi_dsi_mdp_busy_wait(mfd);

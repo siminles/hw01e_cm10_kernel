@@ -701,6 +701,11 @@ int mdp4_lcdc_off(struct platform_device *pdev)
 			/* adb stop */
 			if (pipe->pipe_type == OVERLAY_TYPE_BF)
 				mdp4_overlay_borderfill_stage_down(pipe);
+
+			/* base pipe may change after borderfill_stage_down */
+			pipe = vctrl->base_pipe;
+			mdp4_mixer_stage_down(pipe, 1);
+			mdp4_overlay_pipe_free(pipe);
 			vctrl->base_pipe = NULL;
 		} else {
 			/* system suspending */
@@ -926,12 +931,15 @@ void mdp4_lcdc_overlay(struct msm_fb_data_type *mfd)
 	struct vsycn_ctrl *vctrl;
 	struct mdp4_overlay_pipe *pipe;
 
+	mutex_lock(&mfd->dma->ov_mutex);
 
 	vctrl = &vsync_ctrl_db[cndx];
 	pipe = vctrl->base_pipe;
 
-	if (!pipe || !mfd->panel_power_on)
+	if (!pipe || !mfd->panel_power_on) {
+		mutex_unlock(&mfd->dma->ov_mutex);
 		return;
+	}
 
 	pr_debug("%s: cpu=%d pid=%d\n", __func__,
 			smp_processor_id(), current->pid);
@@ -951,9 +959,7 @@ void mdp4_lcdc_overlay(struct msm_fb_data_type *mfd)
 
 	mdp4_overlay_mdp_perf_upd(mfd, 1);
 
-	mutex_lock(&mfd->dma->ov_mutex);
 	mdp4_lcdc_pipe_commit(0, 0);
-	mutex_unlock(&mfd->dma->ov_mutex);
 
 	if (pipe->ov_blt_addr)
 		mdp4_lcdc_wait4ov(0);
@@ -961,4 +967,5 @@ void mdp4_lcdc_overlay(struct msm_fb_data_type *mfd)
 		mdp4_lcdc_wait4dmap(0);
 
 	mdp4_overlay_mdp_perf_upd(mfd, 0);
+	mutex_unlock(&mfd->dma->ov_mutex);
 }
