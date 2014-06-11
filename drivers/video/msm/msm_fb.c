@@ -3308,7 +3308,7 @@ static void mdp_dynamic_frame_rate_workqueue_handler(struct work_struct *work)
 {
 	if (frame_rate != LOW) {
 		frame_rate = LOW;
-		mipi_video_set_low_fps(60);
+		mipi_video_set_low_fps(42);
 		queue_delayed_work(mdp_dynamic_frame_rate_wq,
 				&mdp_dynamic_frame_rate_worker,
 				mdp_dynamic_frame_buffer_duration);
