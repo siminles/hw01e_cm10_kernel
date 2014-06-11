@@ -272,7 +272,7 @@ static int bq275x0_i2c_word_write(struct i2c_client *client, u8 reg, u16 value)
 
 static int bq275x0_i2c_bytes_write(struct i2c_client *client, u8 reg, u8 *pBuf, u16 len)
 {
-	int i2c_ret, i,j;
+	int i2c_ret = 0, i = 0,j = 0;
     u8 *p;
 
     p = pBuf;
@@ -323,7 +323,7 @@ static int bq275x0_i2c_bytes_read(struct i2c_client *client, u8 reg, u8 *pBuf, u
 
 static int bq275x0_i2c_bytes_read_and_compare(struct i2c_client *client, u8 reg, u8 *pSrcBuf, u8 *pDstBuf, u16 len)
 {
-    int i2c_ret;
+    int i2c_ret = 0;
 
     i2c_ret = bq275x0_i2c_bytes_read(client, reg, pSrcBuf, len);
     if(i2c_ret < 0)
