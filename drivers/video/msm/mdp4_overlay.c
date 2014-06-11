@@ -51,7 +51,6 @@ struct mdp4_overlay_ctrl {
 	uint32 flush[MDP4_MIXER_MAX];
 	struct iommu_free_list iommu_free[MDP4_MIXER_MAX];
 	uint32 cs_controller;
-	uint32 hw_version;
 	uint32 panel_3d;
 	uint32 panel_mode;
 	uint32 mixer0_played;
@@ -344,23 +343,9 @@ uint32 mdp4_overlay_panel_list(void)
 	return ctrl->panel_mode;
 }
 
-void mdp4_overlay_cfg_init(void)
-{
-	if (ctrl->hw_version == 0) {
-		mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
-		ctrl->hw_version = inpdw(MDP_BASE + 0x0); /* MDP_HW_VERSION */
-		mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
-	}
-
-	if (ctrl->hw_version >= 0x0402030b) {
-		/* MDP_LAYERMIXER_IN_CFG_UPDATE_METHOD */
-		outpdw(MDP_BASE + 0x100fc, 0x01);
-	}
-}
-
 int mdp4_overlay_borderfill_supported(void)
 {
-	return (ctrl->hw_version >= 0x0402030b);
+	return (mdp_rev >= MDP_REV_42);
 }
 
 void mdp4_overlay_dmae_cfg(struct msm_fb_data_type *mfd, int atv)
@@ -1913,7 +1898,7 @@ void mdp4_mixer_blend_setup(int mixer)
 	struct mdp4_overlay_pipe *d_pipe;
 	struct mdp4_overlay_pipe *s_pipe;
 	struct blend_cfg *blend;
-	int i, off, ptype, alpha_drop = 0;
+	int i, off, ptype, alpha_drop;
 	int d_alpha, s_alpha;
 	unsigned char *overlay_base;
 	uint32 c0, c1, c2, base_premulti;
@@ -1939,6 +1924,7 @@ void mdp4_mixer_blend_setup(int mixer)
 			d_alpha = 0;
 			continue;
 		}
+		alpha_drop = 0;	/* per stage */
 		/* alpha channel is lost on VG pipe when using QSEED or M/N */
 		if (s_pipe->pipe_type == OVERLAY_TYPE_VIDEO &&
 			((s_pipe->op_mode & MDP4_OP_SCALEY_EN) ||
@@ -1959,7 +1945,8 @@ void mdp4_mixer_blend_setup(int mixer)
 		blend->bg_alpha = 0x0ff - s_pipe->alpha;
 		blend->fg_alpha = s_pipe->alpha;
 		blend->co3_sel = 1; /* use fg alpha */
-
+		pr_debug("%s: bg alpha %d, fg alpha %d\n",
+			__func__, blend->bg_alpha, blend->fg_alpha);
 		if (s_pipe->is_fg) {
 			if (s_pipe->alpha == 0xff) {
 				blend->solidfill = 1;
@@ -1975,10 +1962,9 @@ void mdp4_mixer_blend_setup(int mixer)
 						MDP4_BLEND_FG_ALPHA_FG_PIXEL;
 				else
 					blend->fg_alpha = 0xff;
+				blend->op |= MDP4_BLEND_BG_INV_ALPHA;
 			} else
 				blend->op = MDP4_BLEND_BG_ALPHA_FG_CONST;
-
-			blend->op |= MDP4_BLEND_BG_INV_ALPHA;
 		} else if (d_alpha) {
 			ptype = mdp4_overlay_format2type(s_pipe->src_format);
 			if (ptype == OVERLAY_TYPE_VIDEO) {
