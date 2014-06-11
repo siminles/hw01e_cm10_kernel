@@ -773,7 +773,7 @@ err_device_put:
 	return ret;
 }
 
-extern struct mdp_csc_cfg csc_matrix[3];
+extern struct mdp_csc_cfg_data csc_cfg_matrix[3];
 
 /* add lcd id self adapt */
 /* modify for 8960 t0 */
@@ -787,7 +787,7 @@ static int __init mipi_video_toshiba_720p_init(void)
         return 0;
     }
 	pr_info("%s:mipi_video_toshiba_video_pt_init\n", __func__);
-    memcpy(&csc_matrix[2],&toshiba_720p_r63306_mdp_csc_cfg,sizeof(struct mdp_csc_cfg));
+    memcpy(&csc_cfg_matrix[2],&toshiba_720p_r63306_mdp_csc_cfg,sizeof(struct mdp_csc_cfg_data));
 
 	pinfo.xres = 720;
 	pinfo.yres = 1280;
