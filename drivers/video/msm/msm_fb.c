@@ -3309,6 +3309,8 @@ static void mdp_dynamic_frame_rate_workqueue_handler(struct work_struct *work)
 static int msm_fb_ioctl(struct fb_info *info, unsigned int cmd,
 			unsigned long arg)
 {
+	static unsigned long start_jiffies = 0;
+	unsigned long delta_jiffies;
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
 	void __user *argp = (void __user *)arg;
 	struct fb_cursor cursor;
@@ -3324,9 +3326,6 @@ static int msm_fb_ioctl(struct fb_info *info, unsigned int cmd,
 	struct mdp_page_protection fb_page_protection;
 	struct msmfb_mdp_pp mdp_pp;
 	int ret = 0;
-
-static unsigned long start_jiffies = 0;
-       unsigned long delta_jiffies;
 
 	switch (cmd) {
 #ifdef CONFIG_FB_MSM_OVERLAY
