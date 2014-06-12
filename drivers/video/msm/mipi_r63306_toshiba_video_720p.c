@@ -51,8 +51,8 @@ static struct mutex power_lock;
 static int reset_gpio;
 static struct regulator *reg_vddio, *reg_vci;
 static unsigned int backlight_value[16] = {
-	0 ,8 ,12,15,18 ,21 ,24 ,27,
-        30,52,70,85,100,140,190,255
+	0 ,8 ,20,30,40 ,50 ,60 ,70,
+        80,90,100,110,150,180,220,255
 };
 /*fangchao 00159369 20120223 begin */
 #ifdef CONFIG_FB_DYNAMIC_GAMMA
