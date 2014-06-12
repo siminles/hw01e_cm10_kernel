@@ -1388,6 +1388,7 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 		if (copy_from_user(&data, (void __user *)arg, sizeof(data)))
 			return -EFAULT;
+		data.flags |= data.heap_mask;
 		data.handle = ion_alloc(client, data.len, data.align,
 					     data.flags);
 
