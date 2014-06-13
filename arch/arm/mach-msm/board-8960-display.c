@@ -29,7 +29,7 @@
 #include "board-8960.h"
 
 #ifdef CONFIG_FB_MSM_MIPI_DSI
-#define MIPI_DSI_WRITEBACK_SIZE (1280 * 720 * 3 * 2)//the largest lcd size is 720p now
+#define MIPI_DSI_WRITEBACK_SIZE roundup((1280 * 720 * 3 * 2), 4096)//the largest lcd size is 720p now
 #else
 #define MIPI_DSI_WRITEBACK_SIZE 0
 #endif
@@ -557,8 +557,8 @@ static struct msm_bus_vectors mdp_ui_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_MDP_PORT0,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab = 230400000 * 2, /*216000000 * 2,*/
-		.ib = 288000000 * 2, /*270000000 * 2,*/
+		.ab = 216000000 * 2, /*216000000 * 2,*/
+		.ib = 270000000 * 2, /*270000000 * 2,*/
 	},
 };
 

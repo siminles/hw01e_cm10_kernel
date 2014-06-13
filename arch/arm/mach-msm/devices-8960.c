@@ -1106,8 +1106,8 @@ struct platform_device msm_device_bam_dmux = {
 };
 
 static struct msm_watchdog_pdata msm_watchdog_pdata = {
-	.pet_time = 10000,
-	.bark_time = 11000,
+	.pet_time = 20000,
+	.bark_time = 22000,
 	.has_secure = true,
 };
 
@@ -1936,8 +1936,8 @@ static struct msm_bus_vectors rotator_ui_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_ROTATOR,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
-		.ab  = (1280 * 720 * 4 * 2 * 60),
-		.ib  = (1280 * 720 * 4 * 2 * 60 * 1.5),
+		.ab  = (1024 * 600 * 4 * 2 * 60),
+		.ib  = (1024 * 600 * 4 * 2 * 60 * 1.5),
 	},
 };
 
@@ -2722,7 +2722,7 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.init_level = 0,
 	.num_levels = 5,
 	.set_grp_async = NULL,
-	.idle_timeout = HZ/20,
+	.idle_timeout = HZ/12,
 	.nap_allowed = true,
 	.clk_map = KGSL_CLK_CORE | KGSL_CLK_IFACE | KGSL_CLK_MEM_IFACE,
 #ifdef CONFIG_MSM_BUS_SCALING
