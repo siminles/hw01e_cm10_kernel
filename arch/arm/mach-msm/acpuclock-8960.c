@@ -523,7 +523,6 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_nom[] = {
 	{ 0, { 0 } }
 };
 
-#ifndef CONFIG_HUAWEI_KERNEL
 static struct acpu_level acpu_freq_tbl_8960_kraitv2_fast[] = {
 	{ 0, { STBY_KHZ, QSB,   0, 0, 0x00 }, L2(0),   850000 },
 	{ 1, {   384000, PLL_8, 0, 2, 0x00 }, L2(1),   850000 },
@@ -550,7 +549,6 @@ static struct acpu_level acpu_freq_tbl_8960_kraitv2_fast[] = {
 	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(19), 1150000 },
 	{ 0, { 0 } }
 };
-#endif
 
 /* TODO: Update vdd_dig and vdd_mem when voltage data is available. */
 #undef L2
@@ -1417,31 +1415,7 @@ static struct acpu_level * __init select_freq_plan(void)
 		if (pvs == 0x7)
 			pvs = (pte_efuse >> 13) & 0x7;
 
-#ifdef CONFIG_HUAWEI_KERNEL
-		switch (pvs) { 
-			case 0x0: 
-			case 0x7: 
-				pr_info("ACPU PVS: Slow\n"); 
-				v1 = acpu_freq_tbl_8960_kraitv1_slow; 
-				v2 = acpu_freq_tbl_8960_kraitv2_slow;
-				break; 
-			case 0x1: 
-				pr_info("ACPU PVS: Nominal\n"); 
-				v1 = acpu_freq_tbl_8960_kraitv1_slow;
-				v2 = acpu_freq_tbl_8960_kraitv2_slow;
-				break;
-			case 0x3: 
-				pr_info("ACPU PVS: Fast\n"); 
-				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
-				v2 = acpu_freq_tbl_8960_kraitv2_nom;
-				break; 
-			default: 
-				pr_warn("ACPU PVS: Unknown. Defaulting to slow.\n"); 
-				v1 = acpu_freq_tbl_8960_kraitv1_nom_fast;
-				v2 = acpu_freq_tbl_8960_kraitv2_nom;
-				break; 
-		}
-#else
+
 		switch (pvs) {
 		case 0x0:
 		case 0x7:
@@ -1469,7 +1443,6 @@ static struct acpu_level * __init select_freq_plan(void)
 			v2 = acpu_freq_tbl_8960_kraitv2_slow;
 			break;
 		}
-#endif
 
 		scalable = scalable_8960;
 		if (cpu_is_krait_v1()) {
