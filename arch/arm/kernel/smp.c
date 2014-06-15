@@ -41,6 +41,10 @@
 #include <asm/ptrace.h>
 #include <asm/localtimer.h>
 #include <asm/smp_plat.h>
+#include <asm/exception.h>
+#ifdef CONFIG_ARM_CPU_TOPOLOGY
+#include <asm/topology.h>
+#endif
 
 /*
  * as from 2.5, kernels no longer have an init_tasks structure
@@ -286,6 +290,9 @@ static void __cpuinit smp_store_cpu_info(unsigned int cpuid)
 	struct cpuinfo_arm *cpu_info = &per_cpu(cpu_data, cpuid);
 
 	cpu_info->loops_per_jiffy = loops_per_jiffy;
+#ifdef CONFIG_ARM_CPU_TOPOLOGY
+	store_cpu_topology(cpuid);
+#endif	
 }
 
 /*
@@ -381,7 +388,9 @@ void __init smp_prepare_boot_cpu(void)
 void __init smp_prepare_cpus(unsigned int max_cpus)
 {
 	unsigned int ncores = num_possible_cpus();
-
+#ifdef CONFIG_ARM_CPU_TOPOLOGY
+	init_cpu_topology();
+#endif
 	smp_store_cpu_info(smp_processor_id());
 
 	/*
