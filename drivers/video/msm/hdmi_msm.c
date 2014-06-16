@@ -26,7 +26,6 @@
 #include <mach/clk.h>
 #include <mach/msm_iomap.h>
 #include <mach/socinfo.h>
-#include <hsad/config_interface.h>
 
 #include "msm_fb.h"
 #include "hdmi_msm.h"
@@ -624,17 +623,11 @@ static void hdmi_msm_setup_video_mode_lut(void)
 	HDMI_SETUP_LUT(1920x1080i60_16_9);
 	HDMI_SETUP_LUT(1440x480i60_4_3);
 	HDMI_SETUP_LUT(1440x480i60_16_9);
-#ifndef CONFIG_HUAWEI_MHL_SII9244
-	HDMI_SETUP_LUT(1920x1080p60_16_9);
-#endif
 	HDMI_SETUP_LUT(720x576p50_4_3);
 	HDMI_SETUP_LUT(720x576p50_16_9);
 	HDMI_SETUP_LUT(1280x720p50_16_9);
 	HDMI_SETUP_LUT(1440x576i50_4_3);
 	HDMI_SETUP_LUT(1440x576i50_16_9);
-#ifndef CONFIG_HUAWEI_MHL_SII9244
-	HDMI_SETUP_LUT(1920x1080p50_16_9);
-#endif
 	HDMI_SETUP_LUT(1920x1080p24_16_9);
 	HDMI_SETUP_LUT(1920x1080p25_16_9);
 	HDMI_SETUP_LUT(1920x1080p30_16_9);
@@ -1277,11 +1270,7 @@ static int check_hdmi_features(void)
 static boolean hdmi_msm_has_hdcp(void)
 {
 	/* RAW_FEAT_CONFIG_ROW0_LSB, HDCP_DISABLE */
-#ifndef MHL_CERTIFICATE
-	return (inpdw(QFPROM_BASE + 0x0238) & 0x00400000) ? FALSE : TRUE;
-#else
 	return FALSE;
-#endif
 }
 
 static boolean hdmi_msm_is_power_on(void)
@@ -2986,8 +2975,6 @@ static void hdmi_msm_hdcp_enable(void)
 		return;
 	}
 
-	msleep(200);
-
 	mutex_lock(&hdmi_msm_state_mutex);
 	hdmi_msm_state->hdcp_activating = TRUE;
 	mutex_unlock(&hdmi_msm_state_mutex);
@@ -3670,13 +3657,8 @@ static uint8 hdmi_msm_avi_iframe_lut[][16] = {
 	 0x10,	0x10,	0x10,	0x10,	0x10, 0x10, 0x10}, /*00*/
 	{0x18,	0x18,	0x28,	0x28,	0x28,	 0x28,	0x28,	0x28,	0x28,
 	 0x28,	0x28,	0x28,	0x28,	0x18, 0x28, 0x18}, /*01*/
-#ifndef MHL_CERTIFICATE
 	{0x04,	0x04,	0x04,	0x04,	0x04,	 0x04,	0x04,	0x04,	0x04,
 	 0x04,	0x04,	0x04,	0x04,	0x88, 0x04, 0x04}, /*02*/
-#else
-	{0x04,	0x04,	0x04,	0x04,	0x04,	 0x04,	0x04,	0x04,	0x04,
-	 0x04,	0x04,	0x04,	0x04,	0x88, 0x04, 0x04}, /*02*/
-#endif
 	{0x02,	0x06,	0x11,	0x15,	0x04,	 0x13,	0x10,	0x05,	0x1F,
 	 0x14,	0x20,	0x22,	0x21,	0x01, 0x03, 0x11}, /*03*/
 	{0x00,	0x01,	0x00,	0x01,	0x00,	 0x00,	0x00,	0x00,	0x00,
@@ -3709,9 +3691,6 @@ static void hdmi_msm_avi_info_frame(void)
 	int i;
 	int mode = 0;
 	boolean use_ce_scan_info = TRUE;
-#ifdef MHL_CERTIFICATE
-	extern uint8_t VIDEO_CAPABILITY_D_BLOCK_found;
-#endif
 
 	switch (external_common_state->video_resolution) {
 	case HDMI_VFRMT_720x480p60_4_3:
@@ -3822,17 +3801,7 @@ static void hdmi_msm_avi_info_frame(void)
 	/* Data Byte 02: C1 C0 M1 M0 R3 R2 R1 R0 */
 	aviInfoFrame[4]  = hdmi_msm_avi_iframe_lut[1][mode];
 	/* Data Byte 03: ITC EC2 EC1 EC0 Q1 Q0 SC1 SC0 */
-#ifndef MHL_CERTIFICATE
 	aviInfoFrame[5]  = hdmi_msm_avi_iframe_lut[2][mode];
-#else
-	if(VIDEO_CAPABILITY_D_BLOCK_found) {
-		aviInfoFrame[5]  = (hdmi_msm_avi_iframe_lut[2][mode]&0xF3)|0x04;
-		DEV_DBG("VIDEO_CAPABILITY_D_BLOCK_found = true, limited range\n");
-	} else {
-		aviInfoFrame[5]  = hdmi_msm_avi_iframe_lut[2][mode]&0xF3;  
-		DEV_DBG("VIDEO_CAPABILITY_D_BLOCK_found= false. defult range\n");
-	}
-#endif
 	/* Data Byte 04: 0 VIC6 VIC5 VIC4 VIC3 VIC2 VIC1 VIC0 */
 	aviInfoFrame[6]  = hdmi_msm_avi_iframe_lut[3][mode];
 	/* Data Byte 05: 0 0 0 0 PR3 PR2 PR1 PR0 */
@@ -4740,8 +4709,6 @@ static struct platform_device this_device = {
 static int __init hdmi_msm_init(void)
 {
 	int rc;
-	if(!is_hdmi_exist())
-		return -ENODEV;
 
 	if (cpu_is_msm8930())
 		return 0;
@@ -4762,11 +4729,7 @@ static int __init hdmi_msm_init(void)
 	}
 
 	external_common_state = &hdmi_msm_state->common;
-#ifndef CONFIG_HUAWEI_MHL_SII9244
 	external_common_state->video_resolution = HDMI_VFRMT_1920x1080p60_16_9;
-#else
-	external_common_state->video_resolution = HDMI_VFRMT_1920x1080p24_16_9;
-#endif
 #ifdef CONFIG_FB_MSM_HDMI_3D
 	external_common_state->switch_3d = hdmi_msm_switch_3d;
 #endif
@@ -4859,7 +4822,7 @@ static void __exit hdmi_msm_exit(void)
 	platform_driver_unregister(&this_driver);
 }
 
-late_initcall(hdmi_msm_init);
+module_init(hdmi_msm_init);
 module_exit(hdmi_msm_exit);
 
 MODULE_LICENSE("GPL v2");
