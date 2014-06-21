@@ -110,9 +110,6 @@ struct hw_config_power_tree* config_power_tree_pdata = NULL;
 struct regulator_init_data* msm_saw_regulator_pdata__ = NULL;
 struct gpio_regulator_platform_data* msm_gpio_regulator_pdata__ = NULL;
 #endif
-#ifdef CONFIG_HUAWEI_MHL_SII9244
-#include <linux/i2c/sii_9244.h>
-#endif
 static struct platform_device msm_fm_platform_init = {
 	.name = "iris_fm",
 	.id   = -1,
@@ -124,10 +121,6 @@ static struct platform_device msm_fm_platform_init = {
 
 #ifdef CONFIG_HUAWEI_USBSWITCH
 #define GPIO_USBSWITCH_INT   49
-#endif
-#ifdef CONFIG_HUAWEI_MHL_SII9244
-#define GPIO_MHL_RST		47
-#define GPIO_MHL_INT		50
 #endif
 #if defined(CONFIG_GPIO_SX150X) || defined(CONFIG_GPIO_SX150X_MODULE)
 
@@ -2617,38 +2610,6 @@ static struct i2c_board_info liquid_io_expander_i2c_info[] __initdata = {
 	},
 };
 
-#ifdef CONFIG_HUAWEI_MHL_SII9244
-static void sii9244_reset(void)
-{
-    gpio_request(GPIO_MHL_RST, "mhl_sii9244");
-    gpio_direction_output(GPIO_MHL_RST, 0);
-    msleep(5); //change 100 to 5
-    gpio_direction_output(GPIO_MHL_RST, 1);
-    printk(KERN_INFO "%s:%d:Sii9244 reset successed\n", __func__,__LINE__);
-}
-	
-static struct sii9244_platform_data sii9244_platform_data = {
-    .reset = sii9244_reset,
-};
-
-static struct i2c_board_info msm_mhl_boardinfo[] __initdata = {
-    {
-        I2C_BOARD_INFO("mhl_Sii9244_page0", 0x3B),
-        .platform_data = &sii9244_platform_data,
-        .irq = MSM_GPIO_TO_INT(GPIO_MHL_INT),
-    },
-    {
-        I2C_BOARD_INFO("mhl_Sii9244_page1", 0x3F),
-    },
-    {
-        I2C_BOARD_INFO("mhl_Sii9244_page2", 0x4B),
-    },
-    {
-        I2C_BOARD_INFO("mhl_Sii9244_cbus", 0x66),
-    },
-};
-#endif
-
 static struct i2c_registry msm8960_i2c_devices[] __initdata = {
 #ifdef CONFIG_ISL9519_CHARGER
 	{
@@ -2696,14 +2657,6 @@ static struct i2c_registry msm8960_i2c_devices[] __initdata = {
 		liquid_io_expander_i2c_info,
 		ARRAY_SIZE(liquid_io_expander_i2c_info),
 	},
-#ifdef CONFIG_HUAWEI_MHL_SII9244
-	{
-		I2C_SURF | I2C_FFA | I2C_FLUID | I2C_RUMI,
-		MSM_8960_GSBI5_QUP_I2C_BUS_ID,
-		msm_mhl_boardinfo,
-		ARRAY_SIZE(msm_mhl_boardinfo),
-	},
-#endif
 };
 #endif /* CONFIG_I2C */
 

@@ -41,7 +41,6 @@
 #include <linux/android_pmem.h>
 #include <linux/leds.h>
 #include <linux/pm_runtime.h>
-#include <hsad/config_interface.h>
 #include <linux/sync.h>
 #include <linux/sw_sync.h>
 #include <linux/file.h>
@@ -52,18 +51,6 @@
 #include "tvenc.h"
 #include "mdp.h"
 #include "mdp4.h"
-#include "mipi_dsi.h"
-
-int mipi_video_restore_default_fps(void);
-int mipi_video_set_low_fps(int frame_rate);
-#define LOW     0
-#define HIGH    1
-static int frame_rate = LOW;
-static int start_flag = 0;
-
-static struct workqueue_struct *mdp_dynamic_frame_rate_wq;
-static struct delayed_work mdp_dynamic_frame_rate_worker;
-static unsigned long mdp_dynamic_frame_buffer_duration = (HZ/2);
 
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_NUM	3
@@ -329,28 +316,8 @@ static ssize_t msm_fb_msm_fb_type(struct device *dev,
 }
 
 static DEVICE_ATTR(msm_fb_type, S_IRUGO, msm_fb_msm_fb_type, NULL);
-
-#define MAX_LCD_PANEL_NAME_LEN  40
-static ssize_t msm_fb_msm_lcd_type(struct device *dev,
-				  struct device_attribute *attr, char *buf)
-{
-	int ret;
-	u32 len;
-	char panel_name[MAX_LCD_PANEL_NAME_LEN]={0};
-	ret = get_lcd_name(panel_name);
-	if(ret == false) {
-		ret = snprintf(buf, MAX_LCD_PANEL_NAME_LEN, "unknown panel\n");
-	}
-	len = strlen(panel_name);
-	panel_name[len] = '\n';
-	ret = snprintf(buf, MAX_LCD_PANEL_NAME_LEN, panel_name);
-	return ret;
-}
-static DEVICE_ATTR(msm_lcd_type, S_IRUGO, msm_fb_msm_lcd_type, NULL);
-
 static struct attribute *msm_fb_attrs[] = {
 	&dev_attr_msm_fb_type.attr,
-	&dev_attr_msm_lcd_type.attr,
 	NULL,
 };
 static struct attribute_group msm_fb_attr_group = {
@@ -578,20 +545,6 @@ static int msm_fb_suspend_sub(struct msm_fb_data_type *mfd)
 
 	if ((!mfd) || (mfd->key != MFD_KEY))
 		return 0;
-
-	if (mfd->panel_info.mipi.mode == DSI_VIDEO_MODE) {
-		cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
-		/* for workder can't be cancelled... */
-		flush_workqueue(mdp_dynamic_frame_rate_wq);
-
-		if (frame_rate != HIGH) {
-			frame_rate = HIGH;
-			mipi_video_restore_default_fps();
-
-			printk("\n junger 60fps msm_fb_suspend_sub.\n");
-		}
-		start_flag  = 1;
-	}
 
 	/*
 	 * suspend this channel
@@ -1240,8 +1193,8 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	var->grayscale = 0,	/* No graylevels */
 	var->nonstd = 0,	/* standard pixel format */
 	var->activate = FB_ACTIVATE_VBL,	/* activate it at vsync */
-	var->height = panel_info->height?panel_info->height:-1,	/* height of picture in mm */
-	var->width = panel_info->width?panel_info->width:-1,	/* width of picture in mm */
+	var->height = -1,	/* height of picture in mm */
+	var->width = -1,	/* width of picture in mm */
 	var->accel_flags = 0,	/* acceleration flags */
 	var->sync = 0,	/* see FB_SYNC_* */
 	var->rotate = 0,	/* angle we rotate counter clockwise */
@@ -1946,7 +1899,6 @@ static int msm_fb_pan_display_sub(struct fb_var_screeninfo *var,
 	struct mdp_dirty_region dirty;
 	struct mdp_dirty_region *dirtyPtr = NULL;
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
-	static int fb_update_skip = 0;
 
 	/*
 	 * If framebuffer is 2, io pen display is not allowed.
@@ -1955,13 +1907,6 @@ static int msm_fb_pan_display_sub(struct fb_var_screeninfo *var,
 		pr_err("%s: no pan display for fb%d!",
 		       __func__, info->node);
 		return -EPERM;
-	}
-
-	if(mfd->panel.type == MIPI_VIDEO_PANEL){
-		if(fb_update_skip < 3) {
-			fb_update_skip++;
-			return 0;
-		}
 	}
 
 	if (info->node != 0 || mfd->cont_splash_done)	/* primary */
@@ -2034,7 +1979,6 @@ static int msm_fb_pan_display_sub(struct fb_var_screeninfo *var,
 			msm_fb_release_timeline(mfd);
 			return -EINVAL;
 		}
-		mfd->cont_splash_done = 1;
 	}
 
 	mdp_set_dma_pan_info(info, dirtyPtr,
@@ -3595,16 +3539,6 @@ static int msmfb_handle_pp_ioctl(struct msm_fb_data_type *mfd,
 	return ret;
 }
 
-static void mdp_dynamic_frame_rate_workqueue_handler(struct work_struct *work)
-{
-	if (frame_rate != LOW) {
-		frame_rate = LOW;
-		mipi_video_set_low_fps(42);
-		queue_delayed_work(mdp_dynamic_frame_rate_wq,
-				&mdp_dynamic_frame_rate_worker,
-				mdp_dynamic_frame_buffer_duration);
-	}
-}
 static int msmfb_handle_metadata_ioctl(struct msm_fb_data_type *mfd,
 				struct msmfb_metadata *metadata_ptr)
 {
@@ -3729,8 +3663,6 @@ static int msmfb_display_commit(struct fb_info *info,
 static int msm_fb_ioctl(struct fb_info *info, unsigned int cmd,
 			unsigned long arg)
 {
-	static unsigned long start_jiffies = 0;
-	unsigned long delta_jiffies;
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
 	void __user *argp = (void __user *)arg;
 	struct fb_cursor cursor;
@@ -3753,24 +3685,6 @@ static int msm_fb_ioctl(struct fb_info *info, unsigned int cmd,
 
 	switch (cmd) {
 #ifdef CONFIG_FB_MSM_OVERLAY
-	case FBIOGET_HWCINFO:
-		if ((mfd->panel_info.mipi.mode == DSI_VIDEO_MODE)&&(start_flag != 0)) {
-			delta_jiffies = jiffies - start_jiffies;
-            if (delta_jiffies < 5 ) {
-				cancel_delayed_work(&mdp_dynamic_frame_rate_worker);
-				/* for workder can't be cancelled... */
-				flush_workqueue(mdp_dynamic_frame_rate_wq);
-				queue_delayed_work(mdp_dynamic_frame_rate_wq,
-                                   &mdp_dynamic_frame_rate_worker,
-                                    mdp_dynamic_frame_buffer_duration);
-				if (frame_rate != HIGH) {
-					frame_rate = HIGH;
-					mipi_video_restore_default_fps();
-                }
-            }
-            start_jiffies = jiffies;
-        }
-        break;
 	case MSMFB_OVERLAY_GET:
 		ret = msmfb_overlay_get(info, argp);
 		break;
@@ -4290,11 +4204,6 @@ EXPORT_SYMBOL(get_fb_phys_info);
 int __init msm_fb_init(void)
 {
 	int rc = -ENODEV;
-
-	mdp_dynamic_frame_rate_wq = create_singlethread_workqueue("mdp_dynamic_frame_rate_wq");
-
-	INIT_DELAYED_WORK(&mdp_dynamic_frame_rate_worker,
-			 mdp_dynamic_frame_rate_workqueue_handler);
 
 	if (msm_fb_register_driver())
 		return rc;

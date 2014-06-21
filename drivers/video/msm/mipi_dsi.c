@@ -145,15 +145,13 @@ static ssize_t framerate_store(struct device *pdev,
     if (!frame_rate)
         return -EINVAL;
     mfd->panel_info.mipi.frame_rate = frame_rate;
-    if (frame_rate < 60)
-        count = mipi_video_set_low_fps((int)frame_rate);
-    else
         count = mipi_video_restore_default_fps();
 
     count = frame_rate;
 
     return count;
 }
+
 static DEVICE_ATTR(frame_rate, 0664, framerate_show, framerate_store);
 
 static struct attribute *msm_fb_attrs[] = {
