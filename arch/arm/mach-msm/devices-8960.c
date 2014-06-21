@@ -709,7 +709,6 @@ struct msm_vidc_platform_data vidc_platform_data = {
 #endif
 	.disable_dmx = 0,
 	.disable_fullhd = 0,
-	.enable_sec_metadata = 0,
 };
 
 struct platform_device msm_device_vidc = {
