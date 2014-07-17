@@ -283,29 +283,12 @@ static ssize_t store_mfreq(struct sysdev_class *class,
 }
 
 static SYSDEV_CLASS_ATTR(mfreq, 0200, NULL, store_mfreq);
-#ifdef CONFIG_CPU_VOLTAGE_TABLE
-static struct freq_attr *msm_cpufreq_attr[] = {
-	&cpufreq_freq_attr_scaling_available_freqs,
-	NULL,
-};
-#else
+
 static struct freq_attr *msm_freq_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
 };
-#endif
 
-#ifdef CONFIG_CPU_VOLTAGE_TABLE
-static struct cpufreq_driver msm_cpufreq_driver = {
-	/* lps calculations are handled here. */
-	.flags		= CPUFREQ_STICKY | CPUFREQ_CONST_LOOPS,
-	.init		= msm_cpufreq_init,
-	.verify		= msm_cpufreq_verify,
-	.target		= msm_cpufreq_target,
-	.name		= "msm",
-	.attr		= msm_cpufreq_attr,
-};
-#else
 static struct cpufreq_driver msm_cpufreq_driver = {
 	/* lps calculations are handled here. */
 	.flags		= CPUFREQ_STICKY | CPUFREQ_CONST_LOOPS,
@@ -315,7 +298,6 @@ static struct cpufreq_driver msm_cpufreq_driver = {
 	.name		= "msm",
 	.attr		= msm_freq_attr,
 };
-#endif
 
 static struct notifier_block msm_cpufreq_pm_notifier = {
 	.notifier_call = msm_cpufreq_pm_event,
