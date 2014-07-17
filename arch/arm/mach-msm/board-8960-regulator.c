@@ -501,7 +501,7 @@ msm_pm8921_regulator_pdata[] __devinitdata = {
 		0, 2),
 	PM8XXX_NLDO1200(L28, "8921_l28", 0, 1, 1050000, 1050000, 200, "8921_s7",
 		0, 3),
-	PM8XXX_LDO(L29,      "8921_l29", 0, 1, 2050000, 2100000, 200, "8921_s8",
+	PM8XXX_LDO(L29,      "8921_l29", 0, 1, 2100000, 2100000, 200, "8921_s8",
 		0, 4),
 
 	/*	     ID        name      always_on pd en_t supply    reg_ID */
